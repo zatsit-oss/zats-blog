@@ -164,6 +164,10 @@ const config = {
         darkTheme: prismThemes.dracula,
       },
     }),
+    plugins: [[ require.resolve('docusaurus-lunr-search'), {
+      languages: ['fr'], // language codes
+      enableHighlight: true
+  }]],
 };
 
 export default config;
