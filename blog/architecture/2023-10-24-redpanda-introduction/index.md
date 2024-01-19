@@ -5,11 +5,14 @@ authors: [eperu]
 tags: 
   - "architecture"
   - "data"
+  - "toto"
 
 ---
 
 Présentation de RedPanda, au travers du premier cours dédié aux développeurs de la "RedPanda University" que j'ai suivi,
 je vous présente les grands principes et les premiers pas dans cet écosystème.
+
+![Redpanda logo at a desk typing on his laptop](./desk-panda-alt.svg)
 
 <!-- truncate -->
 
