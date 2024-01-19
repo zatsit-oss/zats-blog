@@ -1,35 +1,33 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
-
+//<a href="https://storyset.com/people">People illustrations by Storyset</a>
 const FeatureList = [
   {
-    title: 'Facile à produire et à salire',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Écrire pour partager',
+    Svg: require('@site/static/img/learning-amico.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Nos collaborateurs ont du talent et souhaitent vous partager leurs connaissances, leurs valeurs.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Simple et efficace',
+    Svg: require('@site/static/img/website-designer-cuate.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Ce blog a été entièrement généré et ne nécessite pas de ressources gourmandes H24.
       </>
     ),
   },
   {
-    title: 'Powered by Docusaurus',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Si tu aimes ce que tu lis',
+    Svg: require('@site/static/img/resume-amico.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Tu pourrais aussi faire partie de l'aventure ! Rejoindre une équipe motivée par la qualité, la sobriété et le partage.
+          N'hésite plus, envoie nous un <a href={"mailto:emplois@zatsit.fr"}>mail ici</a>
       </>
     ),
   },
