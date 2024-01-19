@@ -63,7 +63,7 @@ const config = {
         },
         items: [
           {to: '/blog', label: 'Blog', position: 'left'},
-          {to: 'blog/tags', label: 'Tous les sujets'},
+          {to: 'blog/tags', label: 'Catégories'},
           {to: 'blog/tags/architecture', label: 'Architecture'},
           {to: 'blog/tags/cloud', label: 'Cloud'},
           {to: 'blog/tags/data', label: 'Data & AI'},
@@ -143,6 +143,7 @@ const config = {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
+
     }),
     plugins: [[ require.resolve('docusaurus-lunr-search'), {
       languages: ['fr'], // language codes
