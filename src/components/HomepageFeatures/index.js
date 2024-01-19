@@ -1,47 +1,50 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
-//<a href="https://storyset.com/people">People illustrations by Storyset</a>
+
 const FeatureList = [
   {
     title: 'Écrire pour partager',
     Svg: require('@site/static/img/learning-amico.svg').default,
+    urlSvg: 'https://storyset.com/people',
     description: (
       <>
-        Nos collaborateurs ont du talent et souhaitent vous partager leurs connaissances, leurs valeurs.
+        Nos collaborateurs ont du talent et souhaitent vous partager leurs connaissances, leurs valeurs. N'hésite pas à partager si tu aimes.
       </>
     ),
   },
   {
     title: 'Simple et efficace',
     Svg: require('@site/static/img/website-designer-cuate.svg').default,
+    urlSvg: 'https://storyset.com/people',
     description: (
       <>
-        Ce blog a été entièrement généré et ne nécessite pas de ressources gourmandes H24.
+        Ce blog a été entièrement généré et ne nécessite pas de ressources gourmandes 24/7. 
       </>
     ),
   },
   {
     title: 'Si tu aimes ce que tu lis',
     Svg: require('@site/static/img/resume-amico.svg').default,
+    urlSvg: 'https://storyset.com/people',
     description: (
       <>
         Tu pourrais aussi faire partie de l'aventure ! Rejoindre une équipe motivée par la qualité, la sobriété et le partage.
-          N'hésite plus, envoie nous un <a href={"mailto:emplois@zatsit.fr"}>mail ici</a>
+        Contacte nous par <a href={"mailto:emplois@zatsit.fr"}>mail ici</a>
       </>
     ),
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({Svg, urlSvg,title, description}) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <a href={urlSvg}><Svg className={styles.featureSvg} role="img" /></a>
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
+        <p  style={{ textAlign: 'justify', padding: '0 10px' }}>{description}</p>
       </div>
     </div>
   );
