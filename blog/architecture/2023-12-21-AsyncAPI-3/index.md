@@ -9,6 +9,9 @@ tags: [architecture, data]
 # AsyncAPI 3.0.0 Release Notes
 
 The new version of the AsyncAPI specification - 3.0.0 - is now available and is packed with goodies! Some clear up confusion, some add features, and others improve maintainability.
+
+![AsyncAPI logo](./cover.webp)
+
 <!-- truncate -->
 To make the information as clear as possible, we have split up the information into digestible chunks.
 
