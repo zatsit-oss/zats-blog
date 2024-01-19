@@ -5,7 +5,6 @@ authors: [eperu]
 tags: 
   - "architecture"
   - "data"
-  - "toto"
 
 ---
 

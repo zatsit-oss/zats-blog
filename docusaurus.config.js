@@ -9,26 +9,16 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Zatsit Blog',
-  tagline: 'Zats Crew',
+  tagline: 'Quelque soit votre domaine tech, nous avons forcément un article pour vous',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
+  url: 'https://blog.zatsit.fr',
   baseUrl: '/',
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'zatsit', // Usually your GitHub org/user name.
+  organizationName: 'zatsit-oss', // Usually your GitHub org/user name.
   projectName: 'zatsit-blog', // Usually your repo name.
-
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'fr',
     locales: ['fr'],
@@ -41,25 +31,16 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          //editUrl:
-          //  'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         }
         ,
         blog: {
           showReadingTime: true,
           blogTitle: 'Zatsit blog!',
           blogDescription: 'A Docusaurus powered blog!',
-          postsPerPage: 5,
+          postsPerPage: 10,
           //tagsBasePath : '/blog/tags',
           blogSidebarTitle: 'Nos derniers articles',
           blogSidebarCount: 'ALL',
-          
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          //editUrl:
-            //'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -71,64 +52,63 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'Zats Blog',
+        title: 'zatsit',
         hideOnScroll: true,
         logo: {
-          alt: 'Zatsit logo',
-          src: 'img/logo-zatsit-orange.svg',
+          alt: 'zatsit logo',
+          src: 'img/logo-zatsit-style-light.svg',
+          srcDark: 'img/logo-zatsit-style-dark.svg',
         },
         items: [
-          {to: '/blog', label: 'Accueil', position: 'left'},
-          {
+          {to: '/blog', label: 'Blog', position: 'left'},
+          {to: 'blog/tags', label: 'Tous les sujets'},
+          {to: 'blog/tags/architecture', label: 'Architecture'},
+          {to: 'blog/tags/cloud', label: 'Cloud'},
+          {to: 'blog/tags/data', label: 'Data & AI'},
+          {to: 'blog/tags/general', label: 'Général'},
+          // Future categories, one post is required to display the tem navigation bar, if not, build fail
+          /*{
             type: 'dropdown',
-            to: '/blog/tags',
-            label: 'Catégories',
-            position: 'left',
+            label: 'À venir',
             items: [
-              {to: 'blog/tags', label: 'Tous les sujets'},
-              {to: 'blog/tags/ai', label: 'Intelligence artificielle'},
-              {to: 'blog/tags/architecture', label: 'Architecture'},
-              {to: 'blog/tags/cloud', label: 'Cloud'},
-              {to: 'blog/tags/data', label: 'Data'},
-              {to: 'blog', label: 'Et d\'autres bientôt'},
-             // Next categories
-             // {to: 'blog/tags/dev', label: 'Developpement'},
-             // {to: 'blog/tags/general', label: 'Général'},
-             // {to: 'blog/tags/Eco-conception', label: 'Eco-Conception'},
-             // {to: 'blog/tags/mobile', label: 'Mobile'},
-             // {to: 'blog/tags/ops', label: 'OPS'},
-             // {to: 'blog/tags/web', label: 'Web'},
+              {to: 'blog/tags/dev', label: 'Developpement'},
+              {to: 'blog/tags/Eco-conception', label: 'Eco-Conception'},
+              {to: 'blog/tags/mobile', label: 'Mobile'},
+              {to: 'blog/tags/ops', label: 'OPS'},
+              {to: 'blog/tags/web', label: 'Web'},
             ],
-          },
+          },*/
           {
-            href: 'https://docusaurus.io/https://github.com/facebook/docusaurus',
-            label: 'Built with Docusaurus',
+            label: 'GitHub',
+            href: 'https://zatsit.fr',
             position: 'right',
-          },
+          }
         ],
       },
-      footer: {
-        style: 'dark',
+      announcementBar: {
+        id: 'annoucement',
+        content:
+          'Nouveau blog de Zatsit !',
+        backgroundColor: '#fafbfc',
+        textColor: '#091E42',
+        isCloseable: true,
+      },
+      footer: {        
         links: [
           {
-            title: 'Docs',
+            title: 'zatsit',
             items: [
               {
-                label: 'Créé ton Blog avec Docusaurus',
-                to: 'https://docusaurus.io/docs/category/getting-started',
+                label: 'Blog statique éco-conçu',
+                to: 'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0',
               },
             ],
           },
           {
-            title: 'Communauté',
+            title: 'Nous suivre',
             items: [
-              {
-                label: 'Site web',
-                href: 'https://zatsit.fr',
-              },
               {
                 label: 'Linkedin',
                 href: 'https://zatsit.fr',
@@ -137,17 +117,17 @@ const config = {
                 label: 'Twitter',
                 href: 'https://zatsit.fr',
               },
+              {
+                label: 'GitHub',
+                href: 'https://zatsit.fr',
+              }
             ],
           },
           {
             title: 'Autres',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
-              },
-              {
-                label: 'GitHub',
+                label: 'Site web',
                 href: 'https://zatsit.fr',
               },
               {
@@ -156,8 +136,8 @@ const config = {
               },
             ],
           },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} Zatsit, Built with Docusaurus.`,
+        ], 
+        copyright: `Copyright © ${new Date().getFullYear()} zatsit, Propulsé par <a href="https://docusaurus.io/docs/category/getting-started">Docusaurus</a>.`,
       },
       prism: {
         theme: prismThemes.github,
