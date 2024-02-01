@@ -104,6 +104,10 @@ const config = {
                 label: 'Blog statique éco-conçu',
                 to: 'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0',
               },
+              {
+                label: 'last',
+                to: 'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0',
+              },
             ],
           },
           {
