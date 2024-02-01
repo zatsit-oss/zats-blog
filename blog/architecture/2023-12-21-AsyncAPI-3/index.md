@@ -51,3 +51,5 @@ operations:
     action: receive
     channel: 
       $ref: "#/channels/UserSignup"
+
+```

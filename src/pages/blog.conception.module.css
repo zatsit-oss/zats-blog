@@ -1,0 +1,22 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+body {
+    margin: 0; /* Supprime la marge par défaut du corps */
+    padding: 0; /* Supprime le padding par défaut du corps */
+}
+
+.myRow {
+    padding-left: 20px; /* Padding à gauche */
+    padding-right: 20px; /* Padding à droite */
+}
+
+/* Ajoutez des règles @media pour ajuster le padding en fonction de la taille de l'écran */
+@media screen and (max-width: 600px) {
+    .myRow {
+        padding-left: 10px; /* Padding réduit à gauche pour les écrans plus petits */
+        padding-right: 10px; /* Padding réduit à droite pour les écrans plus petits */
+    }
+}
