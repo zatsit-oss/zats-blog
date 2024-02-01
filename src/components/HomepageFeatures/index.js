@@ -30,7 +30,7 @@ const FeatureList = [
     description: (
       <>
         Tu pourrais aussi faire partie de l'aventure ! Rejoindre une équipe motivée par la qualité, la sobriété et le partage.
-        Contacte nous par <a href={"mailto:emplois@zatsit.fr"}>mail ici</a>
+        Contacte nous par <a href={"mailto:emplois@zatsit.fr"} aria-label="Contacte-nous par mail" style={{textDecoration: 'underline', fontWeight: 'bold'}}>mail ici</a>
       </>
     ),
   },
@@ -40,7 +40,7 @@ function Feature({Svg, urlSvg,title, description}) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <a href={urlSvg}><Svg className={styles.featureSvg} role="img" /></a>
+        <a href={urlSvg} aria-label="Visit storyset website for amazing illustrations"><Svg className={styles.featureSvg} role="img" /></a>
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
