@@ -11,7 +11,8 @@ Google annonce la disponibilité publique de Gemini Pro sur Vertex AI, disponibl
 
 # Google annonce la disponibilité publique de Gemini Pro sur Vertex AI
 
-Il y a une semaine, Google a dévoilé Gemini, son modèle d'IA le plus puissant et flexible à ce jour, disponible en trois tailles : Ultra, Pro et Nano. Aujourd'hui, nous sommes ravis d'annoncer que Gemini Pro est désormais accessible publiquement sur Vertex AI, la plateforme d'IA de bout en bout de Google Cloud, comprenant des outils intuitifs, une infrastructure entièrement gérée et des fonctionnalités intégrées de confidentialité et de sécurité. Avec Gemini Pro, les développeurs peuvent désormais créer des "agents" capables de traiter et d'agir sur des informations.
+Il y a une semaine, Google a dévoilé Gemini, son modèle d'IA le plus puissant et flexible à ce jour, disponible en trois tailles : Ultra, Pro et Nano. 
+> Aujourd'hui, nous sommes ravis d'annoncer que Gemini Pro est désormais accessible publiquement sur Vertex AI, la plateforme d'IA de bout en bout de Google Cloud, comprenant des outils intuitifs, une infrastructure entièrement gérée et des fonctionnalités intégrées de confidentialité et de sécurité. Avec Gemini Pro, les développeurs peuvent désormais créer des "agents" capables de traiter et d'agir sur des informations.
 
 ## Créez des agents d'IA de qualité professionnelle à grande échelle avec Gemini Pro sur Vertex AI
 
@@ -38,3 +39,8 @@ L'approche complète de Google en matière d'IA est conçue pour aider à mainte
 ## Bienvenue dans l'ère Gemini - commençons à construire
 
 L'API Gemini est maintenant disponible. Gemini Pro est également disponible sur Google AI Studio, un outil basé sur le web qui aide à développer rapidement des invites. Nous rendrons Gemini Ultra disponible pour certains clients, développeurs, partenaires et experts en sécurité et responsabilité pour des expérimentations et des commentaires précoces avant de le déployer auprès des développeurs et des clients d'entreprise début de l'année prochaine.
+
+
+
+[![Partage Linkedin](../../../static/img/icon-linkedin.webp)](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fzatsit-blog.web.app%2Fblog%2Fgemini-vertex-ai%2F)
+[![Partage Linkedin](../../../static/img/icon-x.webp)](https://twitter.com/intent/tweet?text=Google%20annonce%20la%20disponibilit%C3%A9%20publique%20de%20Gemini%20Pro%20sur%20Vertex%20AI%2C%20disponible%20en%20trois%20tailles%20%3A%20Ultra%2C%20Pro%20et%20Nano&url=https%3A%2F%2Fzatsit-blog.web.app%2Fblog%2Fgemini-vertex-ai%2F)
