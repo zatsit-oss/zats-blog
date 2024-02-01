@@ -30,3 +30,9 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.storySetAttribution {
+  font-style: italic;
+  font-size: x-small;
+  text-align: right;
+}
