@@ -565,4 +565,7 @@ rpk topic consume -n 1 alerts-avro
 }
 ```
 
-Voilà pour un premier tour de Redpanda si vous n'aviez pas encore creusé cette solution.
+Voilà pour un premier tour de Redpanda si vous n'aviez pas encore creusé cette solution, n'hésitez plus !
+
+[![Partage Linkedin](../../../static/img/icon-linkedin.webp)](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fzatsit-blog.web.app%2Fblog%2Fredpanda-introduction%2F)
+[![Partage Linkedin](../../../static/img/icon-x.webp)](https://twitter.com/intent/tweet?text=Pr%C3%A9sentation%20de%20RedPanda%2C%20au%20travers%20du%20premier%20cours%20d%C3%A9di%C3%A9%20aux%20d%C3%A9veloppeurs%20de%20la%20%22RedPanda%20University%22%20que%20j%27ai%20suivi%2C%0Aje%20vous%20pr%C3%A9sente%20les%20grands%20principes%20et%20les%20premiers%20pas%20dans%20cet%20%C3%A9cosyst%C3%A8me&url=https%3A%2F%2Fzatsit-blog.web.app%2Fblog%2Fredpanda-introduction%2F)
