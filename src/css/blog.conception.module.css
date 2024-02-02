@@ -1,0 +1,46 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+body {
+    margin: 0; /* Supprime la marge par défaut du corps */
+    padding: 0; /* Supprime le padding par défaut du corps */
+}
+
+.ecoConceptionRow {
+    padding-left: 20px; /* Padding à gauche */
+    padding-right: 20px; /* Padding à droite */
+}
+
+/* Ajoutez des règles @media pour ajuster le padding en fonction de la taille de l'écran */
+@media screen and (max-width: 600px) {
+    .ecoConceptionRow {
+        padding-left: 10px; /* Padding réduit à gauche pour les écrans plus petits */
+        padding-right: 10px; /* Padding réduit à droite pour les écrans plus petits */
+    }
+}
+
+/* CO2JS */
+.myRow.info-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 300px; /* Ajustez la largeur selon vos besoins */
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.myRow.info-container.label {
+    background-color: #00a4db; /* Couleur de fond pour le label */
+    color: #fff; /* Couleur du texte pour le label */
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.myRow.info-container.value {
+    background-color: #e74c3c; /* Couleur de fond pour la valeur */
+    color: #fff; /* Couleur du texte pour la valeur */
+    padding: 5px;
+    border-radius: 5px;
+}
