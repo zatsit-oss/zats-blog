@@ -103,11 +103,7 @@ const config = {
               {
                 label: 'Blog statique éco-conçu',
                 to: 'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0',
-              },
-              {
-                label: 'last',
-                to: 'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0',
-              },
+              }
             ],
           },
           {
@@ -115,15 +111,15 @@ const config = {
             items: [
               {
                 label: 'Linkedin',
-                href: 'https://zatsit.fr',
+                href: 'https://www.linkedin.com/company/zatsit/about/',
               },
               {
                 label: 'Twitter',
-                href: 'https://zatsit.fr',
+                href: 'https://twitter.com/zatsit_',
               },
               {
                 label: 'GitHub',
-                href: 'https://zatsit.fr',
+                href: 'https://github.com/zatsit-oss',
               }
             ],
           },
