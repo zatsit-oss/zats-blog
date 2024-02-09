@@ -43,7 +43,7 @@ function Feature({Svg, urlSvg,title, description}) {
         <a href={urlSvg} aria-label="Visit storyset website for amazing illustrations"><Svg className={styles.featureSvg} role="img" /></a>
       </div>
       <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
+        <Heading as="h2">{title}</Heading>
         <p  style={{ textAlign: 'justify', padding: '0 10px' }}>{description}</p>
       </div>
     </div>
@@ -59,7 +59,7 @@ export default function HomepageFeatures() {
             <Feature key={idx} {...props} />
           ))}
         </div>
-          <p className="storySetAttribution">The illustrations of this page comes from <a href={"https://storyset.com/"} aria-label="Lien vers le site de ressources graphiques Storyset">Storyset</a></p>
+          <p className="storySetAttribution">The illustrations of this page comes from <b><a href={"https://storyset.com/"} aria-label="Lien vers le site de ressources graphiques Storyset">Storyset</a></b></p>
       </div>
     </section>
   );
