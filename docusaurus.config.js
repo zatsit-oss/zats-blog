@@ -137,7 +137,7 @@ const config = {
             ],
           },
         ], 
-        copyright: `Copyright © ${new Date().getFullYear()} zatsit, Propulsé par <a href="https://docusaurus.io/docs/category/getting-started">Docusaurus</a>.`,
+        copyright: `Copyright © ${new Date().getFullYear()} zatsit, Propulsé par <b><a href="https://docusaurus.io/docs/category/getting-started">Docusaurus</a></b>.`,
       },
       prism: {
         theme: prismThemes.github,
