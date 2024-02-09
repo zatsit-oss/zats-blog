@@ -6,6 +6,7 @@ tags: [ai, cloud]
 ---
 
 Google annonce la disponibilité publique de Gemini Pro sur Vertex AI, disponible en trois tailles : Ultra, Pro et Nano.
+
 ![logo de gemini](./gemini.webp)
 <!-- truncate -->
 

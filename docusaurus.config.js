@@ -60,6 +60,8 @@ const config = {
           alt: 'zatsit logo',
           src: 'img/logo-zatsit-style-light.svg',
           srcDark: 'img/logo-zatsit-style-dark.svg',
+          height: 32,
+          width: 32
         },
         items: [
           {to: '/blog', label: 'Blog', position: 'left'},
