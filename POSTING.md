@@ -46,7 +46,7 @@ jdoe:
   name: John Doe
   title: Site Reliability Engineer  @ Zatsit
   url: Github account or Linkedin account
-  image_url: Could be an external permanent link to your profile picture
+  image_url: /img/authors/your_picture.webp
 ```
 
 Then in your category folder create a folder like : YYYYMMDD-SLUG, where SLUG will be use by 

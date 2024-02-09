@@ -10,6 +10,13 @@
       "source": "/",
       "destination": "/blog",
       "type": 302
-    } ]
+    } ],
+    "headers": [{
+      "source": "**",
+      "headers": [{
+        "key": "Cache-Control",
+        "value": "max-age=86400"
+      }]
+    }]
   }
 }
