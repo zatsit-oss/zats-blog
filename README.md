@@ -1,4 +1,4 @@
-# Zatsit blog
+# zatsit blog
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
@@ -31,7 +31,7 @@ This command generates static content into the `build` directory and can be serv
 Visit the Firebase CLI documentation to learn how to [install the CLI](https://firebase.google.com/docs/cli#install_the_firebase_cli
 ) or [update to its latest version](https://firebase.google.com/docs/cli#update-cli).
 
-### Step 2: Login with your Zatsit Google account
+### Step 2: Login with your zatsit Google account
 
 ```
 $ firebase login

@@ -1,4 +1,4 @@
-# Posting in Zatsit Blog
+# Posting in zatsit Blog
 
 > Remember that the official documentation of docusaurus is the reference.
 
@@ -34,7 +34,7 @@ You are ready to write !
 
 Below the 'blog' folder we will find [authors.yml](./authors.yml), you will have to create your author's information bloc : 
 
-The first entry follow the same convention in all other Zatsit software usage : 
+The first entry follow the same convention in all other **zatsit** software usage : 
 - everything in lowercase
 - first letter of your first name
 - your name
@@ -44,7 +44,7 @@ This value will be used in your post metadata.
 ```yml
 jdoe:
   name: John Doe
-  title: Site Reliability Engineer  @ Zatsit
+  title: Site Reliability Engineer  @ zatsit
   url: Github account or Linkedin account
   image_url: /img/authors/your_picture.webp
 ```
@@ -66,7 +66,7 @@ Then with your favourite IDE, you can edit your index.md file following this exa
 ```md
 ---
 slug: zatsit-blog
-title: Zatsit blog introduction
+title: zatsit blog introduction
 authors: [jdoe]
 tags: 
   - "architecture"

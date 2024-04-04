@@ -1,4 +1,4 @@
-# Contributing to Zatsit Blog
+# Contributing to zatsit blog
 
 First off, thanks for taking the time to contribute! ❤️
 
@@ -6,7 +6,7 @@ All types of contributions are encouraged and valued.
 
 
 * Contribute to the technical stack.
-* Write blog posts, for this refers to [Zatsit Code of Posting](./POSTING.md).
+* Write blog posts, for this refers to [zatsit Code of Posting](./POSTING.md).
 
 See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. The community looks forward to your contributions. 🎉
 
@@ -32,7 +32,7 @@ See the [Table of Contents](#table-of-contents) for different ways to help and d
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the
-[Zatsit Blog Code of Conduct](./CODE_OF_CONDUCT.md).
+[zatsit Blog Code of Conduct](./CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code. Please report problems
 to [DT](mailto:dirtech@zatsit.fr).
 
@@ -96,7 +96,7 @@ Once it's filed:
 
 ### Suggesting Enhancements
 
-This section guides you through submitting an enhancement suggestion for Zatsit Blog, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
+This section guides you through submitting an enhancement suggestion for **zatsit** blog, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
 
 #### Before Submitting an Enhancement
 
@@ -113,7 +113,7 @@ Enhancement suggestions are tracked as [GitHub issues](https://TODO/issues).
 - Provide a **step-by-step description of the suggested enhancement** in as many details as possible.
 - **Describe the current behavior** and **explain which behavior you expected to see instead** and why. At this point you can also tell which alternatives do not work for you.
 - You may want to **include screenshots and animated GIFs** which help you demonstrate the steps or point out the part which the suggestion is related to. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux. <!-- this should only be included if the project has a GUI -->
-- **Explain why this enhancement would be useful** to most Zatsit Blog users. You may also want to point out the other projects that solved it better and which could serve as inspiration.
+- **Explain why this enhancement would be useful** to most **zatsit** Blog users. You may also want to point out the other projects that solved it better and which could serve as inspiration.
 
 <!-- You might want to create an issue template for enhancement suggestions that can be used as a guide and that defines the structure of the information to be included. If you do so, reference it here in the description. -->
 
