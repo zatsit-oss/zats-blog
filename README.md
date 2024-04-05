@@ -38,4 +38,8 @@ $ firebase login
 ```
 Your web browser will ask you to fill in the login form.
 
-Now everything is in the firebase.json file, refer you to the [POSTING](.POSTING.md) instructions to deploy it.
+Then you will deploy the blog with :
+
+```
+$ firebase deploy
+```

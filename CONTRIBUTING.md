@@ -6,7 +6,7 @@ All types of contributions are encouraged and valued.
 
 
 * Contribute to the technical stack.
-* Write blog posts, for this refers to [zatsit Code of Posting](./POSTING.md).
+* Write blog posts, for this refers to [zatsit Code of Posting](https://github.com/zatsit-oss/zats-blog-content/blob/main/POSTING.md).
 
 See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. The community looks forward to your contributions. 🎉
 
@@ -40,7 +40,7 @@ to [DT](mailto:dirtech@zatsit.fr).
 ## I Have a Question
 
 > If you want to ask a question, we assume that you have read the available
-> [Documentation](https://docusaurus.io/docs/docs-introduction) [README](./README.md) and [POSTING](./POSTING.md).
+> [Documentation](https://docusaurus.io/docs/docs-introduction) [README](./README.md) and [POSTING](https://github.com/zatsit-oss/zats-blog-content/blob/main/POSTING.md).
 
 Before you ask a question, it is best to search for existing [Issues](https://TODO/issues) that might help you. In case you have found a suitable issue and still need clarification, you can write your question in this issue.
 
