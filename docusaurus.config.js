@@ -89,14 +89,6 @@ const config = {
           }
         ],
       },
-      /*announcementBar: {
-        id: 'annoucement',
-        content:
-          'Nouveau blog de zatsit !',
-        backgroundColor: '#fafbfc',
-        textColor: '#091E42',
-        isCloseable: true,
-      },*/
       footer: {        
         links: [
           {
