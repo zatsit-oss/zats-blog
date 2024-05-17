@@ -8,7 +8,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Zatsit Blog',
+  title: 'zatsit blog',
   tagline: 'Quelque soit votre domaine tech, nous avons forcément un article pour vous',
   favicon: 'img/favicon.ico',
 
@@ -35,7 +35,7 @@ const config = {
         ,
         blog: {
           showReadingTime: true,
-          blogTitle: 'Zatsit blog!',
+          blogTitle: 'zatsit blog!',
           blogDescription: 'A Docusaurus powered blog!',
           postsPerPage: 10,
           //tagsBasePath : '/blog/tags',
@@ -88,14 +88,6 @@ const config = {
             position: 'right',
           }
         ],
-      },
-      announcementBar: {
-        id: 'annoucement',
-        content:
-          'Nouveau blog de Zatsit !',
-        backgroundColor: '#fafbfc',
-        textColor: '#091E42',
-        isCloseable: true,
       },
       footer: {        
         links: [
