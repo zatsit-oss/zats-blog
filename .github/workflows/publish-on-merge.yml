@@ -1,0 +1,47 @@
+name: Publish Blog Content
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "blog/**"
+      - "docs/**"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "CODE_OF_CONDUCT.md"
+  workflow_dispatch:
+
+
+concurrency:
+  group: ${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  Fetch-and-build-blog:
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch and Build blog content
+        uses: ./.github/actions/docusaurus
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GH_PAT }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZATSIT_BLOG }}'
+          channelId: live
+          projectId: zatsit-blog
+
+      # needed to avoid the post action error
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+
+
