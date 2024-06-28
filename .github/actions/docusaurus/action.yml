@@ -33,6 +33,7 @@ runs:
           authors
 
     - name: Save Blog Contents Cache
+      if: steps.cache-blog-contents-restore.outputs.cache-hit != 'true'
       id: cache-blog-contents-save
       uses: actions/cache/save@v4
       with:

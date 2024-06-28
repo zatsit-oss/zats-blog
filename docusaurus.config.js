@@ -89,14 +89,14 @@ const config = {
           }
         ],
       },
-      footer: {        
+      footer: {
         links: [
           {
             title: 'zatsit',
             items: [
               {
                 label: 'Blog statique éco-conçu',
-                to: 'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0',
+                href: 'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0',
               }
             ],
           },
@@ -126,11 +126,11 @@ const config = {
               },
               {
                 label: 'Mentions légales',
-                href: '/mentions-legales',
+                to: '/mentions-legales',
               },
             ],
           },
-        ], 
+        ],
         copyright: `Copyright © ${new Date().getFullYear()} zatsit, Propulsé par <b><a href="https://docusaurus.io/docs/category/getting-started">Docusaurus</a></b>.`,
       },
       prism: {

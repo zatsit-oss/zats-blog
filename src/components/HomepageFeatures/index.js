@@ -9,17 +9,17 @@ const FeatureList = [
     urlSvg: '/blog',
     description: (
       <>
-        Nos collaborateurs ont du talent et souhaitent vous partager leurs connaissances, leurs valeurs. N'hésite pas à partager si tu aimes.
+        Nos consultants ont du talent et souhaitent vous partager leurs connaissances, leurs valeurs. N'hésite pas à partager si tu aimes.
       </>
     ),
   },
   {
-    title: 'Simple et efficace',
+    title: 'Simple, efficace et surtout éco-conçu.',
     Svg: require('@site/static/img/website-designer-cuate.svg').default,
     urlSvg: '/blog-conception',
     description: (
       <>
-        Ce blog a été entièrement généré et ne nécessite pas de ressources gourmandes 24/7. 
+        Ce blog a été entièrement généré et ne nécessite pas de ressources gourmandes 24/7.
       </>
     ),
   },
@@ -30,7 +30,7 @@ const FeatureList = [
     description: (
       <>
         Tu pourrais aussi faire partie de l'aventure ! Rejoindre une équipe motivée par la qualité, la sobriété et le partage.
-        Contacte nous par <a href={"mailto:emplois@zatsit.fr"} aria-label="Contacte-nous par mail" style={{textDecoration: 'underline', fontWeight: 'bold'}}>mail ici</a>
+        Contacte nous par <a href={"mailto:emplois@zatsit.fr"} aria-label="Contacte-nous par mail" style={{textDecoration: 'underline', fontWeight: 'bold'}}>mail ici</a>.
       </>
     ),
   },
