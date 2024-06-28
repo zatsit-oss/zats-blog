@@ -1,4 +1,4 @@
-name: Publish Blog Content
+name: Publish Blog on Merge
 
 on:
   push:
@@ -36,12 +36,3 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZATSIT_BLOG }}'
           channelId: live
           projectId: zatsit-blog
-
-      # needed to avoid the post action error
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-
-
