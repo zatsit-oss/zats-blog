@@ -1,0 +1,73 @@
+name: Fetch and build Blog
+description: Fetch and build the blog
+inputs:
+  token:
+      description: 'The token to use for fetching the repository'
+      required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Restore blog contents
+      id: cache-blog-contents-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: blog-contents
+        key: blog-contents-${{ runner.os }}
+        restore-keys: |
+          blog-contents-${{ runner.os }}
+          blog-contents-
+
+    - name: Checkout repository
+      if: steps.cache-blog-contents-restore.outputs.cache-hit != 'true'
+      uses: actions/checkout@v4
+      with:
+        repository: 'zatsit-oss/zats-blog-content'
+        token: ${{ inputs.token }}
+        ref: 'main'
+        path: blog-contents
+        sparse-checkout-cone-mode: false
+        sparse-checkout: |
+          blog
+          docs
+          authors
+
+    - name: Save Blog Contents Cache
+      id: cache-blog-contents-save
+      uses: actions/cache/save@v4
+      with:
+        path: blog-contents
+        key: ${{ steps.cache-blog-contents-restore.outputs.cache-primary-key }}
+
+    - name: move blog-content blog dir to blog dir
+      run: cp -R blog-contents/blog/* blog
+      shell: bash
+
+    - name: move blog-content docs dir to docs dir
+      run: cp -R blog-contents/docs/* docs
+      shell: bash
+
+    - name: move authors.yml into blog folder
+      run: cp blog-contents/authors/authors.yml blog
+      shell: bash
+
+    - name: move authors imgs into blog/img/authors
+      run: cp -R blog-contents/authors/img/* static/img/authors
+      shell: bash
+
+    - name: remove blog-content dir
+      run: rm -R blog-contents
+      shell: bash
+
+    - name: node-setup
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - shell: bash
+      run: npm ci
+
+    - shell: bash
+      run: npm run docusaurus build
+
