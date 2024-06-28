@@ -23,7 +23,6 @@ jobs:
         uses: ./.github/actions/docusaurus
         with:
           token: ${{ secrets.GH_PAT }}
-          branch: ${{ github.head_ref }}
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
