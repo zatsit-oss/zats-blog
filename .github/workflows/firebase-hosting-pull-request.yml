@@ -1,0 +1,32 @@
+name: Deploy to Firebase Hosting on PR
+on:
+  pull_request:
+    paths-ignore:
+      - "blog/**"
+      - "docs/**"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "CODE_OF_CONDUCT.md"
+
+concurrency:
+  group: ${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch and Build blog
+        uses: ./.github/actions/docusaurus
+        with:
+          token: ${{ secrets.GH_PAT }}
+          branch: ${{ github.head_ref }}
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZATSIT_BLOG }}'
+          projectId: zatsit-blog
