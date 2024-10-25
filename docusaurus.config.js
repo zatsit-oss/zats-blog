@@ -88,7 +88,7 @@ const config = {
             position: 'right',
           },
           {
-            label: 'zatsit',
+            label: 'Site web',
             href: 'https://zatsit.fr',
             position: 'right',
           }
