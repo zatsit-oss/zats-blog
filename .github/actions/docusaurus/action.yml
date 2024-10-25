@@ -1,11 +1,9 @@
 name: Fetch and build Blog
 description: Fetch and build the blog
-on:
-  workflow_call:
-    inputs:
-      token:
-        description: 'The token to use for fetching the repository'
-        required: true
+inputs:
+  token:
+      description: 'The token to use for fetching the repository'
+      required: true
 
 runs:
   using: 'composite'
