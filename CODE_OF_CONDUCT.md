@@ -1,4 +1,4 @@
-# Code of Conduct - Zatsit Blog
+# Code of Conduct - zatsit Blog
 
 ## Our Pledge
 
