@@ -84,6 +84,11 @@ const config = {
           },*/
           {
             label: 'GitHub',
+            href: 'https://github.com/zatsit-oss',
+            position: 'right',
+          },
+          {
+            label: 'Site web',
             href: 'https://zatsit.fr',
             position: 'right',
           }
