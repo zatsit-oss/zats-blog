@@ -30,7 +30,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: './sidebars.js',
+          sidebarPath: './sidebars.js'
         }
         ,
         blog: {
@@ -41,6 +41,8 @@ const config = {
           //tagsBasePath : '/blog/tags',
           blogSidebarTitle: 'Nos derniers articles',
           blogSidebarCount: 'ALL',
+            editUrl: 'https://github.com/zatsit-oss/zats-blog-content/tree/main',
+            showLastUpdateTime: true
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -136,7 +138,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} zatsit, Propulsé par <b><a href="https://docusaurus.io/docs/category/getting-started">Docusaurus</a></b>.`,
+        copyright: `Copyright © ${new Date().getFullYear()} <b>zatsit</b>, Propulsé par <b><a href="https://docusaurus.io/docs/category/getting-started">Docusaurus</a></b>.`,
       },
       prism: {
         theme: prismThemes.github,

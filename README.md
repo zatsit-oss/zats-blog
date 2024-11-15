@@ -16,6 +16,21 @@ $ npm run
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
+#### Fetch zatsit blog content
+
+The **zatsit** blog content is hosted on a separated repository to facilitate the contribution. To fetch the content, you have to run the following command :
+
+- Clone [the repository](https://github.com/zatsit-oss/zats-blog-content) on your workspace
+- Copy the `zats-blog-content/blog` folder to the `blog` folder
+- Copy the `zats-blog-content/authors` folder to the `authors` folder
+
+```
+cp -r  ../zats-blog-content/docs/ docs 
+cp -r  ../zats-blog-content/blog/ blog 
+cp -r  ../zats-blog-content/authors/ blog
+cp -R ../zats-blog-content/authors/img/* static/img/authors
+```
+
 ### Build
 
 ```
