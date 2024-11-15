@@ -23,6 +23,7 @@ runs:
       uses: actions/checkout@v4
       with:
         repository: 'zatsit-oss/zats-blog-content'
+        fetch-depth: 0
         token: ${{ inputs.token }}
         ref: 'main'
         path: blog-contents
