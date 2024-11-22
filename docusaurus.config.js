@@ -5,6 +5,7 @@
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
 import {themes as prismThemes} from 'prism-react-renderer';
+import { PATH_URL } from './path';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -13,7 +14,7 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://blog.zatsit.fr',
+  url: PATH_URL.website,
   baseUrl: '/',
   organizationName: 'zatsit-oss', // Usually your GitHub org/user name.
   projectName: 'zatsit-blog', // Usually your repo name.
@@ -23,7 +24,12 @@ const config = {
     defaultLocale: 'fr',
     locales: ['fr'],
   },
-
+  scripts: [
+     {
+      src: "./src/scripts/x.js",
+      defer: true,
+     }
+  ],
   presets: [
     [
       'classic',
@@ -144,7 +150,11 @@ const config = {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
-
+      metadata: [
+        {name: 'keywords', content: 'it, blog'},
+        {name: 'twitter:card', content: 'summary_large_image'},
+        {name: 'twitter:card', content: 'summary'}
+      ],
     }),
     plugins: [[ require.resolve('docusaurus-lunr-search'), {
       languages: ['fr'], // language codes
