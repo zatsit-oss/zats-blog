@@ -152,7 +152,6 @@ const config = {
       },
       metadata: [
         {name: 'keywords', content: 'it, blog'},
-        {name: 'twitter:card', content: 'summary_large_image'},
         {name: 'twitter:card', content: 'summary'}
       ],
     }),
