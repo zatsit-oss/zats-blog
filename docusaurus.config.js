@@ -4,8 +4,7 @@
 // There are various equivalent ways to declare your Docusaurus config.
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
-import {themes as prismThemes} from 'prism-react-renderer';
-import { PATH_URL } from './path';
+import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -14,7 +13,7 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: PATH_URL.website,
+  url: "https://blog.zatsit.fr",
   baseUrl: '/',
   organizationName: 'zatsit-oss', // Usually your GitHub org/user name.
   projectName: 'zatsit-blog', // Usually your repo name.
