@@ -1,4 +1,6 @@
 import { PATH_URL } from "../../path";
+import XLogo from '@site/static/img/x.svg';
+import LinkedinLogo from '@site/static/img/linkedin.svg';
 
 const SocialsComponent = (article) => {
   const URL = `${PATH_URL.website}${article.articleUrl}`;
@@ -6,12 +8,8 @@ const SocialsComponent = (article) => {
   return (
     <>
       <h2>Partager cet article :</h2>
-      <a href={`${PATH_URL.socialShare.linkedin}${URL}`} target="_blank" style={{paddingRight: "1rem"}}>
-        <img
-          src={require("../../static/img/icon-linkedin-72.png").default}
-          style={{ widht: "2rem", height: "2rem" }}
-          alt="Linkedin icon, share post on it"
-        />
+      <a href={`${PATH_URL.socialShare.linkedin}${URL}`} target="_blank" style={{marginRight: "1rem"}}>
+        <LinkedinLogo style={{ width: "2rem", height: "2rem"}} />
       </a>
       <a
         class="twitter-share-button"
@@ -24,11 +22,7 @@ const SocialsComponent = (article) => {
         data-related="twitterapi,twitter"
         target="_blank"
       >
-        <img
-          src={require("../../static/img/icon-x-black.png").default}
-          style={{ widht: "2rem", height: "2rem" }}
-          alt="X social icon"
-        />
+        <XLogo title="Docusaurus Logo" className="logo" style={{ width: "2rem", height: "2rem"  }} alt="X social icon" />
       </a>
     </>
   );
