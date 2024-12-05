@@ -14,10 +14,12 @@ const SocialsComponent = (article) => {
         href={`${socialShare.linkedin}${URL}`}
         target="_blank"
         style={{ marginRight: "1rem" }}
+        alt="Partager l'article sur Linkedin"
       >
         <LinkedinLogo style={{ width: "2rem", height: "2rem" }} />
       </a>
       <a
+        alt="Partager l'article sur twitter"
         class="twitter-share-button"
         href={`${socialShare.x}${URL}`}
         data-size="large"
@@ -29,7 +31,7 @@ const SocialsComponent = (article) => {
         target="_blank"
       >
         <XLogo
-          title="Docusaurus Logo"
+          title="X Logo"
           className="logo"
           style={{ width: "2rem", height: "2rem" }}
           alt="X social icon"
