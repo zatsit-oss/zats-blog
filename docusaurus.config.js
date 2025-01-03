@@ -68,6 +68,7 @@ const config = {
         items: [
           {to: '/blog', label: 'Blog', position: 'left'},
           {to: 'blog/tags', label: 'Catégories'},
+          {to: 'blog/tags/green', label: 'Green'},
           {to: 'blog/tags/architecture', label: 'Architecture'},
           {to: 'blog/tags/cloud', label: 'Cloud'},
           {to: 'blog/tags/data', label: 'Data & AI'},
