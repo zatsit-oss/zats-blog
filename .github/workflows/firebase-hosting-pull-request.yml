@@ -22,7 +22,7 @@ jobs:
       - name: Fetch and Build blog
         uses: ./.github/actions/docusaurus
         with:
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
