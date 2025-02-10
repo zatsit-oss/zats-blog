@@ -59,7 +59,7 @@ const config = {
         title: 'zatsit',
         hideOnScroll: true,
         logo: {
-          alt: 'zatsit logo',
+          alt: 'Accueil blog',
           src: 'img/logo-zatsit-style-light.svg',
           srcDark: 'img/logo-zatsit-style-dark.svg',
           height: 32,
