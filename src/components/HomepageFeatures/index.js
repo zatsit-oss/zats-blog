@@ -59,7 +59,7 @@ export default function HomepageFeatures() {
             <Feature key={idx} {...props} />
           ))}
         </div>
-          <p className="storySetAttribution">The illustrations of this page comes from <b><a href={"https://storyset.com/"} aria-label="Lien vers le site de ressources graphiques Storyset">Storyset</a></b></p>
+          <p className="storySetAttribution">The illustrations of this page comes from <b><a href={"https://storyset.com/"} aria-label="Site de ressources graphiques Storyset">Storyset</a></b></p>
       </div>
     </section>
   );
