@@ -30,7 +30,7 @@ const FeatureList = [
     description: (
       <>
         Tu pourrais aussi faire partie de l'aventure ! Rejoindre une équipe motivée par la qualité, la sobriété et le partage.
-        Contacte nous par <a href={"mailto:emplois@zatsit.fr"} aria-label="Contacte-nous par mail" style={{textDecoration: 'underline', fontWeight: 'bold'}}>mail ici</a>.
+        Contacte nous par <a href={"mailto:emplois@zatsit.fr"} style={{textDecoration: 'underline', fontWeight: 'bold'}}>mail</a>.
       </>
     ),
   },
