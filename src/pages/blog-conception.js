@@ -15,8 +15,8 @@ const BlogConception = () => {
     const {siteConfig} = useDocusaurusContext();
 
     return (
-        <Layout title={`Eco conception de ${siteConfig.title}`}
-                description="Description will go into a meta tag in <head />">
+        <Layout title="Eco conception"
+                description="Informations relatives à l'éco-conception du site et les mesures de son impact">
             <div>
                 <header className="hero hero--primary heroBanner_src-pages-index-module">
                     <div className="container">

@@ -35,8 +35,8 @@ const config = {
         ,
         blog: {
           showReadingTime: true,
-          blogTitle: 'zatsit blog!',
-          blogDescription: 'A Docusaurus powered blog!',
+          blogTitle: 'Blog',
+          blogDescription: 'Blog de zatsit, généré grâce à Docusaurus',
           postsPerPage: 10,
           //tagsBasePath : '/blog/tags',
           blogSidebarTitle: 'Nos derniers articles',
