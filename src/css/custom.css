@@ -78,3 +78,7 @@
   color: #0e11a8;
   border-radius: 0px 0.3em 0.3em 0px;
 }
+
+.navbar__link:hover, .navbar__link--active {
+  text-decoration: underline;
+}
