@@ -84,3 +84,7 @@
 .navbar__link:hover, .navbar__link--active, article a {
   text-decoration: underline;
 }
+
+div[class^='authorSocials'] {
+  overflow: inherit;
+}
