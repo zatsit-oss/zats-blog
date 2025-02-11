@@ -79,6 +79,6 @@
   border-radius: 0px 0.3em 0.3em 0px;
 }
 
-.navbar__link:hover, .navbar__link--active {
+.navbar__link:hover, .navbar__link--active, article a {
   text-decoration: underline;
 }
