@@ -15,8 +15,8 @@ const BlogConception = () => {
     const {siteConfig} = useDocusaurusContext();
 
     return (
-        <Layout title={`Eco conception de ${siteConfig.title}`}
-                description="Description will go into a meta tag in <head />">
+        <Layout title="Eco conception"
+                description="Informations relatives à l'éco-conception du site et les mesures de son impact">
             <div>
                 <header className="hero hero--primary heroBanner_src-pages-index-module">
                     <div className="container">
@@ -32,14 +32,14 @@ const BlogConception = () => {
                                     Nous accordons une grande importance à l'éco-conception et la sobriété dans tous nos
                                     projets. La préservation de l'environnement est une responsabilité que nous prenons à cœur.
                                     Dans cet esprit, nous utilisons le service de mesure de l'empreinte carbone en
-                                    ligne, <a href={"https://www.websitecarbon.com/"} aria-label={"Lien vers la page d'accueil"}>WebsiteCarbon</a>,
+                                    ligne, <a href={"https://www.websitecarbon.com/"}>WebsiteCarbon</a>,
                                     pour évaluer et minimiser l'impact écologique de nos sites web.
                                     <br /><br />
                                     <ZatsWebsiteCarbonBadge/>
                                     <br /><br />
                                     Puisqu'une mesure peut être soumise à erreur, il est préférable de croiser les données et de
                                     se confronter à plusieurs outils. Vous pourrez par exemple utiliser aussi
-                                    <a href={"https://developers.thegreenwebfoundation.org/co2js/tutorials/getting-started-browser/"} aria-label={"Lien vers la page d'accueil"}> CO2.js de la "Green Web Foundation"</a>, le résultat au 1er février, notre page d'accueil pèse kb (en cours d'amélioration), :
+                                    <a href={"https://developers.thegreenwebfoundation.org/co2js/tutorials/getting-started-browser/"}> CO2.js de la "Green Web Foundation"</a>, le résultat au 1er février, notre page d'accueil pèse kb (en cours d'amélioration), :
                                     <br /><br />
                                     <ZatsCO2JSBadge />
 
