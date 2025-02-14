@@ -35,8 +35,8 @@ const config = {
         ,
         blog: {
           showReadingTime: true,
-          blogTitle: 'zatsit blog!',
-          blogDescription: 'A Docusaurus powered blog!',
+          blogTitle: 'Blog',
+          blogDescription: 'Blog de zatsit, propulsé par Docusaurus',
           postsPerPage: 10,
           //tagsBasePath : '/blog/tags',
           blogSidebarTitle: 'Nos derniers articles',
@@ -59,7 +59,7 @@ const config = {
         title: 'zatsit',
         hideOnScroll: true,
         logo: {
-          alt: 'zatsit logo',
+          alt: 'Accueil blog',
           src: 'img/logo-zatsit-style-light.svg',
           srcDark: 'img/logo-zatsit-style-dark.svg',
           height: 32,
