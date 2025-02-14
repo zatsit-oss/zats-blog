@@ -22,12 +22,12 @@ The **zatsit** blog content is hosted on a separated repository to facilitate th
 
 - Clone [the repository](https://github.com/zatsit-oss/zats-blog-content) on your workspace
 - Copy the `zats-blog-content/blog` folder to the `blog` folder
-- Copy the `zats-blog-content/authors` folder to the `authors` folder
+- Copy the `zats-blog-content/authors/authors.yml` to the `blog` folder
 
 ```
-cp -r  ../zats-blog-content/docs/ docs 
-cp -r  ../zats-blog-content/blog/ blog 
-cp -r  ../zats-blog-content/authors/ blog
+cp -r  ../zats-blog-content/docs/* docs 
+cp -r  ../zats-blog-content/blog/* blog 
+cp -r  ../zats-blog-content/authors/authors.yml blog
 cp -R ../zats-blog-content/authors/img/* static/img/authors
 ```
 
