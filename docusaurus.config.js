@@ -66,13 +66,13 @@ const config = {
           width: 32
         },
         items: [
-          {to: '/blog', label: 'Blog', position: 'left'},
-          {to: 'blog/tags', label: 'Catégories'},
-          {to: 'blog/tags/green', label: 'Green'},
-          {to: 'blog/tags/architecture', label: 'Architecture'},
-          {to: 'blog/tags/cloud', label: 'Cloud'},
-          {to: 'blog/tags/data', label: 'Data & AI'},
-          {to: 'blog/tags/general', label: 'Général'},
+          {to: '/blog', label: 'Blog', position: 'left', exact: true},
+          {to: 'blog/tags', label: 'Catégories', exact: true},
+          {to: 'blog/tags/green', label: 'Green', exact: true},
+          {to: 'blog/tags/architecture', label: 'Architecture', exact: true},
+          {to: 'blog/tags/cloud', label: 'Cloud', exact: true},
+          {to: 'blog/tags/data', label: 'Data & AI', exact: true},
+          {to: 'blog/tags/general', label: 'Général', exact: true},
           // Future categories, one post is required to display the tem navigation bar, if not, build fail
           /*{
             type: 'dropdown',
