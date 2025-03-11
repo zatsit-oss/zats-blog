@@ -1,0 +1,9 @@
+.codelabs div {
+  height: 100%;
+  width: 100%;
+}
+
+.codelabs iframe {
+  height: calc(100vh - 280px);
+  width: 100%;
+}
