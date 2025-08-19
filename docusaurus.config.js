@@ -44,6 +44,17 @@ const config = {
             editUrl: 'https://github.com/zatsit-oss/zats-blog-content/tree/main',
             showLastUpdateTime: true
         },
+        pages: {
+          path: 'src/pages',
+          routeBasePath: '',
+          include: ['**/*.{js,jsx,ts,tsx,md,mdx}'],
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+          ],
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
