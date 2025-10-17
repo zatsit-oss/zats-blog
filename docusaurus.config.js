@@ -56,10 +56,10 @@ const config = {
     ],
     stylesheets: [
         {
-            href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+            href: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css',
             type: 'text/css',
             integrity:
-                'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+                'sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+',
             crossorigin: 'anonymous',
         },
     ],
