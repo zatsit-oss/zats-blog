@@ -28,3 +28,5 @@ blog/**
 docs/**
 blog/authors.yml
 static/img/authors/**
+
+static/assets/*
