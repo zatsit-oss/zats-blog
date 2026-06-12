@@ -26,44 +26,41 @@ const config = {
         locales: ['fr'],
     },
 
-    presets: [
-        [
-            'classic',
-            /** @type {import('@docusaurus/preset-classic').Options} */
-            ({
-                docs: {
-                    sidebarPath: './sidebars.js'
-                }
-                ,
-                blog: {
-                    remarkPlugins: [remarkMath],
-                    rehypePlugins: [rehypeKatex],
-                    showReadingTime: true,
-                    blogTitle: 'Blog',
-                    blogDescription: 'Blog de zatsit, propulsé par Docusaurus',
-                    postsPerPage: 10,
-                    //tagsBasePath : '/blog/tags',
-                    blogSidebarTitle: 'Nos derniers articles',
-                    blogSidebarCount: 'ALL',
-                    editUrl: 'https://github.com/zatsit-oss/zats-blog-content/tree/main',
-                    showLastUpdateTime: true
-                },
-                theme: {
-                    customCss: './src/css/custom.css',
-                },
-            }),
-        ]
-    ],
-    stylesheets: [
-        {
-            href: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css',
-            type: 'text/css',
-            integrity:
-                'sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+',
-            crossorigin: 'anonymous',
+  presets: [
+    [
+      'classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
+        docs: {
+          sidebarPath: './sidebars.js'
+        }
+        ,
+        blog: {
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
+          showReadingTime: true,
+          blogTitle: 'Blog',
+          blogDescription: 'Blog de zatsit, propulsé par Docusaurus',
+          postsPerPage: 10,
+          //tagsBasePath : '/blog/tags',
+          blogSidebarTitle: 'Nos derniers articles',
+          blogSidebarCount: 'ALL',
+            editUrl: 'https://github.com/zatsit-oss/zats-blog-content/tree/main',
+            showLastUpdateTime: true
         },
+        theme: {
+          // KaTeX stylesheet served locally (no third-party CDN), keeps the
+          // CSS version in sync with the bundled katex package automatically.
+          customCss: [
+            './src/css/custom.css',
+            require.resolve('katex/dist/katex.min.css'),
+          ],
+        },
+      }),
     ],
-    themeConfig:
+  ],
+
+  themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
             image: 'img/zatsit-social-card.png',
