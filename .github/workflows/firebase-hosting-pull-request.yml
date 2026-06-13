@@ -15,6 +15,11 @@ concurrency:
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
+    # Expose the secret as a job-level env var so it can be tested in step `if`
+    # conditions. Secrets are not available to workflows triggered by Dependabot
+    # or forks, so this is empty there and the deploy step is skipped (not failed).
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZATSIT_BLOG }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,8 +29,12 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      # The build above is the blocking check. The preview deploy only runs when
+      # the Firebase secret is present, so Dependabot/fork PRs stay green.
+      - name: Deploy preview to Firebase Hosting
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZATSIT_BLOG }}'
+          firebaseServiceAccount: '${{ env.FIREBASE_SERVICE_ACCOUNT }}'
           projectId: zatsit-blog
