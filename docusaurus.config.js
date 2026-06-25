@@ -31,11 +31,9 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: {
-          sidebarPath: './sidebars.js'
-        }
-        ,
+        docs: false,
         blog: {
+          routeBasePath: '/', // Serve the blog at the site's root
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
           showReadingTime: true,
@@ -43,7 +41,7 @@ const config = {
           blogDescription: 'Blog de zatsit, propulsé par Docusaurus',
           postsPerPage: 10,
           //tagsBasePath : '/blog/tags',
-          blogSidebarTitle: 'Nos derniers articles',
+          blogSidebarTitle: 'Tous nos articles',
           blogSidebarCount: 'ALL',
             editUrl: 'https://github.com/zatsit-oss/zats-blog-content/tree/main',
             showLastUpdateTime: true
@@ -75,23 +73,23 @@ const config = {
                     width: 32
                 },
                 items: [
-                    {to: '/blog', label: 'Blog', position: 'left', exact: true},
-                    {to: 'blog/tags', label: 'Catégories', exact: true},
-                    {to: 'blog/tags/green', label: 'Green', exact: true},
-                    {to: 'blog/tags/architecture', label: 'Architecture', exact: true},
-                    {to: 'blog/tags/cloud', label: 'Cloud', exact: true},
-                    {to: 'blog/tags/data', label: 'Data & AI', exact: true},
-                    {to: 'blog/tags/general', label: 'Général', exact: true},
+                    {to: '/', label: 'Blog', position: 'left', exact: true},
+                    {to: '/tags', label: 'Catégories', exact: true},
+                    {to: '/tags/green', label: 'Green', exact: true},
+                    {to: '/tags/architecture', label: 'Architecture', exact: true},
+                    {to: '/tags/cloud', label: 'Cloud', exact: true},
+                    {to: '/tags/data', label: 'Data & AI', exact: true},
+                    {to: '/tags/general', label: 'Général', exact: true},
                     // Future categories, one post is required to display the tem navigation bar, if not, build fail
                     /*{
                       type: 'dropdown',
                       label: 'À venir',
                       items: [
-                        {to: 'blog/tags/dev', label: 'Developpement'},
-                        {to: 'blog/tags/Eco-conception', label: 'Eco-Conception'},
-                        {to: 'blog/tags/mobile', label: 'Mobile'},
-                        {to: 'blog/tags/ops', label: 'OPS'},
-                        {to: 'blog/tags/web', label: 'Web'},
+                        {to: '/tags/dev', label: 'Developpement'},
+                        {to: '/tags/eco-conception', label: 'Eco-Conception'},
+                        {to: '/tags/mobile', label: 'Mobile'},
+                        {to: '/tags/ops', label: 'OPS'},
+                        {to: '/tags/web', label: 'Web'},
                       ],
                     },*/
                     {
@@ -123,10 +121,6 @@ const config = {
                             {
                                 label: 'Linkedin',
                                 href: 'https://www.linkedin.com/company/zatsit/about/',
-                            },
-                            {
-                                label: 'Twitter',
-                                href: 'https://twitter.com/zatsit_',
                             },
                             {
                                 label: 'GitHub',
