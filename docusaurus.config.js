@@ -31,11 +31,9 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: {
-          sidebarPath: './sidebars.js'
-        }
-        ,
+        docs: false,
         blog: {
+          routeBasePath: '/', // Serve the blog at the site's root
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
           showReadingTime: true,
@@ -123,10 +121,6 @@ const config = {
                             {
                                 label: 'Linkedin',
                                 href: 'https://www.linkedin.com/company/zatsit/about/',
-                            },
-                            {
-                                label: 'Twitter',
-                                href: 'https://twitter.com/zatsit_',
                             },
                             {
                                 label: 'GitHub',
