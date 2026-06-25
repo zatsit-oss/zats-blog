@@ -73,3 +73,4 @@ Categories displayed in the navbar are tag-based (`/blog/tags/<tag>`). Adding a 
 ## Node version
 
 Requires Node ≥ 20. Pinned in [.node-version](.node-version).
+
