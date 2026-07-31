@@ -32,3 +32,4 @@ static/img/authors/**
 sync-content.sh
 
 static/assets/*
+.secrets
