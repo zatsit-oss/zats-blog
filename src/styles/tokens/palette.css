@@ -1,0 +1,43 @@
+/* ==========================================================================
+   Zatsit — Raw Brand Palette (primitive tokens)
+   The fixed, theme-agnostic brand colors. Semantic aliases in colors.css
+   map these to roles per theme. Prefer the semantic tokens in product code.
+
+   Source: Zatsit Design System, tokens/palette.css — copied verbatim.
+   ========================================================================== */
+
+:root {
+  /* Brand — Blue (light theme primary, "trust / institutional") */
+  --zat-blue-500: #0f15fd;   /* core brand blue */
+  --zat-blue-600: #0a0ecc;   /* hover / pressed */
+  --zat-blue-900: #020466;   /* deep blue, gradient end */
+
+  /* Brand — Gold / Orange (dark theme primary, "warm / impact") */
+  --zat-gold-400: #f1be51;   /* core brand gold */
+  --zat-gold-300: #ffd580;   /* light gold, gradient end */
+  --zat-orange-500: #e1601f; /* secondary / accent orange */
+  --zat-orange-600: #ff8c00; /* impact gradient end */
+
+  /* Neutrals — Light */
+  --zat-white: #ffffff;
+  --zat-slate-50: #f8fafc;
+  --zat-slate-200: #cbd5e1;
+  --zat-slate-600: #475569;
+  --zat-ink: #1c1e21;        /* near-black text on light */
+
+  /* Neutrals — Dark */
+  --zat-night: #1b1b1d;      /* dark surface */
+  --zat-night-deep: #0a0a0a; /* deepest dark surface */
+  --zat-slate-400: #94a3b8;
+  --zat-slate-700: #334155;
+  --zat-fog: #e3e3e3;        /* text on dark */
+
+  /* Eco signifier — used sparingly for sustainability metrics */
+  --zat-eco-green: #2ecc71;
+
+  /* Light-theme accents (mesh gradients, decorative blobs only) */
+  --zat-cyan: #06b6d4;
+  --zat-blue-bright: #3b82f6;
+  --zat-indigo: #6366f1;
+  --zat-violet: #7c3aed;
+}
