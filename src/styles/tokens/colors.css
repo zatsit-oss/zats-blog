@@ -1,0 +1,83 @@
+/* ==========================================================================
+   Zatsit — Semantic Color Tokens (dual-theme)
+   :root is the LIGHT theme (Blue — professional, institutional).
+   [data-theme="dark"] is the DARK theme (Orange — warm, impactful).
+
+   Usage: always reference these semantic tokens in product code, e.g.
+   color: var(--color-text); background: var(--color-primary);
+   Never a raw hex — both themes then resolve automatically.
+
+   Source: Zatsit Design System, tokens/colors.css.
+   Blog-specific note: the design system ships no prefers-color-scheme block
+   on purpose, so that cards and exports render deterministically. The blog
+   resolves the OS preference in the inline theme script of BaseHead, which
+   also prevents the flash of wrong theme.
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  /* Surfaces */
+  --color-bg: var(--zat-white);
+  --color-surface: var(--zat-slate-50);
+  --color-card-bg: var(--zat-slate-50);
+
+  /* Text */
+  --color-text: var(--zat-ink);
+  --color-text-muted: var(--zat-slate-600);
+
+  /* Borders */
+  --color-border: var(--zat-slate-200);
+
+  /* Primary action (Blue) */
+  --color-primary: var(--zat-blue-500);
+  --color-primary-hover: var(--zat-blue-600);
+  --color-on-primary: var(--zat-white);
+
+  /* Secondary */
+  --color-secondary: var(--zat-blue-500);
+  --color-secondary-hover: var(--zat-blue-600);
+
+  /* Decorative accents (mesh gradient / blobs only) */
+  --color-accent-1: var(--zat-cyan);
+  --color-accent-2: var(--zat-blue-bright);
+  --color-accent-3: var(--zat-indigo);
+
+  /* "Impact" gradient — reserved for highlighted keywords only */
+  --gradient-text: linear-gradient(to bottom, #0f15fd 0%, #020466 100%);
+  --gradient-impact: linear-gradient(to bottom, #0f15fd 0%, #020466 100%);
+
+  /* Glass (navigation bars only) */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(15, 21, 253, 0.1);
+
+  /* Eco signifier */
+  --color-eco: var(--zat-eco-green);
+
+  color-scheme: light;
+}
+
+/* Dark theme (Orange). Applied via [data-theme="dark"] on <html>, set by the
+   inline script before first paint from localStorage, falling back to the OS
+   preference. */
+[data-theme="dark"] {
+  --color-bg: var(--zat-night);
+  --color-surface: rgba(255, 255, 255, 0.05);
+  --color-card-bg: rgba(255, 255, 255, 0.05);
+  --color-text: var(--zat-fog);
+  --color-text-muted: var(--zat-slate-400);
+  --color-border: var(--zat-slate-700);
+  --color-primary: var(--zat-gold-400);
+  --color-primary-hover: #f3b851;
+  --color-on-primary: var(--zat-night);
+  --color-secondary: var(--zat-orange-500);
+  --color-secondary-hover: var(--zat-gold-400);
+  --color-accent-1: #f59e0b;
+  --color-accent-2: #ef4444;
+  --color-accent-3: #f97316;
+  --gradient-text: linear-gradient(45deg, #f1be51, #ffd580);
+  --gradient-impact: linear-gradient(135deg, #f1be51, #f59e0b, #ef4444);
+  --glass-bg: rgba(27, 27, 29, 0.85);
+  --glass-border: rgba(241, 190, 81, 0.2);
+
+  color-scheme: dark;
+}

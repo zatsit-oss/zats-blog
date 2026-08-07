@@ -1,0 +1,51 @@
+---
+// Temporary smoke-test page. It exists to prove the loader, the schema and the
+// date resolution work against the real 19 articles. The real paginated
+// listing replaces it in the pages phase.
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date!.valueOf() - a.data.date!.valueOf(),
+);
+
+const authors = await getCollection('authors');
+const dated = posts.filter((p) => p.data.date).length;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+    <main id="main-content">
+      <h1>Socle <span class="text-gradient">Astro</span>.</h1>
+      <p>
+        {posts.length} articles chargés depuis le dépôt de contenu, {dated} avec
+        une date résolue, {authors.length} auteurs.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Titre</th><th>Slug</th><th>Auteurs</th><th>Tags</th></tr>
+        </thead>
+        <tbody>
+          {
+            posts.map((post) => (
+              <tr>
+                <td>{post.data.date?.toISOString().slice(0, 10)}</td>
+                <td>{post.data.title}</td>
+                <td><code>/{post.data.slug}/</code></td>
+                <td>{post.data.authors.join(', ')}</td>
+                <td>{post.data.tags.join(', ')}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>

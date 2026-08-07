@@ -1,0 +1,75 @@
+---
+// Imported here so every page that uses <BaseHead /> gets the global styles.
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_OG_IMAGE } from '../consts';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Absolute or root-relative path to the social card for this page. */
+  image?: string;
+  /** "article" on blog posts, "website" everywhere else. */
+  type?: 'website' | 'article';
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  image = SITE_OG_IMAGE,
+  type = 'website',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImageURL = new URL(image, Astro.site);
+// The home page is the only one that must not read "Blog | zatsit".
+const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<link rel="icon" type="image/svg+xml" href="/img/logo-zatsit-style-light.svg" />
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={SITE_TITLE}
+  href={new URL('rss.xml', Astro.site)}
+/>
+
+<Font cssVariable="--font-poppins" preload />
+
+<link rel="canonical" href={canonicalURL} />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={socialImageURL} />
+<meta property="og:image:alt" content={title} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content="fr_FR" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={socialImageURL} />
+
+{/* Runs before first paint so the dual theme never flashes the wrong palette.
+    The design system ships no prefers-color-scheme block on purpose, so the OS
+    preference is resolved here and written to data-theme. */}
+<script is:inline>
+  (function () {
+    const stored = localStorage.getItem('theme');
+    const theme =
+      stored ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = theme;
+  })();
+</script>
