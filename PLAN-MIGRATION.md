@@ -13,6 +13,44 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 ---
 
+## 0. État d'avancement
+
+*Dernière mise à jour : 7 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
+
+| Phase | État |
+|---|---|
+| Ph0 — préparation et capture de référence | ✅ terminée |
+| A — normalisation du contenu | ✅ terminée |
+| Ph1 — socle Astro et jetons | ✅ terminée |
+| Ph2 — contenu et schéma | 🟡 loader et schéma faits, build bloqué |
+| Ph3 — pages et parité | ⬜ à faire |
+| Ph4 — vérification des URLs | ⬜ à faire |
+| Ph5 — CI/CD | ⬜ à faire |
+| Ph6 et A bis, B, C — documentation et CI contenu | ⬜ à faire |
+
+**Acquis mesurés, pas supposés**
+
+- Les 19 articles sont chargés depuis le repo voisin, **les 19 dates résolues**, les 12 auteurs lus.
+- La normalisation du contenu n'a changé **aucune URL** : build Docusaurus relancé après renommage, `diff` des 45 routes vide.
+- Astro retenu : **7.2.0**, au-delà du « ≥ 6 » du brief. Exige Node ≥ 22.12, déjà couvert par `.node-version`.
+- Arbre de dépendances : 215 paquets, contre l'installation Docusaurus.
+
+**Blocage courant, unique**
+
+8 des 19 articles codent en dur `../../../static/img/icon-linkedin.webp`, les liens de partage de `POSTING.md`. Ce chemin supposait l'ancien modèle où le contenu était copié dans la coque ; le loader lit désormais le repo voisin sur place. **Décision prise** : remplacer ce boilerplate par un composant `ShareLinks.astro` dans le layout, et retirer les lignes des 8 articles. Détail dans `REPRISE.md`.
+
+**Deux pièges déjà payés**
+
+1. `glob()` dérive l'`id` du `slug` du frontmatter, pas du chemin. Le repli de date doit lire `entry.filePath`.
+2. `authors.yml` est un document unique de 12 profils : il exige `file()` avec un parseur YAML, `glob()` le charge comme une entrée unique.
+
+**Écarts assumés par rapport au design system**
+
+- Les huit `@font-face` de `tokens/typography.css` sont remplacés par l'API Fonts native d'Astro 7 : même woff2 latin auto-hébergé, sans binaires dupliqués.
+- `tokens/base.css` (`.btn-primary`, `.card`, `.tag`, `.glass`) n'est pas encore importé, ses classes n'ayant pas d'usage avant la phase 3.
+
+---
+
 ## 1. Inventaire réel (établi, non supposé)
 
 ### Contenu : 19 articles, 10 catégories, 12 auteurs
