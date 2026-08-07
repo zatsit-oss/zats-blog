@@ -30,6 +30,8 @@ blog/authors.yml
 static/img/authors/**
 .claude/
 sync-content.sh
+dev.sh
+watch-content.mjs
 
 static/assets/*
 .secrets
