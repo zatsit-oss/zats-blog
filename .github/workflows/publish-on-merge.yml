@@ -23,7 +23,7 @@ jobs:
     if: always()
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Fetch and Build blog content
         uses: ./.github/actions/docusaurus
