@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: build(deps)
+    groups:
+      # Group minor and patch bumps into a single PR: these dependencies are all
+      # transitive (pulled by Docusaurus) and only touch package-lock.json, so
+      # separate PRs conflict with each other as soon as one is merged.
+      npm-minor-patch:
+        update-types:
+          - minor
+          - patch
+    # Major bumps stay in their own PR: they need a manual review of the changelog.
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci(deps)
+    groups:
+      github-actions:
+        patterns:
+          - "*"
