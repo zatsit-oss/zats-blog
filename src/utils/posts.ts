@@ -1,7 +1,21 @@
 import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION } from '../consts';
 
 type Post = CollectionEntry<'blog'>;
+
+/**
+ * Published articles, newest first. The single entry point for every listing,
+ * so the home page, the tag pages, the archive and the feed cannot disagree on
+ * what is published or in what order.
+ *
+ * The date is non-null by construction: the loader derives it from the folder
+ * name when the frontmatter omits it, and fails the build otherwise.
+ */
+export async function sortedPosts(): Promise<Post[]> {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.sort((a, b) => b.data.date!.valueOf() - a.data.date!.valueOf());
+}
 
 /** The marker Docusaurus used to cut a post. 17 of the 19 articles carry it. */
 const TRUNCATE = /<!--\s*truncate\s*-->/;
