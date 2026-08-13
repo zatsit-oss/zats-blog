@@ -1,0 +1,134 @@
+---
+/**
+ * Site footer, carrying over the three Docusaurus columns.
+ *
+ * Deliberately not a copy of the corporate footer: that one pulls a badge
+ * script from unpkg.com, which our own rules forbid (no external CDN, no
+ * third-party script). The blog has its own CO2 badge components to port,
+ * built on @tgwf/co2 and computed locally.
+ */
+import GithubIcon from '../assets/icons/github.svg';
+import LinkedinIcon from '../assets/icons/linkedin.svg';
+import { GITHUB_URL, LINKEDIN_URL, WEBSITE_URL, ECOINDEX_URL, SITE_TITLE } from '../consts';
+
+// Build time, not visitor time: a static page cannot know the current year, and
+// pretending otherwise would need client JavaScript for a copyright line.
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__columns">
+    <section class="footer__column">
+      <h2 class="footer__title">{SITE_TITLE}</h2>
+      <ul class="footer__list">
+        <li>
+          <a class="footer__link" href={ECOINDEX_URL} target="_blank" rel="noopener noreferrer">
+            Blog statique éco-conçu<span class="sr-only">, résultat EcoIndex, dans un nouvel onglet</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="footer__column">
+      <h2 class="footer__title">Nous suivre</h2>
+      <ul class="footer__list">
+        <li>
+          <a class="footer__link" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">
+            <LinkedinIcon class="icon" aria-hidden="true" />
+            LinkedIn<span class="sr-only">, dans un nouvel onglet</span>
+          </a>
+        </li>
+        <li>
+          <a class="footer__link" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+            <GithubIcon class="icon" aria-hidden="true" />
+            GitHub<span class="sr-only">, dans un nouvel onglet</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="footer__column">
+      <h2 class="footer__title">Autres</h2>
+      <ul class="footer__list">
+        <li>
+          <a class="footer__link" href={WEBSITE_URL} target="_blank" rel="noopener noreferrer">
+            Site web<span class="sr-only">, dans un nouvel onglet</span>
+          </a>
+        </li>
+        <li><a class="footer__link" href="/mentions-legales/">Mentions légales</a></li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="footer__bar">
+    <p class="container footer__copyright">
+      Copyright © {year} <strong>{SITE_TITLE}</strong>, propulsé par <a
+        class="footer__link"
+        href="https://astro.build"
+        target="_blank"
+        rel="noopener noreferrer">Astro</a
+      >.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-block-start: auto;
+    border-block-start: var(--border-width) solid var(--color-border);
+    background: var(--color-surface);
+    font-size: var(--text-sm);
+  }
+
+  .footer__columns {
+    display: grid;
+    gap: var(--space-8);
+    padding-block: var(--space-12);
+  }
+
+  .footer__title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-base);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .footer__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .footer__link:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .footer__bar {
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+
+  .footer__copyright {
+    padding-block: var(--space-4);
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+
+  @media (min-width: 768px) {
+    .footer__columns {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-16);
+    }
+  }
+</style>

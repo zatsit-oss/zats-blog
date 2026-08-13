@@ -1,0 +1,302 @@
+---
+/**
+ * Site header, modelled on the corporate one but rewritten against our tokens:
+ * corporate is a Tailwind project, this is plain CSS, so the utility classes do
+ * not carry over even though the result should read as the same site.
+ *
+ * Navigation matches the Docusaurus navbar exactly, categories included, so
+ * nobody has to relearn where things are.
+ */
+import { Menu, X } from '@lucide/astro';
+import GithubIcon from '../assets/icons/github.svg';
+import ThemeToggle from './ThemeToggle.astro';
+import { NAV_LINKS, GITHUB_URL, WEBSITE_URL } from '../consts';
+
+const currentPath = Astro.url.pathname;
+
+/** `/` must match exactly, the rest by prefix so a tag page stays highlighted. */
+const isCurrent = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+---
+
+<header class="header glass">
+  <nav class="container header__nav" aria-label="Navigation principale">
+    <a class="header__brand" href="/">
+      <img
+        class="header__logo"
+        src="/img/logo-zatsit-style-light.svg"
+        alt=""
+        width="32"
+        height="32"
+      />
+      <span>zatsit</span>
+      <span class="sr-only">, accueil du blog</span>
+    </a>
+
+    <ul class="header__links">
+      {
+        NAV_LINKS.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="header__link"
+              aria-current={isCurrent(link.href) ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="header__actions">
+      <a
+        class="header__icon-link"
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Le GitHub de zatsit, dans un nouvel onglet"
+      >
+        <GithubIcon class="icon" aria-hidden="true" />
+      </a>
+      <a class="header__site-link" href={WEBSITE_URL} target="_blank" rel="noopener noreferrer">
+        Site web<span class="sr-only">, dans un nouvel onglet</span>
+      </a>
+
+      <ThemeToggle />
+
+      <button
+        id="menu-button"
+        class="header__menu-button"
+        type="button"
+        aria-label="Ouvrir le menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <Menu class="icon menu-icon--open" aria-hidden="true" />
+        <X class="icon menu-icon--close" aria-hidden="true" />
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" class="header__mobile" hidden>
+    <ul class="container header__mobile-links">
+      {
+        NAV_LINKS.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="header__link"
+              aria-current={isCurrent(link.href) ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a class="header__link" href={WEBSITE_URL} target="_blank" rel="noopener noreferrer">
+          Site web<span class="sr-only">, dans un nouvel onglet</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-block-end: var(--border-width) solid var(--glass-border);
+  }
+
+  .header__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    block-size: 4rem;
+  }
+
+  .header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text);
+    font-weight: var(--font-bold);
+    font-size: var(--text-lg);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .header__logo {
+    inline-size: 2rem;
+    block-size: 2rem;
+  }
+
+  /* The dark logo is a separate file, swapped with the theme rather than
+     recoloured: it is a brand asset, not an icon. */
+  :global([data-theme='dark']) .header__logo {
+    content: url('/img/logo-zatsit-style-dark.svg');
+  }
+
+  .header__links {
+    display: none;
+    align-items: center;
+    gap: var(--space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header__link {
+    color: var(--color-text-muted);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .header__link:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+
+  /* Current page carries weight and colour, never colour alone. */
+  .header__link[aria-current='page'] {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.35em;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .header__icon-link,
+  .header__site-link {
+    display: none;
+    align-items: center;
+    color: var(--color-text-muted);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+
+  .header__icon-link {
+    inline-size: var(--space-10);
+    block-size: var(--space-10);
+    justify-content: center;
+    border-radius: var(--radius-md);
+  }
+
+  .header__icon-link:hover,
+  .header__site-link:hover {
+    color: var(--color-text);
+  }
+
+  .header__menu-button {
+    display: grid;
+    place-items: center;
+    inline-size: var(--space-10);
+    block-size: var(--space-10);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .header__menu-button:hover {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .menu-icon--open,
+  .menu-icon--close {
+    grid-area: 1 / 1;
+  }
+
+  .menu-icon--close {
+    display: none;
+  }
+
+  .header__menu-button[aria-expanded='true'] .menu-icon--open {
+    display: none;
+  }
+
+  .header__menu-button[aria-expanded='true'] .menu-icon--close {
+    display: block;
+  }
+
+  .header__mobile {
+    border-block-start: var(--border-width) solid var(--color-border);
+    background: var(--color-bg);
+  }
+
+  .header__mobile-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding-block: var(--space-6);
+  }
+
+  .header__mobile-links .header__link {
+    font-size: var(--text-base);
+  }
+
+  @media (min-width: 1024px) {
+    .header__nav {
+      block-size: 5rem;
+    }
+
+    .header__links,
+    .header__icon-link,
+    .header__site-link {
+      display: flex;
+    }
+
+    .header__menu-button,
+    .header__mobile {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function initMenu() {
+    const button = document.getElementById('menu-button');
+    const menu = document.getElementById('mobile-menu');
+    if (!button || !menu) return;
+
+    const setOpen = (open: boolean) => {
+      button.setAttribute('aria-expanded', String(open));
+      button.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+      menu.hidden = !open;
+    };
+
+    setOpen(false);
+
+    button.addEventListener('click', () => {
+      setOpen(button.getAttribute('aria-expanded') !== 'true');
+    });
+
+    // Escape closes and hands focus back to the trigger, so a keyboard user is
+    // never left stranded inside a panel they cannot see.
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (button.getAttribute('aria-expanded') !== 'true') return;
+      setOpen(false);
+      button.focus();
+    });
+  }
+
+  initMenu();
+  document.addEventListener('astro:after-swap', initMenu);
+</script>
