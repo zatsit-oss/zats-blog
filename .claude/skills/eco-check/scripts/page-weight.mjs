@@ -37,7 +37,7 @@ const BUDGET = {
   initialBytes: 500 * 1024, // what a first-time visitor downloads
   totalBytes: 1024 * 1024, // including lazy images
   requests: 25, // initial requests, excluding the document itself
-  domElements: 1500, // whole document
+  domElements: 1500, // structural, excluding syntax-highlighting spans
 };
 
 const TEXT = new Set(['.html', '.css', '.js', '.mjs', '.json', '.svg', '.xml', '.txt']);
@@ -116,8 +116,18 @@ function analyzePage(pageFile) {
   const inlineBytes = [...html.matchAll(/<(style|script)\b[^>]*>([\s\S]*?)<\/\1>/gi)]
     .reduce((sum, m) => sum + Buffer.byteLength(m[2]), 0);
 
-  // Rough DOM size: opening tags, minus void-tag noise. Good enough to spot bloat.
-  const domElements = (html.match(/<[a-z][a-z0-9-]*[\s>/]/gi) ?? []).length;
+  // DOM size, counted as opening tags. Syntax highlighting is excluded from the
+  // budgeted figure and reported separately: Shiki wraps every token in a span,
+  // so a code-heavy article can be 78% highlighting. Counting those would flag
+  // "this page contains a lot of code" while claiming to measure structural
+  // complexity, and the two call for completely different fixes. The raw total
+  // is still printed, so nothing is hidden.
+  const countTags = (s) => (s.match(/<[a-z][a-z0-9-]*[\s>/]/gi) ?? []).length;
+  const highlightSpans = (html.match(/<pre[\s\S]*?<\/pre>/gi) ?? [])
+    .join('')
+    .match(/<span[\s>]/gi)?.length ?? 0;
+  const domTotal = countTags(html);
+  const domElements = domTotal - highlightSpans;
 
   const initialBytes = documentBytes + [...initial.values()].reduce((a, b) => a + b, 0);
   const deferredBytes = [...deferred.values()].reduce((a, b) => a + b, 0);
@@ -130,6 +140,8 @@ function analyzePage(pageFile) {
     totalBytes: initialBytes + deferredBytes,
     requests: initial.size,
     domElements,
+    domTotal,
+    highlightSpans,
     initial,
     deferred,
   };
@@ -181,6 +193,10 @@ function main() {
 
     if (verbose) {
       console.log(`      document ${kb(r.documentBytes)} (inline css/js ${kb(r.inlineBytes)} raw)`);
+      if (r.highlightSpans)
+        console.log(
+          `      dom ${r.domTotal} tags total, ${r.highlightSpans} of them syntax highlighting`,
+        );
       for (const [path, bytes] of [...r.initial].sort((a, b) => b[1] - a[1]))
         console.log(`      ${kb(bytes).padStart(10)}  ${relative(DIST, path)}`);
       for (const [path, bytes] of [...r.deferred].sort((a, b) => b[1] - a[1]))

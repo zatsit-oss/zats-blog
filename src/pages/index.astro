@@ -1,9 +1,9 @@
 ---
 // Temporary smoke-test page. It exists to prove the loader, the schema and the
-// date resolution work against the real 19 articles. The real paginated
-// listing replaces it in the pages phase.
+// date resolution work against the real 19 articles, and now that the header
+// and footer render around it. The paginated listing replaces it next.
 import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
+import Layout from '../layouts/Layout.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 const posts = (await getCollection('blog')).sort(
@@ -14,20 +14,15 @@ const authors = await getCollection('authors');
 const dated = posts.filter((p) => p.data.date).length;
 ---
 
-<!doctype html>
-<html lang="fr">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
-    <main id="main-content">
-      <h1>Socle <span class="text-gradient">Astro</span>.</h1>
-      <p>
-        {posts.length} articles chargés depuis le dépôt de contenu, {dated} avec
-        une date résolue, {authors.length} auteurs.
-      </p>
+<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <div class="container smoke">
+    <h1>Socle <span class="text-gradient">Astro</span>.</h1>
+    <p>
+      {posts.length} articles chargés depuis le dépôt de contenu, {dated} avec une
+      date résolue, {authors.length} auteurs.
+    </p>
 
+    <div class="smoke__scroller">
       <table>
         <thead>
           <tr><th>Date</th><th>Titre</th><th>Slug</th><th>Auteurs</th><th>Tags</th></tr>
@@ -37,7 +32,9 @@ const dated = posts.filter((p) => p.data.date).length;
             posts.map((post) => (
               <tr>
                 <td>{post.data.date?.toISOString().slice(0, 10)}</td>
-                <td>{post.data.title}</td>
+                <td>
+                  <a href={`/${post.data.slug}/`}>{post.data.title}</a>
+                </td>
                 <td><code>/{post.data.slug}/</code></td>
                 <td>{post.data.authors.join(', ')}</td>
                 <td>{post.data.tags.join(', ')}</td>
@@ -46,6 +43,38 @@ const dated = posts.filter((p) => p.data.date).length;
           }
         </tbody>
       </table>
-    </main>
-  </body>
-</html>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .smoke {
+    padding-block: var(--space-12) var(--space-24);
+  }
+
+  /* The table is wider than a phone. It scrolls inside its own box so the page
+     itself never scrolls sideways. */
+  .smoke__scroller {
+    overflow-x: auto;
+    margin-block-start: var(--space-8);
+  }
+
+  table {
+    border-collapse: collapse;
+    inline-size: 100%;
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-block-end: var(--border-width) solid var(--color-border);
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  th {
+    color: var(--color-text-muted);
+    font-weight: var(--font-semibold);
+  }
+</style>

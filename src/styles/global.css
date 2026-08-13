@@ -176,6 +176,39 @@ td {
 }
 
 /* --------------------------------------------------------------------------
+   Layout utilities
+
+   The design system keeps these in base.css. That file is not vendored here,
+   so the classes the site actually uses are written against the same tokens
+   rather than importing a stylesheet full of components we do not render.
+   -------------------------------------------------------------------------- */
+
+.container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--margin-mobile);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-inline: var(--gutter);
+  }
+}
+
+/* Reserved for navigation bars, per the design system. */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+}
+
+.icon {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
    Accessibility
    -------------------------------------------------------------------------- */
 

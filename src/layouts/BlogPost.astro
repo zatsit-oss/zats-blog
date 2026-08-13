@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
+import Layout from './Layout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import ShareLinks from '../components/ShareLinks.astro';
 import { metaDescription, readingTime } from '../utils/posts';
@@ -32,81 +32,71 @@ const description = metaDescription(post);
 const minutes = readingTime(post);
 ---
 
-<!doctype html>
-<html lang="fr">
-  <head>
-    <BaseHead
-      title={title}
-      description={description}
-      type="article"
-      publishedAt={date}
-      authors={authors.map((a) => a.name)}
-      tags={tags}
-    />
-  </head>
-  <body>
-    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+<Layout
+  title={title}
+  description={description}
+  type="article"
+  publishedAt={date}
+  authors={authors.map((a) => a.name)}
+  tags={tags}
+>
+  <article class="post">
+    <header class="post__header">
+      <h1>{title}</h1>
 
-    <main id="main-content">
-      <article class="post">
-        <header class="post__header">
-          <h1>{title}</h1>
+      <div class="post__meta">
+        {date && <FormattedDate date={date} />}
+        <span aria-hidden="true">·</span>
+        <span>{minutes} min de lecture</span>
+      </div>
 
-          <div class="post__meta">
-            {date && <FormattedDate date={date} />}
-            <span aria-hidden="true">·</span>
-            <span>{minutes} min de lecture</span>
-          </div>
+      <ul class="post__authors">
+        {
+          authors.map((author) => (
+            <li class="post__author">
+              {author.image_url && (
+                <img
+                  class="post__avatar"
+                  src={author.image_url}
+                  alt=""
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                />
+              )}
+              <span class="post__author-text">
+                {author.url ? (
+                  <a href={author.url} rel="noopener noreferrer">{author.name}</a>
+                ) : (
+                  author.name
+                )}
+                {author.title && <span class="post__author-title">{author.title}</span>}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
 
-          <ul class="post__authors">
-            {
-              authors.map((author) => (
-                <li class="post__author">
-                  {author.image_url && (
-                    <img
-                      class="post__avatar"
-                      src={author.image_url}
-                      alt=""
-                      width="40"
-                      height="40"
-                      loading="lazy"
-                    />
-                  )}
-                  <span class="post__author-text">
-                    {author.url ? (
-                      <a href={author.url} rel="noopener noreferrer">{author.name}</a>
-                    ) : (
-                      author.name
-                    )}
-                    {author.title && <span class="post__author-title">{author.title}</span>}
-                  </span>
-                </li>
-              ))
-            }
+      {
+        tags.length > 0 && (
+          <ul class="post__tags" aria-label="Thèmes de cet article">
+            {tags.map((tag) => (
+              <li>
+                <a class="post__tag" href={`/tags/${tag}/`}>{tag}</a>
+              </li>
+            ))}
           </ul>
+        )
+      }
+    </header>
 
-          {
-            tags.length > 0 && (
-              <ul class="post__tags" aria-label="Thèmes de cet article">
-                {tags.map((tag) => (
-                  <li>
-                    <a class="post__tag" href={`/tags/${tag}/`}>{tag}</a>
-                  </li>
-                ))}
-              </ul>
-            )
-          }
-        </header>
+    <div class="post__body">
+      <slot />
+    </div>
 
-        <div class="post__body">
-          <slot />
-        </div>
-
-        <ShareLinks slug={slug} title={title} text={shareText} />
-      </article>
-    </main>
-  </body>
-</html>
+    <ShareLinks slug={slug} title={title} text={shareText} />
+  </article>
+</Layout>
 
 <style>
   .post {
