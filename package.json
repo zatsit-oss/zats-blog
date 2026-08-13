@@ -13,6 +13,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "check:a11y": "node .claude/skills/wcag-check/scripts/contrast.mjs",
+    "check:eco": "node .claude/skills/eco-check/scripts/page-weight.mjs",
     "astro": "astro"
   },
   "dependencies": {

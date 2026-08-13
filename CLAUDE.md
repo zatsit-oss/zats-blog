@@ -8,6 +8,21 @@ This is the **zatsit blog** — a static site built with [Docusaurus v3](https:/
 
 **Important**: Blog content (posts, docs, author profiles) lives in a **separate repository** — [zatsit-oss/zats-blog-content](https://github.com/zatsit-oss/zats-blog-content). This repo only contains the site shell, theme, and components.
 
+> **Migration in progress.** The shell is being rebuilt on Astro 7 on the `migration-astro` branch. Everything below this section still describes the Docusaurus setup and is rewritten in phase 6. See `PLAN-MIGRATION.md` and `REPRISE.md`.
+
+## Quality gates (non-negotiable)
+
+@.claude/rules/quality.md
+
+Two gates run on every front-end change, before declaring the work done and before committing:
+
+```bash
+npm run check:a11y   # WCAG 2.1 AA contrast, both themes  (skill: wcag-check)
+npm run check:eco    # page weight budgets on dist/       (skill: eco-check)
+```
+
+Both exit non-zero on failure. The matching skills in `.claude/skills/` carry the checklists: `wcag-check` and `eco-check` are the verification gates, `accessibility-a11y` is the implementation guidance to read while writing a component.
+
 ## Commands
 
 ```bash
