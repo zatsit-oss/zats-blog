@@ -15,7 +15,7 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 ## 0. État d'avancement
 
-*Dernière mise à jour : 7 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
+*Dernière mise à jour : 13 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
 
 | Phase | État |
 |---|---|
@@ -24,7 +24,7 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Ph1 — socle Astro et jetons | ✅ terminée |
 | Ph2 — contenu et schéma | ✅ terminée, **le build passe** |
 | Ph2 bis — garde-fous qualité (a11y, éco) | ✅ terminée |
-| Ph3 — pages et parité | ⬜ à faire |
+| Ph3 — pages et parité | 🟡 en cours, voir le détail ci-dessous |
 | Ph4 — vérification des URLs | ⬜ à faire |
 | Ph5 — CI/CD | ⬜ à faire |
 | Ph6 et A bis, B, C — documentation et CI contenu | ⬜ à faire |
@@ -35,6 +35,35 @@ Branche cible : **`migration-astro`** dans les deux repos.
 - La normalisation du contenu n'a changé **aucune URL** : build Docusaurus relancé après renommage, `diff` des 45 routes vide.
 - Astro retenu : **7.2.0**, au-delà du « ≥ 6 » du brief. Exige Node ≥ 22.12, déjà couvert par `.node-version`.
 - Arbre de dépendances : 215 paquets, contre l'installation Docusaurus.
+
+**Détail de la phase 3**
+
+| Élément | État |
+|---|---|
+| Route d'article `/<slug>/`, 19 articles | ✅ |
+| Header, footer, bascule de thème | ✅ |
+| Badge Website Carbon, auto-hébergé | ✅ |
+| Listing paginé `/` et `/page/2/` | ✅ |
+| Pages de tags : `/tags/` et les 17 `/tags/<tag>/` | ⬜ |
+| `/archive/` | ⬜ |
+| 404 | ⬜ |
+| Pages portées : `/mentions-legales/`, `/blog-conception/` | ⬜ |
+| Admonitions `:::info` | ⬜ |
+| Thème Shiki accordé aux jetons, bouton copier | ⬜ |
+| RSS | ⬜ |
+| Pagefind | ⬜ |
+
+**Mesures du 13 août 2026, sur 21 pages construites**
+
+| | Docusaurus (45 pages) | Astro |
+|---|---|---|
+| Poids initial | 243 à 3 324 ko | **60,5 à 74 ko** |
+| JS client | 135 ko gzip | **1,10 ko gzip** |
+| Requêtes | 5 à 16 | 9 à 11 |
+| Pages sous le budget de 1 Mo au total | 0 / 45 | 17 / 21 |
+| Contrastes vérifiés | 0 | 16 appariements, deux thèmes |
+
+Les quatre pages hors budget total le sont à cause d'images non redimensionnées. Le mécanisme est établi dans les deux sens : la médaille EcoVadis du footer, qui déclare `width` et `height`, passe de 57 ko à 2,8 ko, quand les images d'articles, qui n'en déclarent aucun, sont réencodées sans être redimensionnées.
 
 **Garde-fous outillés avant la phase 3**
 
