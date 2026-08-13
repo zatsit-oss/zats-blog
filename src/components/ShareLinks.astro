@@ -1,0 +1,97 @@
+---
+/**
+ * Share links for an article.
+ *
+ * Replaces the boilerplate that used to be pasted at the bottom of eight
+ * articles, where the icon paths were relative to the shell's `static/` folder.
+ * That only worked while content was copied into the shell; the loader now
+ * reads the content repository in place, so those paths no longer resolve.
+ *
+ * Centralising it also fixes a drift the boilerplate had accumulated: seven of
+ * the eight hardcoded URLs pointed at `/blog/<slug>/`, a prefix the site
+ * stopped using. The canonical URL is now derived once, from `site`.
+ */
+interface Props {
+  /** Article slug, from the frontmatter. Drives the canonical URL. */
+  slug: string;
+  /** Article title, used as the share text when no custom one is given. */
+  title: string;
+  /**
+   * Hand-written share copy, from the optional `shareText` frontmatter field.
+   * Five articles carry one; the rest fall back to the title.
+   */
+  text?: string;
+}
+
+const { slug, title, text } = Astro.props;
+
+// Astro.site is set in astro.config.mjs. Articles are served at the root, not
+// under /blog: the inventory of the 45 Docusaurus routes established this.
+const url = new URL(`/${slug}/`, Astro.site).href;
+const shareText = text ?? title;
+
+const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+const x = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
+---
+
+<aside class="share" aria-labelledby="share-heading">
+  <h2 id="share-heading" class="share__heading">Vous avez aimé cet article ? Partagez-le</h2>
+  <ul class="share__list">
+    <li>
+      <a class="share__link" href={linkedin} target="_blank" rel="noopener noreferrer"
+        aria-label={`Partager « ${title} » sur LinkedIn, dans un nouvel onglet`}>
+        <img src="/img/icon-linkedin.svg" alt="" width="24" height="24" aria-hidden="true" />
+      </a>
+    </li>
+    <li>
+      <a class="share__link" href={x} target="_blank" rel="noopener noreferrer"
+        aria-label={`Partager « ${title} » sur X, dans un nouvel onglet`}>
+        <img src="/img/icon-x.svg" alt="" width="24" height="24" aria-hidden="true" />
+      </a>
+    </li>
+  </ul>
+</aside>
+
+<style>
+  .share {
+    margin-block-start: var(--space-12);
+    padding-block-start: var(--space-6);
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+
+  .share__heading {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-3);
+  }
+
+  .share__list {
+    display: flex;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 48px hit area around a 24px icon: clears the 44x44 project rule and stays
+     on the 4px scale. */
+  .share__link {
+    display: grid;
+    place-items: center;
+    inline-size: var(--space-12);
+    block-size: var(--space-12);
+    border-radius: var(--radius-md);
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .share__link:hover {
+    background-color: var(--color-surface);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .share__link {
+      transition: none;
+    }
+  }
+</style>

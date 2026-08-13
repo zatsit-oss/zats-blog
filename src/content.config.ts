@@ -38,6 +38,12 @@ const blogSchema = z.object({
   description: z.string().optional(),
   cover: z.string().optional(),
   draft: z.boolean().default(false),
+  /**
+   * Hand-written copy for the X share link, recovered from the boilerplate the
+   * articles used to carry. Present on five articles; ShareLinks falls back to
+   * the title when it is absent.
+   */
+  shareText: z.string().optional(),
 });
 
 /**
@@ -72,10 +78,18 @@ function blogLoader() {
         }
 
         const [, year, month, day] = match;
-        context.store.set({
+        const dated = {
           ...entry,
           data: { ...entry.data, date: new Date(`${year}-${month}-${day}T00:00:00Z`) },
-        });
+        };
+
+        // store.set() is a no-op when the entry's digest is unchanged: the
+        // content layer uses it to skip rewriting entries whose source file did
+        // not move. Our change is to the derived data, not to the file, so the
+        // digest is identical and the write would be dropped. Deleting first
+        // forces it through.
+        context.store.delete(id);
+        context.store.set(dated);
       }
 
       // Fail loudly. A silently undated article would sort last and break the
@@ -85,6 +99,21 @@ function blogLoader() {
           `Ces articles n'ont ni "date" en frontmatter ni date dans le nom de leur dossier :\n` +
             undated.map((id) => `  - ${id}`).join('\n') +
             `\nAjoutez "date: YYYY-MM-DD" au frontmatter, ou renommez le dossier en YYYY-MM-DD-slug.`,
+        );
+      }
+
+      // Post-condition, and not a formality: the loop above can derive a date
+      // and still fail to persist it. Assert the end state rather than the
+      // intent, so a regression surfaces here instead of as an undefined date
+      // in whatever page sorts the collection next.
+      const unpersisted = [...context.store.entries()]
+        .filter(([, entry]) => !entry.data.date)
+        .map(([id]) => id);
+
+      if (unpersisted.length > 0) {
+        throw new Error(
+          `Date non persistée dans le store pour :\n` +
+            unpersisted.map((id) => `  - ${id}`).join('\n'),
         );
       }
     },
