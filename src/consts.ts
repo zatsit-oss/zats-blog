@@ -16,12 +16,20 @@ export const POSTS_PER_PAGE = 10;
  */
 export const CONTENT_REPO = '../zats-blog-content';
 
-/** Outbound links, shared by the header and the footer. */
+/**
+ * Outbound links, shared by the header and the footer. Values match the
+ * defaults of the corporate site's env schema, so the two stay in step.
+ */
 export const GITHUB_URL = 'https://github.com/zatsit-oss';
-export const LINKEDIN_URL = 'https://www.linkedin.com/company/zatsit/about/';
+export const LINKEDIN_URL = 'https://www.linkedin.com/company/zatsit/';
 export const WEBSITE_URL = 'https://zatsit.fr';
+export const SUSTAINABILITY_URL = 'https://sustainability.zatsit.fr/';
+export const CONTACT_EMAIL = 'contact@zatsit.fr';
 export const ECOINDEX_URL =
   'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0';
+
+/** Postal address, as the corporate footer prints it. */
+export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];
 
 /**
  * Navigation, kept identical to the Docusaurus navbar so no habit breaks.
