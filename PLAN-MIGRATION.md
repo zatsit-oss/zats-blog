@@ -22,7 +22,8 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Ph0 — préparation et capture de référence | ✅ terminée |
 | A — normalisation du contenu | ✅ terminée |
 | Ph1 — socle Astro et jetons | ✅ terminée |
-| Ph2 — contenu et schéma | 🟡 loader et schéma faits, build bloqué |
+| Ph2 — contenu et schéma | ✅ terminée, **le build passe** |
+| Ph2 bis — garde-fous qualité (a11y, éco) | ✅ terminée |
 | Ph3 — pages et parité | ⬜ à faire |
 | Ph4 — vérification des URLs | ⬜ à faire |
 | Ph5 — CI/CD | ⬜ à faire |
@@ -35,9 +36,20 @@ Branche cible : **`migration-astro`** dans les deux repos.
 - Astro retenu : **7.2.0**, au-delà du « ≥ 6 » du brief. Exige Node ≥ 22.12, déjà couvert par `.node-version`.
 - Arbre de dépendances : 215 paquets, contre l'installation Docusaurus.
 
-**Blocage courant, unique**
+**Garde-fous outillés avant la phase 3**
 
-8 des 19 articles codent en dur `../../../static/img/icon-linkedin.webp`, les liens de partage de `POSTING.md`. Ce chemin supposait l'ancien modèle où le contenu était copié dans la coque ; le loader lit désormais le repo voisin sur place. **Décision prise** : remplacer ce boilerplate par un composant `ShareLinks.astro` dans le layout, et retirer les lignes des 8 articles. Détail dans `REPRISE.md`.
+Les exigences d'accessibilité et d'éco-conception étaient jusqu'ici de la prose. Elles sont désormais mesurables, et posées avant d'écrire les pages plutôt qu'auditées après.
+
+- `.claude/rules/quality.md` : la charte, avec les budgets chiffrés.
+- `npm run check:a11y` : résout les vrais jetons de `src/styles/tokens/` et mesure les 16 appariements standards dans les deux thèmes. **Tous passent aujourd'hui.** Deux points de vigilance mesurés : `--color-secondary` en sombre à 4,83:1, soit 0,33 de marge, et `--color-eco` à 2,10:1 en clair, donc inutilisable comme couleur de texte.
+- `npm run check:eco` : mesure le poids réel de chaque page de `dist/` contre les budgets. Sort en erreur si un budget est dépassé.
+- Skills `wcag-check`, `eco-check` et `accessibility-a11y` dans `.claude/skills/`.
+
+**Blocage levé le 13 août 2026**
+
+Les 8 articles qui codaient en dur `../../../static/img/icon-linkedin.webp` sont nettoyés, le boilerplate est remplacé par `src/components/ShareLinks.astro`, et la copie éditoriale des 5 textes de partage rédigés à la main est préservée dans un champ `shareText` optionnel du frontmatter. `npm run build` passe : **19 articles, 19 dates résolues, 12 auteurs**.
+
+Un second bug, masqué par le premier, a été trouvé et corrigé dans le loader : `context.store.set()` est ignoré quand le digest de l'entrée n'a pas changé. Notre modification portant sur la donnée dérivée et non sur le fichier, l'écriture des 12 dates était silencieusement abandonnée. Correction : `delete()` puis `set()`, et surtout une post-condition qui vérifie **l'état final du store** au lieu de l'intention. L'ancienne garde ne couvrait que le cas « date non dérivable » et laissait donc passer « date non persistée ».
 
 **Deux pièges déjà payés**
 
@@ -531,7 +543,8 @@ Repris du brief, rendus vérifiables :
 - [ ] Poppins auto-hébergée en woff2 latin, aucune requête de police vers un tiers
 - [ ] `<head>` complet sur article et listing : canonical, `og:type` correct, `og:image` en URL absolue, carte Twitter, `article:published_time` et `article:author` sur les articles, aperçu de partage vérifié sur LinkedIn et X
 - [ ] Preview Firebase opérationnelle sur une PR du repo contenu
-- [ ] Poids de page et JS client mesurés et inférieurs à l'actuel (objectif GreenIT), badge ecoindex revérifié
+- [ ] Poids de page et JS client mesurés et inférieurs à l'actuel (objectif GreenIT), badge ecoindex revérifié : `npm run check:eco`, comparé à la ligne de base Docusaurus mesurée dans `.claude/skills/eco-check/references/baseline-docusaurus.md` (0/45 pages sous le budget de 1 Mo, médiane 304 ko initial et 1 335 ko total, accueil à 3,2 Mo)
+- [ ] Accessibilité WCAG 2.1 AA vérifiée, pas supposée : `npm run check:a11y` au vert et checklist du skill `wcag-check` passée sur chaque page livrée
 - [ ] Aucun article modifié, ou modifications documentées et justifiées
 
 ---
