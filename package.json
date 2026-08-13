@@ -23,6 +23,7 @@
     "@lucide/astro": "^1.31.0",
     "astro": "^7.2.0",
     "sharp": "^0.35.0",
+    "website-carbon-badges": "^1.1.3",
     "yaml": "^2.9.0"
   },
   "devDependencies": {

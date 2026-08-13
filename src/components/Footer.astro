@@ -9,6 +9,7 @@
  */
 import GithubIcon from '../assets/icons/github.svg';
 import LinkedinIcon from '../assets/icons/linkedin.svg';
+import WebsiteCarbonBadge from './WebsiteCarbonBadge.astro';
 import { GITHUB_URL, LINKEDIN_URL, WEBSITE_URL, ECOINDEX_URL, SITE_TITLE } from '../consts';
 
 // Build time, not visitor time: a static page cannot know the current year, and
@@ -27,6 +28,9 @@ const year = new Date().getFullYear();
           </a>
         </li>
       </ul>
+      <div class="footer__badge">
+        <WebsiteCarbonBadge />
+      </div>
     </section>
 
     <section class="footer__column">
@@ -112,6 +116,13 @@ const year = new Date().getFullYear();
   .footer__link:hover {
     color: var(--color-primary);
     text-decoration: underline;
+  }
+
+  /* The badge sizes itself in em from a 15px base; left-aligned like the rest
+     of the column rather than centred as the package's demo shows it. */
+  .footer__badge {
+    margin-block-start: var(--space-4);
+    text-align: start;
   }
 
   .footer__bar {

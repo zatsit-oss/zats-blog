@@ -1,0 +1,35 @@
+---
+/**
+ * Website Carbon badge, as on the corporate site.
+ *
+ * One difference, deliberate: corporate pulls the script from unpkg.com, this
+ * imports the npm package so Vite bundles and self-hosts it. Same 1.9 kB, same
+ * rendering, no third-party origin in the critical path and nothing for a CDN
+ * outage to break. The badge still calls api.websitecarbon.com at runtime,
+ * which is the point of a live measurement; it caches the result for a day.
+ *
+ * The dark variant is handled in CSS rather than by toggling the .wcb-d class
+ * the package documents, so switching theme costs no JavaScript at all.
+ */
+---
+
+<div id="wcb" class="carbonbadge"></div>
+
+<script>
+  import 'website-carbon-badges/b.min.js';
+</script>
+
+<style is:global>
+  /* Mirrors the package's own .wcb-d rules, keyed on our theme attribute.
+     Higher specificity than the stylesheet the script injects, so these win
+     whatever the load order. */
+  [data-theme='dark'] #wcb.carbonbadge #wcb_a {
+    color: var(--b1);
+    background: var(--b2);
+    border-color: var(--b2);
+  }
+
+  [data-theme='dark'] #wcb.carbonbadge #wcb_2 {
+    color: var(--zat-white);
+  }
+</style>
