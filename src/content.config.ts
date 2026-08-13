@@ -140,7 +140,8 @@ const authors = defineCollection({
     title: z.string().optional(),
     url: z.string().optional(),
     image_url: z.string().optional(),
-    socials: z.record(z.string()).optional(),
+    /** Network -> handle, e.g. { github: 'm3lkior', bluesky: 'ldussart.bsky.social' }. */
+    socials: z.record(z.string(), z.string()).optional(),
   }),
 });
 

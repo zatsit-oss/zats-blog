@@ -11,6 +11,12 @@ interface Props {
   image?: string;
   /** "article" on blog posts, "website" everywhere else. */
   type?: 'website' | 'article';
+  /** Publication date, articles only. Feeds `article:published_time`. */
+  publishedAt?: Date;
+  /** Author display names, articles only. One `article:author` each. */
+  authors?: string[];
+  /** Tag names, articles only. One `article:tag` each. */
+  tags?: string[];
 }
 
 const {
@@ -18,6 +24,9 @@ const {
   description = SITE_DESCRIPTION,
   image = SITE_OG_IMAGE,
   type = 'website',
+  publishedAt,
+  authors = [],
+  tags = [],
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -55,6 +64,14 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 <meta property="og:image:alt" content={title} />
 <meta property="og:site_name" content={SITE_TITLE} />
 <meta property="og:locale" content="fr_FR" />
+
+{/* Article metadata. LinkedIn and X read these when unfurling a share link,
+    which is exactly what ShareLinks generates. */}
+{publishedAt && (
+  <meta property="article:published_time" content={publishedAt.toISOString()} />
+)}
+{authors.map((author) => <meta property="article:author" content={author} />)}
+{tags.map((tag) => <meta property="article:tag" content={tag} />)}
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />

@@ -1,0 +1,37 @@
+---
+/**
+ * Article route.
+ *
+ * Lives at the site root rather than under /blog: the inventory of the 45
+ * Docusaurus routes established that articles are served as /<slug>/, and the
+ * migration must not move a single URL. Astro gives explicit routes priority
+ * over this rest parameter, so /tags/, /archive/ and friends are unaffected.
+ */
+import type { GetStaticPaths } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import BlogPost from '../layouts/BlogPost.astro';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+  return posts.map((post) => ({
+    // The slug comes from the frontmatter, never from the folder name: it is
+    // what Docusaurus used to build the URL, and the two do differ (the folder
+    // 2024-06-21-greenIT-introduction-1 is served as /green-exploitation-miniere/).
+    params: { slug: post.data.slug },
+    props: { post },
+  }));
+};
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BlogPost post={post}>
+  <Content />
+</BlogPost>

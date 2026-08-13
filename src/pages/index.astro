@@ -4,7 +4,6 @@
 // listing replaces it in the pages phase.
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
-import ShareLinks from '../components/ShareLinks.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 const posts = (await getCollection('blog')).sort(
@@ -47,19 +46,6 @@ const dated = posts.filter((p) => p.data.date).length;
           }
         </tbody>
       </table>
-
-      {
-        /* Smoke test for ShareLinks: rendered against the most recent article
-           so the generated URLs and the shareText fallback are verifiable in
-           the built HTML. It moves to the article layout in the pages phase. */
-        posts[0] && (
-          <ShareLinks
-            slug={posts[0].data.slug}
-            title={posts[0].data.title}
-            text={posts[0].data.shareText}
-          />
-        )
-      }
     </main>
   </body>
 </html>
