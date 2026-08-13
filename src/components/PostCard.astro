@@ -1,0 +1,130 @@
+---
+/**
+ * One article in a listing. Shared by the paginated home, the tag pages and
+ * the archive, so they cannot drift apart.
+ */
+import type { CollectionEntry } from 'astro:content';
+import FormattedDate from './FormattedDate.astro';
+import { excerpt, readingTime } from '../utils/posts';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  /** The first card of the first page gets an h2 that carries more weight. */
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, headingLevel = 'h2' } = Astro.props;
+const { title, slug, date, tags } = post.data;
+
+const Heading = headingLevel;
+const href = `/${slug}/`;
+const summary = excerpt(post);
+const minutes = readingTime(post);
+---
+
+<article class="card">
+  <Heading class="card__title">
+    {/* The title is the link, not the whole card: the accessible name stays
+        the title rather than every word of the summary. */}
+    <a class="card__link" href={href}>{title}</a>
+  </Heading>
+
+  <div class="card__meta">
+    {date && <FormattedDate date={date} format="short" />}
+    <span aria-hidden="true">·</span>
+    <span>{minutes} min de lecture</span>
+  </div>
+
+  {summary && <p class="card__excerpt">{summary}</p>}
+
+  {
+    tags.length > 0 && (
+      <ul class="card__tags">
+        {tags.map((tag) => (
+          <li>
+            <a class="card__tag" href={`/tags/${tag}/`}>
+              {tag}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</article>
+
+<style>
+  .card {
+    position: relative;
+    padding-block: var(--space-8);
+    border-block-end: var(--border-width) solid var(--color-border);
+  }
+
+  .card__title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-2xl);
+  }
+
+  .card__link {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  /* Extends the hit area to the whole card without swallowing the accessible
+     name. The tag links sit above it thanks to their own stacking context. */
+  .card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card__link:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .card__excerpt {
+    margin-block: var(--space-3) 0;
+    color: var(--color-text-muted);
+    /* Three lines is enough to judge an article, and keeps every card the same
+       height whatever the author wrote above the truncate marker. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card__tags {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+
+  .card__tag {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    text-decoration: none;
+  }
+
+  .card__tag:hover,
+  .card__tag:focus-visible {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+</style>

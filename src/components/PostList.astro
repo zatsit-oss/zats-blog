@@ -1,0 +1,56 @@
+---
+/**
+ * A page of articles, with its heading and its pagination.
+ * Shared by the home page and the /page/N/ routes so the two cannot drift.
+ */
+import type { CollectionEntry } from 'astro:content';
+import PostCard from './PostCard.astro';
+import Pagination from './Pagination.astro';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+  heading: string;
+  /** Rendered under the heading when there is something worth saying. */
+  intro?: string;
+  current: number;
+  total: number;
+  prevUrl?: string;
+  nextUrl?: string;
+}
+
+const { posts, heading, intro, current, total, prevUrl, nextUrl } = Astro.props;
+---
+
+<div class="container listing">
+  <header class="listing__header">
+    <h1>{heading}</h1>
+    {intro && <p class="listing__intro">{intro}</p>}
+  </header>
+
+  {
+    posts.length > 0 ? (
+      posts.map((post) => <PostCard post={post} />)
+    ) : (
+      <p>Aucun article pour l'instant.</p>
+    )
+  }
+
+  <Pagination prevUrl={prevUrl} nextUrl={nextUrl} current={current} total={total} />
+</div>
+
+<style>
+  .listing {
+    max-width: 48rem;
+    padding-block: var(--space-12) var(--space-24);
+  }
+
+  .listing__header {
+    margin-block-end: var(--space-6);
+  }
+
+  .listing__intro {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+</style>

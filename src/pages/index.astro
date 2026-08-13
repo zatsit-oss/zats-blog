@@ -1,80 +1,27 @@
 ---
-// Temporary smoke-test page. It exists to prove the loader, the schema and the
-// date resolution work against the real 19 articles, and now that the header
-// and footer render around it. The paginated listing replaces it next.
-import { getCollection } from 'astro:content';
+/**
+ * First page of the article listing, served at the root.
+ *
+ * Pages 2 and beyond live in src/pages/page/[page].astro rather than coming
+ * from a single paginate() call, because Astro's pagination would emit /2/ and
+ * the Docusaurus URL to preserve is /page/2/.
+ */
 import Layout from '../layouts/Layout.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import PostList from '../components/PostList.astro';
+import { sortedPosts } from '../utils/posts';
+import { SITE_TITLE, SITE_DESCRIPTION, POSTS_PER_PAGE } from '../consts';
 
-const posts = (await getCollection('blog')).sort(
-  (a, b) => b.data.date!.valueOf() - a.data.date!.valueOf(),
-);
-
-const authors = await getCollection('authors');
-const dated = posts.filter((p) => p.data.date).length;
+const posts = await sortedPosts();
+const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-  <div class="container smoke">
-    <h1>Socle <span class="text-gradient">Astro</span>.</h1>
-    <p>
-      {posts.length} articles chargés depuis le dépôt de contenu, {dated} avec une
-      date résolue, {authors.length} auteurs.
-    </p>
-
-    <div class="smoke__scroller">
-      <table>
-        <thead>
-          <tr><th>Date</th><th>Titre</th><th>Slug</th><th>Auteurs</th><th>Tags</th></tr>
-        </thead>
-        <tbody>
-          {
-            posts.map((post) => (
-              <tr>
-                <td>{post.data.date?.toISOString().slice(0, 10)}</td>
-                <td>
-                  <a href={`/${post.data.slug}/`}>{post.data.title}</a>
-                </td>
-                <td><code>/{post.data.slug}/</code></td>
-                <td>{post.data.authors.join(', ')}</td>
-                <td>{post.data.tags.join(', ')}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <PostList
+    posts={posts.slice(0, POSTS_PER_PAGE)}
+    heading="Le blog de zatsit"
+    intro={SITE_DESCRIPTION}
+    current={1}
+    total={totalPages}
+    nextUrl={totalPages > 1 ? '/page/2/' : undefined}
+  />
 </Layout>
-
-<style>
-  .smoke {
-    padding-block: var(--space-12) var(--space-24);
-  }
-
-  /* The table is wider than a phone. It scrolls inside its own box so the page
-     itself never scrolls sideways. */
-  .smoke__scroller {
-    overflow-x: auto;
-    margin-block-start: var(--space-8);
-  }
-
-  table {
-    border-collapse: collapse;
-    inline-size: 100%;
-    font-size: var(--text-sm);
-  }
-
-  th,
-  td {
-    padding: var(--space-2) var(--space-3);
-    border-block-end: var(--border-width) solid var(--color-border);
-    text-align: start;
-    white-space: nowrap;
-  }
-
-  th {
-    color: var(--color-text-muted);
-    font-weight: var(--font-semibold);
-  }
-</style>
