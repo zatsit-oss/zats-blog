@@ -1,0 +1,214 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import ShareLinks from '../components/ShareLinks.astro';
+import { metaDescription, readingTime } from '../utils/posts';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, slug, date, tags, shareText } = post.data;
+
+// Resolve the author keys against authors.yml. An unknown key is not silently
+// dropped: it would leave an article with no byline, which is worse than a
+// loud build failure while the corpus is being migrated.
+const authors = await Promise.all(
+  post.data.authors.map(async (key) => {
+    const entry = await getEntry('authors', key);
+    if (!entry) {
+      throw new Error(
+        `L'article "${slug}" référence l'auteur "${key}", absent de authors.yml.`,
+      );
+    }
+    return entry.data;
+  }),
+);
+
+const description = metaDescription(post);
+const minutes = readingTime(post);
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      type="article"
+      publishedAt={date}
+      authors={authors.map((a) => a.name)}
+      tags={tags}
+    />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <main id="main-content">
+      <article class="post">
+        <header class="post__header">
+          <h1>{title}</h1>
+
+          <div class="post__meta">
+            {date && <FormattedDate date={date} />}
+            <span aria-hidden="true">·</span>
+            <span>{minutes} min de lecture</span>
+          </div>
+
+          <ul class="post__authors">
+            {
+              authors.map((author) => (
+                <li class="post__author">
+                  {author.image_url && (
+                    <img
+                      class="post__avatar"
+                      src={author.image_url}
+                      alt=""
+                      width="40"
+                      height="40"
+                      loading="lazy"
+                    />
+                  )}
+                  <span class="post__author-text">
+                    {author.url ? (
+                      <a href={author.url} rel="noopener noreferrer">{author.name}</a>
+                    ) : (
+                      author.name
+                    )}
+                    {author.title && <span class="post__author-title">{author.title}</span>}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+
+          {
+            tags.length > 0 && (
+              <ul class="post__tags" aria-label="Thèmes de cet article">
+                {tags.map((tag) => (
+                  <li>
+                    <a class="post__tag" href={`/tags/${tag}/`}>{tag}</a>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </header>
+
+        <div class="post__body">
+          <slot />
+        </div>
+
+        <ShareLinks slug={slug} title={title} text={shareText} />
+      </article>
+    </main>
+  </body>
+</html>
+
+<style>
+  .post {
+    max-width: 45rem;
+    margin-inline: auto;
+    padding-inline: var(--margin-mobile);
+    padding-block: var(--space-12) var(--space-24);
+  }
+
+  .post__header {
+    margin-block-end: var(--space-10);
+  }
+
+  .post__header h1 {
+    margin-block-end: var(--space-4);
+  }
+
+  .post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .post__authors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+  }
+
+  .post__author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .post__avatar {
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+
+  .post__author-text {
+    display: flex;
+    flex-direction: column;
+    line-height: var(--leading-snug);
+  }
+
+  .post__author-title {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .post__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+  }
+
+  .post__tag {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+
+  .post__tag:hover,
+  .post__tag:focus-visible {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  /* Article prose. Images are constrained here rather than globally so a
+     future full-bleed layout stays possible. */
+  .post__body :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+
+  .post__body :global(h2) {
+    margin-block-start: var(--space-10);
+  }
+
+  .post__body :global(h3) {
+    margin-block-start: var(--space-8);
+  }
+
+  /* Wide content must scroll inside its own box, never the page. */
+  .post__body :global(pre),
+  .post__body :global(table) {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+</style>
