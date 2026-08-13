@@ -1,67 +1,67 @@
 # Où en est la migration
 
-Note de reprise, 7 août 2026. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 13 août 2026. À supprimer une fois la migration terminée.
 
-Branche `migration-astro` dans **les deux** repos. Tout est commité.
+Branche `migration-astro` dans **les deux** repos.
 
 ## Le prochain geste
 
-Le build est bloqué sur **une seule** erreur :
-
-```
-[ImageNotFound] Could not find requested image `../../../static/img/icon-linkedin.webp`
-```
-
-**Cause.** 8 des 19 articles codent en dur les liens de partage LinkedIn/X documentés dans `POSTING.md`, avec un chemin relatif qui remontait de `blog/<cat>/<article>/` vers le `static/` de la coque. Ce chemin supposait le vieux modèle, où le contenu était *copié dans* la coque. Le loader lit désormais le repo voisin sur place : `../../../static/` n'existe plus.
-
-**Décision prise** : remplacer ce boilerplate par un composant de layout.
-
-1. Créer `src/components/ShareLinks.astro`, qui prend `slug` et `title` et génère les deux liens (icônes déjà présentes dans `public/img/icon-linkedin.webp` et `public/img/icon-x.webp`).
-2. Retirer les 15 lignes de partage des 8 articles du repo contenu :
-   - `blog/ai/2023-12-21-Gemini-on-vertex-ai`
-   - `blog/architecture/2023-12-10-redpanda-introduction`
-   - `blog/architecture/2024-10-29-Realworld-app`
-   - `blog/dev/2024-07-18-bundlephobia`
-   - `blog/dev/2024-11-04-hacktoberfest-2024--nos-retours`
-   - `blog/dev/2024-12-19-ai-assistant-vscode`
-   - `blog/general/2025-07-10-entreprise-a-mission`
-   - `blog/green/2024-06-21-greenIT-introduction-1`
-3. Appeler `<ShareLinks />` depuis le layout d'article.
-4. Retirer la section correspondante de `POSTING.md` (phase C).
-
-## Fait
-
-- **Plan** : `PLAN-MIGRATION.md`, 500 lignes, D1-D5 et P1-P6 tous arbitrés.
-- **Référence** : les 45 routes Docusaurus dans `migration-routes-docusaurus.txt`, et le build complet archivé dans `/Users/emmanuelperu/dev/zatsit/blog/docusaurus-reference-build`. C'est la seule référence visuelle restante, Docusaurus étant supprimé. `npx serve` dessus pour comparer.
-- **Contenu normalisé** : 19/19 articles en `YYYY-MM-DD-slug/index.md`, marqueurs `truncate` complets. Vérifié : le build Docusaurus repassait et le diff des 45 routes était vide.
-- **Socle Astro 7.2.0** : jetons du design system, Poppins via l'API Fonts native, `global.css` sans aucun hexadécimal brut, `BaseHead` avec OG complet et script de thème anti-flash.
-- **Loader** : les 19 articles chargés, les 19 dates résolues, les 12 auteurs chargés.
-
-## Deux pièges déjà payés, à ne pas réintroduire
-
-1. **`glob()` dérive l'`id` du `slug` du frontmatter**, pas du chemin. Le repli de date doit lire `entry.filePath`. Avec `id`, les 12 articles sans date en frontmatter échouent.
-2. **`authors.yml` est un seul document de 12 profils.** Il faut `file()` avec un parseur YAML ; `glob()` le charge comme une entrée unique et la validation Zod échoue sur `name: Required`.
-
-## Mis de côté, à réintégrer
-
-**Les fichiers Docusaurus à porter** sont dans l'historique git, c'est la source fiable (le scratchpad de session, lui, disparaît) :
-
-```bash
-git show HEAD~1:src/pages/mentions-legales.md
-git show HEAD~1:src/pages/blog-conception.js
-git show HEAD~1:src/components/zatsCO2JSBadge.js
-git show HEAD~1:src/components/zatsWebsiteCarbonBadge.js
-git show HEAD~1:src/css/custom.css
-```
-
-**Les fichiers du gabarit Astro** non encore habillés (`[...slug].astro`, `rss.xml.js`, `BlogPost.astro`, `Header/Footer/HeaderLink.astro`) n'ont jamais été commités. Inutile de les chercher : ils se régénèrent en une commande.
+Phase 3, les pages. Le gabarit Astro à régénérer (`[...slug].astro`, `rss.xml.js`, `BlogPost.astro`, `Header/Footer/HeaderLink.astro`) n'a jamais été commité :
 
 ```bash
 npm create astro@latest /tmp/scaffold -- --template blog --no-install --no-git --skip-houston --yes
 ```
 
-## Reste à faire
+Dans l'ordre : listing paginé, article, tags, `/archive/`, `/authors/`, 404, admonitions, Pagefind, RSS, temps de lecture. Puis la vérification des URLs contre les 45 routes de `migration-routes-docusaurus.txt`.
 
-Phases 3 à 6 de `PLAN-MIGRATION.md`. Dans l'ordre : pages et parité (listing paginé, article, tags, `/archive/`, `/authors/`, 404, admonitions, Pagefind, RSS, temps de lecture), vérification des URLs contre les 45 routes, CI/CD, documentation.
+Deux gestes à ne pas oublier en y arrivant :
 
-Ne pas oublier : `base.css` du design system n'est pas encore importé, il porte `.btn-primary`, `.card`, `.tag`, `.glass`.
+1. **Déplacer `<ShareLinks />`** de la page de contrôle vers le layout d'article. Il y est branché uniquement pour prouver qu'il compile.
+2. **Importer `base.css`** du design system, il porte `.btn-primary`, `.card`, `.tag`, `.glass`.
+
+## Fait
+
+- **Plan** : `PLAN-MIGRATION.md`, D1-D5 et P1-P6 tous arbitrés.
+- **Référence** : les 45 routes dans `migration-routes-docusaurus.txt`, et le build complet archivé dans `/Users/emmanuelperu/dev/zatsit/blog/docusaurus-reference-build`. Seule référence visuelle restante. `npx serve` dessus pour comparer.
+- **Contenu normalisé** : 19/19 articles en `YYYY-MM-DD-slug/index.md`, marqueurs `truncate` complets. Le build Docusaurus repassait et le diff des 45 routes était vide.
+- **Socle Astro 7.2.0** : jetons du design system, Poppins via l'API Fonts native, `global.css` sans aucun hexadécimal brut, `BaseHead` avec OG complet et script de thème anti-flash.
+- **Garde-fous qualité** : `.claude/rules/quality.md`, les skills `wcag-check`, `eco-check` et `accessibility-a11y`, et deux commandes qui sortent en erreur, `npm run check:a11y` et `npm run check:eco`. Ligne de base Docusaurus mesurée dans `.claude/skills/eco-check/references/baseline-docusaurus.md`.
+- **Le build passe.** 19 articles, 19 dates résolues, 12 auteurs. `ShareLinks` remplace le boilerplate de partage, `POSTING.md` est à jour.
+
+## Mesures du 13 août 2026
+
+| | Docusaurus (45 pages) | Astro (page de contrôle) |
+|---|---|---|
+| Poids initial | 304 ko médian, 3 152 ko sur l'accueil | **120,7 ko** |
+| Requêtes | 5 à 16 | 18, dont **14 polices** |
+| Contrastes vérifiés | 0 | 16, deux thèmes, tous au vert |
+
+La page de contrôle n'est pas une vraie page : le chiffre ne vaut que comme plancher. À refaire sur un article réel en phase 3.
+
+## Trois pièges déjà payés, à ne pas réintroduire
+
+1. **`glob()` dérive l'`id` du `slug` du frontmatter**, pas du chemin. Le repli de date doit lire `entry.filePath`. Avec `id`, les 12 articles sans date en frontmatter échouent.
+2. **`authors.yml` est un seul document de 12 profils.** Il faut `file()` avec un parseur YAML ; `glob()` le charge comme une entrée unique et la validation Zod échoue sur `name: Required`.
+3. **`context.store.set()` est ignoré si le digest de l'entrée n'a pas changé.** Modifier une donnée dérivée sans toucher au fichier source ne s'écrit donc pas. Faire `delete()` puis `set()`. Corollaire de méthode : une garde doit vérifier **l'état final du store**, pas le fait d'avoir tenté l'écriture.
+
+## Deux dettes mesurées, à traiter en phase 3
+
+1. **Polices** : `astro.config.mjs` déclare 7 graisses × 2 styles, soit 14 woff2. Sur la page de contrôle, elles représentent **112 ko sur 121 ko et 14 requêtes sur 18** : la quasi-totalité du poids. La règle éco en autorise 3. C'est le gain le plus rentable disponible.
+2. **Images du repo contenu** : la ligne de base montre `devlille-2026` à 10,8 Mo et l'accueil à 6,7 Mo, des rasters non optimisés. La coque Astro ne les corrige pas toute seule, il faut les passer par `astro:assets`.
+
+## Deux points en attente d'arbitrage
+
+- **L'icône X** (`public/img/icon-x.svg`) est une conversion raster de 4,4 ko, trois tracés superposés avec un carré noir en fond. Elle rendra mal en thème sombre. À remplacer par le glyphe officiel.
+- **Coquilles dans un `shareText`** repris verbatim depuis l'ancien boilerplate (`bundlephobia`) : « appplications », « plus rapide et moins energivore ». Conservées telles quelles pour ne pas modifier la copie sans accord.
+
+## Récupérer les fichiers Docusaurus à porter
+
+L'historique git est la source fiable. Attention, le commit de référence est `5772d1c~1`, pas `HEAD~1` :
+
+```bash
+git show 5772d1c~1:src/pages/mentions-legales.md
+git show 5772d1c~1:src/pages/blog-conception.js
+git show 5772d1c~1:src/components/zatsCO2JSBadge.js
+git show 5772d1c~1:src/components/zatsWebsiteCarbonBadge.js
+git show 5772d1c~1:src/css/custom.css
+```
