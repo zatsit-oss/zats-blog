@@ -1,0 +1,149 @@
+---
+/**
+ * The people who write here, at /authors/.
+ *
+ * Docusaurus generated no page per author and neither do we: the reference
+ * routes list /authors/ alone. Each name links to its own site or GitHub, as
+ * authors.yml declares it.
+ */
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import { sortedPosts } from '../utils/posts';
+import { avatarFor } from '../utils/avatars';
+
+const posts = await sortedPosts();
+const authors = await getCollection('authors');
+
+// Count first, sort second: the byline order on an article is meaningful, the
+// order on this page is not, so most-published first is as good a rule as any
+// and more useful than alphabetical.
+const counted = authors
+  .map((author) => ({
+    ...author.data,
+    key: author.id,
+    avatar: avatarFor(author.id),
+    count: posts.filter((post) => post.data.authors.includes(author.id)).length,
+  }))
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'fr'));
+---
+
+<Layout
+  title="Les auteurs"
+  description="Les consultantes et consultants de zatsit qui écrivent sur ce blog."
+>
+  <div class="container authors">
+    <header class="authors__header">
+      <h1>Les auteurs</h1>
+      <p class="authors__intro">
+        {counted.length} personnes ont écrit les {posts.length} articles de ce blog.
+      </p>
+    </header>
+
+    <ul class="authors__list">
+      {
+        counted.map((author) => (
+          <li class="author">
+            {author.avatar && (
+              <Image
+                class="author__avatar"
+                src={author.avatar}
+                alt=""
+                width={64}
+                height={64}
+                densities={[1, 2]}
+                loading="lazy"
+              />
+            )}
+            <div>
+              <h2 class="author__name">
+                {author.url ? (
+                  <a href={author.url} target="_blank" rel="noopener noreferrer">
+                    {author.name}
+                    <span class="sr-only">, dans un nouvel onglet</span>
+                  </a>
+                ) : (
+                  author.name
+                )}
+              </h2>
+              {author.title && <p class="author__title">{author.title}</p>}
+              <p class="author__count">
+                {author.count === 0
+                  ? 'Pas encore publié'
+                  : author.count === 1
+                    ? 'Un article'
+                    : `${author.count} articles`}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Layout>
+
+<style>
+  .authors {
+    max-width: 48rem;
+    padding-block: var(--space-12) var(--space-24);
+  }
+
+  .authors__header {
+    margin-block-end: var(--space-10);
+  }
+
+  .authors__intro {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .authors__list {
+    display: grid;
+    gap: var(--space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .author__avatar {
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .author__name {
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+
+  .author__name a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .author__name a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .author__title,
+  .author__count {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 640px) {
+    .authors__list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+    }
+  }
+</style>

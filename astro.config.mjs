@@ -19,6 +19,15 @@ export default defineConfig({
   // No MDX on purpose: articles stay portable plain Markdown, per the brief.
   integrations: [sitemap()],
 
+  // /markdown-page/ is one of the 45 routes to preserve, but its content was
+  // Docusaurus scaffold filler: "You don't need React to write simple
+  // standalone pages", in English, on a French blog. Republishing that would
+  // be parity with the letter and not the intent. The URL keeps resolving,
+  // to the home page.
+  redirects: {
+    '/markdown-page': '/',
+  },
+
   // Poppins is the single Zatsit typeface. The Fonts API downloads, subsets
   // and self-hosts the woff2 files at build time, so nothing is fetched from a
   // third party at runtime. Latin only, to keep the footprint eco-light.

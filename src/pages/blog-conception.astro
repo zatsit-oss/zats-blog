@@ -1,0 +1,106 @@
+---
+/**
+ * How this blog is built and what it costs, at /blog-conception/.
+ *
+ * Ported from the Docusaurus React page, with its two badges. The text is
+ * largely the original; the passage that read "notre page d'accueil pèse kb
+ * (en cours d'amélioration)" is rewritten, since the number had gone missing
+ * from the sentence and the improvement has since happened.
+ */
+import Layout from '../layouts/Layout.astro';
+import WebsiteCarbonBadge from '../components/WebsiteCarbonBadge.astro';
+import CO2JSBadge from '../components/CO2JSBadge.astro';
+import { MEASURED_PAGE_DATE } from '../consts';
+---
+
+<Layout
+  title="Éco-conception"
+  description="Comment ce blog est conçu, et ce qu'une page coûte réellement."
+>
+  <article class="eco">
+    <header class="eco__header">
+      <h1>Éco-conception de ce blog</h1>
+      <p class="eco__lead">
+        Nous voulions un blog léger, rapide, et qui ne mobilise pas de ressources en continu.
+      </p>
+    </header>
+
+    <p>
+      L'éco-conception et la sobriété comptent dans tous nos projets, et un blog qui en parle
+      sans se mesurer ne vaut pas grand-chose. Ce site est entièrement généré à la publication :
+      aucun serveur n'exécute quoi que ce soit pendant que vous le lisez, il n'y a que des
+      fichiers à servir.
+    </p>
+
+    <h2>Ce que dit Website Carbon</h2>
+
+    <p>
+      Nous utilisons <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener noreferrer"
+        >WebsiteCarbon</a
+      > pour évaluer l'empreinte de nos pages. La mesure est faite sur la page que vous consultez,
+      en direct.
+    </p>
+
+    <div class="eco__badge">
+      <WebsiteCarbonBadge />
+    </div>
+
+    <h2>Et ce que dit CO2.js</h2>
+
+    <p>
+      Une mesure isolée peut se tromper, mieux vaut croiser les outils. <a
+        href="https://developers.thegreenwebfoundation.org/co2js/"
+        target="_blank"
+        rel="noopener noreferrer">CO2.js</a
+      >, de la Green Web Foundation, donne une seconde estimation à partir du poids réel de la
+      page. Le calcul est fait à la construction du site, pas dans votre navigateur : afficher une
+      empreinte carbone en vous faisant télécharger une bibliothèque pour la calculer serait
+      contradictoire.
+    </p>
+
+    <div class="eco__badge">
+      <CO2JSBadge />
+    </div>
+
+    <h2>Ce que nous mesurons nous-mêmes</h2>
+
+    <p>
+      Deux vérifications tournent à chaque modification du site et échouent si un seuil est
+      dépassé : l'une mesure le poids de chaque page contre un budget, l'autre les contrastes de
+      couleur contre le niveau AA des WCAG, dans les thèmes clair et sombre. Les chiffres de cette
+      page datent du {MEASURED_PAGE_DATE}.
+    </p>
+
+    <p>
+      Cette approche ne rend pas un site vertueux par magie. Elle rend ses coûts visibles, ce qui
+      est la condition pour les réduire.
+    </p>
+  </article>
+</Layout>
+
+<style>
+  .eco {
+    max-width: 45rem;
+    margin-inline: auto;
+    padding-inline: var(--margin-mobile);
+    padding-block: var(--space-12) var(--space-24);
+  }
+
+  .eco__header {
+    margin-block-end: var(--space-8);
+  }
+
+  .eco__lead {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .eco h2 {
+    margin-block-start: var(--space-10);
+  }
+
+  .eco__badge {
+    margin-block: var(--space-6);
+  }
+</style>
