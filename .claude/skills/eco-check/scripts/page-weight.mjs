@@ -105,8 +105,29 @@ function analyzePage(pageFile) {
     add(initial, toDistPath(tag.match(/\bsrc=["']([^"']+)["']/i)?.[1], pageFile));
   }
 
-  // Images: lazy ones are not part of the initial payload.
-  for (const [, tag] of html.matchAll(/<img\b([^>]*)>/gi)) {
+  // <picture>: the browser takes the first <source> whose type it supports and
+  // never fetches the <img> fallback. Counting the fallback would report the
+  // heaviest variant, penalising the very technique that makes the page light.
+  // The first source wins here, matching how a current browser resolves it.
+  const pictures = [...html.matchAll(/<picture\b[\s\S]*?<\/picture>/gi)].map((m) => m[0]);
+
+  for (const picture of pictures) {
+    const srcset = picture.match(/<source\b[^>]*\bsrcset=["']([^"']+)["']/i)?.[1];
+    const fallback = picture.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
+    // A srcset lists "url width" pairs; the last is the largest and is what a
+    // 2x screen pulls, so it is the honest figure to budget against.
+    const candidate = srcset
+      ? srcset.split(',').pop()?.trim().split(/\s+/)[0]
+      : fallback;
+    const path = toDistPath(candidate, pageFile);
+    add(/\bloading=["']lazy["']/i.test(picture) ? deferred : initial, path);
+  }
+
+  // Standalone images. Anything already accounted for inside a <picture> is
+  // skipped, lazy ones stay out of the initial payload.
+  const insidePicture = pictures.join('');
+  for (const [tag] of html.matchAll(/<img\b[^>]*>/gi)) {
+    if (insidePicture.includes(tag)) continue;
     const path = toDistPath(tag.match(/\bsrc=["']([^"']+)["']/i)?.[1], pageFile);
     add(/\bloading=["']lazy["']/i.test(tag) ? deferred : initial, path);
   }
