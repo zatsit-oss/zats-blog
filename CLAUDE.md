@@ -1,91 +1,76 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code working in this repository.
 
-## Project Overview
+## What this is
 
-This is the **zatsit blog** — a static site built with [Docusaurus v3](https://docusaurus.io/) (React, MDX), deployed on Firebase Hosting. The site is French-language only (`defaultLocale: 'fr'`).
+The **zatsit blog**: a static site built with [Astro 7](https://astro.build/), French-only, deployed on Firebase Hosting. Migrated from Docusaurus v3 in August 2026.
 
-**Important**: Blog content (posts, docs, author profiles) lives in a **separate repository** — [zatsit-oss/zats-blog-content](https://github.com/zatsit-oss/zats-blog-content). This repo only contains the site shell, theme, and components.
+**Content lives in another repository.** Articles, authors and their images are in [zats-blog-content](https://github.com/zatsit-oss/zats-blog-content), cloned as a **sibling directory**, and read in place by a `glob()` loader. Nothing is copied. This repo holds the shell only.
 
-> **Migration in progress.** The shell is being rebuilt on Astro 7 on the `migration-astro` branch. Everything below this section still describes the Docusaurus setup and is rewritten in phase 6. See `PLAN-MIGRATION.md` and `REPRISE.md`.
-
-## Quality gates (non-negotiable)
+## Quality gates, non-negotiable
 
 @.claude/rules/quality.md
 
-Two gates run on every front-end change, before declaring the work done and before committing:
-
 ```bash
-npm run check:a11y   # WCAG 2.1 AA contrast, both themes  (skill: wcag-check)
-npm run check:eco    # page weight budgets on dist/       (skill: eco-check)
+npm run check        # TypeScript
+npm run check:a11y   # WCAG 2.1 AA contrast, both themes, plus the Shiki colours
+npm run check:eco    # page weight budgets, on dist/
 ```
 
-Both exit non-zero on failure. The matching skills in `.claude/skills/` carry the checklists: `wcag-check` and `eco-check` are the verification gates, `accessibility-a11y` is the implementation guidance to read while writing a component.
+All three run in CI on every pull request and exit non-zero on failure. Read the full output of `astro check`: the error count sits above the warnings line, and truncating with `tail -3` hides it.
 
-## Commands
+The matching skills carry the checklists: `wcag-check` and `eco-check` are the verification gates, `accessibility-a11y` is the implementation guidance to read while writing a component.
 
-```bash
-npm install          # install dependencies
-npm run start        # local dev server with live reload
-npm run build        # production build → build/
-npm run serve        # serve the production build locally
-npm run clear        # clear Docusaurus cache (use when stale build issues occur)
-```
+## The traps this codebase has already paid for
 
-No linting or test scripts are configured.
+Each of these cost a debugging session. They are not hypothetical.
 
-## Content Setup (local dev)
+**The content store caches rendered Markdown.** Changing a Markdown plugin and rebuilding shows the old output. Move `node_modules/.astro/data-store.json` aside after touching the Markdown pipeline, or you will diagnose problems that no longer exist.
 
-Blog content must be fetched from the content repo before developing locally:
+**`context.store.set()` is a no-op when the entry digest is unchanged.** Deriving data from a file without touching the file means the write is silently dropped. `delete()` then `set()`. And assert the end state of the store, not the fact of having attempted the write.
 
-```bash
-# Clone the content repo at the same workspace level, then:
-cp -r  ../zats-blog-content/docs/* docs
-cp -r  ../zats-blog-content/blog/* blog
-cp -r  ../zats-blog-content/authors/authors.yml blog
-cp -R  ../zats-blog-content/authors/img/* static/img/authors
-```
+**`glob()` derives its `id` from the frontmatter `slug`, not the path.** The date fallback reads `entry.filePath`; with `id`, the twelve articles without a frontmatter date fail.
+
+**`authors.yml` is one document of twelve profiles.** It needs `file()` with a YAML parser; `glob()` loads it as a single entry and Zod fails on `name: Required`.
+
+**Astro scopes component CSS to server-rendered elements.** Anything a script creates at runtime carries no `data-astro-cid` attribute, so scoped rules never match it. Those styles must be `is:global`.
+
+**`is:inline` is required, not stylistic, for the search script.** `/pagefind/pagefind.js` is generated after the Astro build, and a Vite-processed dynamic import emits an unsubstituted `__VITE_PRELOAD__` marker that throws at runtime. The inline script also needs `type="module"`, or Safari refuses the dynamic import that Chrome accepts.
+
+**Files under `public/` bypass the image pipeline.** They ship at full resolution. `astro:assets` only resizes when width and height are declared, which is why the content images are re-encoded but not resized.
 
 ## Architecture
 
-### Content separation
-
-| Concern | Repository |
+| Concern | Where |
 |---|---|
-| Site shell, theme, components | This repo (`zats-blog`) |
-| Blog posts, docs, authors | `zats-blog-content` |
+| Loader, schema, date fallback | `src/content.config.ts` |
+| Shared helpers: excerpt, reading time, tags | `src/utils/posts.ts` |
+| Avatars, read from the content repo | `src/utils/avatars.ts` |
+| Page shell, header, footer | `src/layouts/Layout.astro` |
+| Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
+| Admonitions | `src/plugins/mdast-admonitions.mjs` |
+| Design tokens | `src/styles/tokens/`, entry point `src/styles/tokens.css` |
+| Site constants, navigation, hero copy | `src/consts.ts` |
 
-In CI, the custom composite action at [.github/actions/docusaurus/action.yml](.github/actions/docusaurus/action.yml) handles fetching the content repo (with caching), merging it into the right folders, and running the build.
+Articles are served at the **root**, as `/<slug>/`, and the slug comes from the frontmatter rather than the folder name. `migration-routes-docusaurus.txt` holds the 45 reference routes; the build matches all 45.
 
-### Key configuration files
+## Conventions
 
-- [docusaurus.config.js](docusaurus.config.js) — full site config: navbar, footer, plugins, math (KaTeX via `remark-math` + `rehype-katex`), and search (`docusaurus-lunr-search` in French).
-- [sidebars.js](sidebars.js) — docs sidebar (auto-generated from filesystem).
-- [firebase.json](firebase.json) — Firebase Hosting config: serves `build/`, root redirects to `/blog`, cache-control set to 1 day.
-- [.firebaserc](.firebaserc) — Firebase project: `zatsit-blog`.
+- Never a raw hex in product code: always a semantic token from `src/styles/tokens/colors.css`, so both themes resolve.
+- No MDX. Articles stay portable plain Markdown.
+- Never reference this repo's assets from an article with a relative path: the content repo no longer sits inside the shell.
+- The visual reference for shared components is the corporate site in `zats-websites`, but it is a Tailwind project: read it, rewrite it, do not copy its classes.
 
-### Custom components
+## Markdown pipeline
 
-All live under [src/](src/):
+Sätteri, the default processor in Astro 7, with `features.directive` on for admonitions. Not remark: that would need `@astrojs/markdown-remark` and swap the whole pipeline for one feature the default already has.
 
-- [src/pages/index.js](src/pages/index.js) — homepage (hero + `HomepageFeatures`).
-- [src/pages/blog-conception.js](src/pages/blog-conception.js) — eco-design info page.
-- [src/pages/mentions-legales.md](src/pages/mentions-legales.md) — legal notices (raw Markdown page).
-- [src/components/zatsCO2JSBadge.js](src/components/zatsCO2JSBadge.js) — custom CO2 badge using `@tgwf/co2`.
-- [src/components/zatsWebsiteCarbonBadge.js](src/components/zatsWebsiteCarbonBadge.js) — Website Carbon badge widget.
+Shiki emits both themes on every token with `defaultColor: false`, and CSS keyed on `data-theme` picks one. Code blocks sit on our surface token, so a theme's published contrast does not carry over: `check:a11y` measures the colours actually emitted.
 
-### Navigation categories
+## Deployment
 
-Categories displayed in the navbar are tag-based (`/blog/tags/<tag>`). Adding a new category requires at least one published post with that tag, otherwise the build fails with a broken link.
+- **Pull request** → [firebase-hosting-pull-request.yml](.github/workflows/firebase-hosting-pull-request.yml), which clones the content repo as a sibling, builds, runs the gates and deploys a preview channel.
+- **Merge to `main`** → [publish-on-merge.yml](.github/workflows/publish-on-merge.yml). **Still on the Docusaurus action**, deliberately, until the migration is validated. Migrating it is the last step.
 
-### CI/CD
-
-- **PRs** → [firebase-hosting-pull-request.yml](.github/workflows/firebase-hosting-pull-request.yml): builds and deploys a Firebase preview channel.
-- **Merge to `main`** → [publish-on-merge.yml](.github/workflows/publish-on-merge.yml): builds and deploys to the live Firebase channel.
-- Changes to `blog/`, `docs/`, and markdown files do **not** trigger CI (content is managed in the content repo).
-
-## Node version
-
-Requires Node ≥ 20. Pinned in [.node-version](.node-version).
-
+A publication in the content repo needs a rebuild of this shell to appear online.

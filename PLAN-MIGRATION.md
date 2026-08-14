@@ -26,8 +26,8 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Ph2 bis — garde-fous qualité (a11y, éco) | ✅ terminée |
 | Ph3 — pages et parité | ✅ terminée |
 | Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
-| Ph5 — CI/CD | ⬜ à faire |
-| Ph6 et A bis, B, C — documentation et CI contenu | ⬜ à faire |
+| Ph5 — CI/CD | 🟡 preview migrée et verte, production encore sur Docusaurus |
+| Ph6 — documentation | 🟡 `README`, `CLAUDE.md`, `AGENTS.md` refaits ; reste la CI du dépôt contenu |
 
 **Acquis mesurés, pas supposés**
 
