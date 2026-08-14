@@ -20,7 +20,8 @@ interface Props {
    */
   highlight?: string;
   subtitle?: string;
-  actions?: { href: string; label: string; primary?: boolean }[];
+  /** Readonly, because HERO in consts.ts is declared `as const`. */
+  actions?: readonly { readonly href: string; readonly label: string; readonly primary?: boolean }[];
   /** Root-relative path to a decorative illustration. */
   illustration?: string;
 }
