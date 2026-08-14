@@ -1,0 +1,86 @@
+name: Build the Astro blog
+description: >
+  Clones the content repository as a sibling directory and builds the site.
+  Replaces the docusaurus action, which copied content into the shell.
+
+inputs:
+  token:
+    description: Token used to clone the content repository.
+    required: true
+  content-ref:
+    description: >
+      Branch of the content repository to build. Defaults to the branch of the
+      pull request when the content repository has one by that name, so a
+      migration branch builds against its own content, and main otherwise.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Clone the content repository as a sibling
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        REQUESTED_REF: ${{ inputs.content-ref }}
+        HEAD_REF: ${{ github.head_ref }}
+      run: |
+        set -euo pipefail
+
+        # A sibling, not a subdirectory, and this is a hard requirement rather
+        # than a preference: src/utils/avatars.ts reads the avatars through an
+        # import.meta.glob, and Vite only analyses a glob whose path is a
+        # literal. That literal is ../../../zats-blog-content/authors/img/*.
+        # actions/checkout refuses a path outside the workspace, hence a plain
+        # clone.
+        TARGET="$(dirname "$GITHUB_WORKSPACE")/zats-blog-content"
+        REPO="https://x-access-token:${GH_TOKEN}@github.com/zatsit-oss/zats-blog-content.git"
+
+        # Prefer a content branch named like the pull request branch, so the
+        # migration builds against migrated content, and fall back to main once
+        # that branch is gone.
+        REF="${REQUESTED_REF}"
+        if [ -z "$REF" ]; then
+          if [ -n "$HEAD_REF" ] && git ls-remote --exit-code --heads "$REPO" "$HEAD_REF" >/dev/null 2>&1; then
+            REF="$HEAD_REF"
+          else
+            REF="main"
+          fi
+        fi
+
+        echo "Contenu : branche $REF"
+        git clone --depth 1 --branch "$REF" "$REPO" "$TARGET"
+
+        # Fail here rather than three steps later on a Zod error nobody reads.
+        test -d "$TARGET/blog" || { echo "::error::blog/ absent du dépôt contenu"; exit 1; }
+        test -f "$TARGET/authors/authors.yml" || { echo "::error::authors.yml absent"; exit 1; }
+        echo "Articles trouvés : $(find "$TARGET/blog" -name index.md | wc -l)"
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        # From .node-version rather than pinned here: Astro 7 needs >= 22.12 and
+        # the previous action asked for 20, which would fail on the first build.
+        node-version-file: .node-version
+        cache: npm
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Type-check
+      shell: bash
+      run: npm run check
+
+    - name: Build
+      shell: bash
+      # Also runs Pagefind and prunes its unused interfaces, see package.json.
+      run: npm run build
+
+    - name: Quality gates
+      shell: bash
+      # Both exit non-zero on failure, so a contrast regression or a page over
+      # budget fails the pull request instead of being noticed later.
+      run: |
+        npm run check:a11y
+        npm run check:eco

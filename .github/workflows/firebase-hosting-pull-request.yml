@@ -1,12 +1,14 @@
 name: Deploy to Firebase Hosting on PR
 on:
   pull_request:
+    # blog/ and docs/ are gone: content is read from the content repository in
+    # place, and this repo no longer holds a copy of it.
     paths-ignore:
-      - "blog/**"
-      - "docs/**"
       - "README.md"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
+      - "PLAN-MIGRATION.md"
+      - "REPRISE.md"
 
 concurrency:
   group: ${{ github.ref || github.run_id }}
@@ -24,8 +26,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Fetch and Build blog
-        uses: ./.github/actions/docusaurus
+      - name: Fetch content and build
+        uses: ./.github/actions/astro
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 

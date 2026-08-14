@@ -1,17 +1,27 @@
 {
   "hosting": {
-    "public": "build",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "headers": [{
-      "source": "**",
-      "headers": [{
-        "key": "Cache-Control",
-        "value": "max-age=86400"
-      }]
-    }]
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "//": "Hashed filenames never change content, so they can be cached for a year. This was max-age=86400 on everything, which made returning visitors re-download unchanged fonts and images every day.",
+        "source": "/_astro/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      },
+      {
+        "//": "The search index is regenerated on every build and its filenames are not hashed, so it must revalidate.",
+        "source": "/pagefind/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
+      },
+      {
+        "//": "Pages and the feed: short-lived, so a publication shows up quickly.",
+        "source": "**/*.@(html|xml)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=600" }]
+      },
+      {
+        "source": "**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+      }
+    ]
   }
 }
