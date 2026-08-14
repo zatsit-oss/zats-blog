@@ -30,6 +30,50 @@ function beforeTruncate(post: Post): string {
   return head;
 }
 
+export interface TagSummary {
+  tag: string;
+  count: number;
+}
+
+/**
+ * Every tag in use, with how many articles carry it, most used first and
+ * alphabetical within a count.
+ *
+ * Derived from the articles rather than declared anywhere: Docusaurus worked
+ * the same way, which is why the navbar exposes six categories while seventeen
+ * tag pages exist. All seventeen must survive the migration, including those
+ * no menu links to.
+ */
+export async function allTags(posts?: Post[]): Promise<TagSummary[]> {
+  const entries = posts ?? (await sortedPosts());
+  const counts = new Map<string, number>();
+
+  for (const post of entries) {
+    for (const tag of post.data.tags) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+
+  return [...counts.entries()]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, 'fr'));
+}
+
+/** Articles carrying a given tag, newest first. */
+export async function postsByTag(tag: string, posts?: Post[]): Promise<Post[]> {
+  const entries = posts ?? (await sortedPosts());
+  return entries.filter((post) => post.data.tags.includes(tag));
+}
+
+/**
+ * The heading Docusaurus used, with its agreement bug fixed: its French locale
+ * printed "Un article tagués avec « java »".
+ */
+export function taggedHeading(tag: string, count: number): string {
+  const lead = count === 1 ? 'Un article tagué' : `${count} articles tagués`;
+  return `${lead} avec « ${tag} »`;
+}
+
 /**
  * Markdown reduced to readable prose. Deliberately not a full parser: it feeds
  * a meta description and a listing excerpt, where a leftover asterisk matters
