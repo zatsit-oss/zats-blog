@@ -10,7 +10,15 @@
  * Centralising it also fixes a drift the boilerplate had accumulated: seven of
  * the eight hardcoded URLs pointed at `/blog/<slug>/`, a prefix the site
  * stopped using. The canonical URL is now derived once, from `site`.
+ *
+ * The icons are the corporate marks, in currentColor, so they follow the theme.
+ * They replace public/img/icon-x.svg, a 4.4 kB raster conversion carrying a
+ * baked black square that rendered badly on the dark background; the
+ * replacement is 258 bytes.
  */
+import LinkedinIcon from '../assets/icons/linkedin.svg';
+import TwitterIcon from '../assets/icons/twitter.svg';
+
 interface Props {
   /** Article slug, from the frontmatter. Drives the canonical URL. */
   slug: string;
@@ -40,13 +48,13 @@ const x = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)
     <li>
       <a class="share__link" href={linkedin} target="_blank" rel="noopener noreferrer"
         aria-label={`Partager « ${title} » sur LinkedIn, dans un nouvel onglet`}>
-        <img src="/img/icon-linkedin.svg" alt="" width="24" height="24" aria-hidden="true" />
+        <LinkedinIcon class="icon" aria-hidden="true" />
       </a>
     </li>
     <li>
       <a class="share__link" href={x} target="_blank" rel="noopener noreferrer"
         aria-label={`Partager « ${title} » sur X, dans un nouvel onglet`}>
-        <img src="/img/icon-x.svg" alt="" width="24" height="24" aria-hidden="true" />
+        <TwitterIcon class="icon" aria-hidden="true" />
       </a>
     </li>
   </ul>
