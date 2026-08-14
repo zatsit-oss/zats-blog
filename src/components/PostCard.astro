@@ -2,6 +2,12 @@
 /**
  * One article in a listing. Shared by the paginated home, the tag pages and
  * the archive, so they cannot drift apart.
+ *
+ * The hover treatment is the design system's signature, which nothing in this
+ * site implemented until now: a 4px lift, a primary rule appearing along the
+ * top edge, and a diffuse primary glow. The system is explicit that elevation
+ * comes from tonal layers and hairlines rather than heavy shadows, so the
+ * resting state carries no shadow at all.
  */
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from './FormattedDate.astro';
@@ -9,31 +15,34 @@ import { excerpt, readingTime } from '../utils/posts';
 
 interface Props {
   post: CollectionEntry<'blog'>;
-  /** The first card of the first page gets an h2 that carries more weight. */
-  headingLevel?: 'h2' | 'h3';
+  /**
+   * The lead article of the first page. Wider, larger, with a longer excerpt:
+   * on a blog the newest piece is why most readers came, and a listing where
+   * every item weighs the same makes them work that out for themselves.
+   */
+  featured?: boolean;
 }
 
-const { post, headingLevel = 'h2' } = Astro.props;
+const { post, featured = false } = Astro.props;
 const { title, slug, date, tags } = post.data;
 
-const Heading = headingLevel;
 const href = `/${slug}/`;
 const summary = excerpt(post);
 const minutes = readingTime(post);
 ---
 
-<article class="card">
-  <Heading class="card__title">
-    {/* The title is the link, not the whole card: the accessible name stays
-        the title rather than every word of the summary. */}
-    <a class="card__link" href={href}>{title}</a>
-  </Heading>
-
+<article class:list={['card', featured && 'card--featured']}>
   <div class="card__meta">
     {date && <FormattedDate date={date} format="short" />}
     <span aria-hidden="true">·</span>
     <span>{minutes} min de lecture</span>
   </div>
+
+  <h2 class="card__title">
+    {/* The title is the link, not the whole card: the accessible name stays
+        the title rather than every word of the summary. */}
+    <a class="card__link" href={href}>{title}</a>
+  </h2>
 
   {summary && <p class="card__excerpt">{summary}</p>}
 
@@ -55,13 +64,58 @@ const minutes = readingTime(post);
 <style>
   .card {
     position: relative;
-    padding-block: var(--space-8);
-    border-block-end: var(--border-width) solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--space-6);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out);
+  }
+
+  /* The accent rule, hidden until the card is pointed at or its link focused.
+     A pseudo-element rather than a border, so nothing shifts when it appears. */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -1px;
+    inset-inline: var(--space-6);
+    block-size: 2px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border));
+    box-shadow: var(--shadow-lift);
+  }
+
+  .card:hover::before,
+  .card:focus-within::before {
+    opacity: 1;
+  }
+
+  .card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
   }
 
   .card__title {
-    margin: 0 0 var(--space-2);
-    font-size: var(--text-2xl);
+    margin: var(--space-2) 0 0;
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
   }
 
   .card__link {
@@ -77,25 +131,15 @@ const minutes = readingTime(post);
     inset: 0;
   }
 
-  .card__link:hover {
+  .card:hover .card__link {
     color: var(--color-primary);
-    text-decoration: underline;
-  }
-
-  .card__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
   }
 
   .card__excerpt {
     margin-block: var(--space-3) 0;
     color: var(--color-text-muted);
-    /* Three lines is enough to judge an article, and keeps every card the same
-       height whatever the author wrote above the truncate marker. */
+    /* Three lines keeps every card the same height whatever the author wrote
+       above the truncate marker. */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -106,25 +150,63 @@ const minutes = readingTime(post);
     position: relative;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    gap: var(--space-3);
     list-style: none;
-    margin: var(--space-4) 0 0;
-    padding: 0;
+    /* Pushed to the bottom so tags align across a row of uneven cards. */
+    margin: auto 0 0;
+    padding-block-start: var(--space-4);
   }
 
+  /* Plain text rather than pills: the card already has a border, and pills
+     inside a bordered box read as noise. */
   .card__tag {
-    display: inline-block;
-    padding: var(--space-1) var(--space-3);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius-full);
     color: var(--color-text-muted);
     font-size: var(--text-xs);
     text-decoration: none;
   }
 
+  .card__tag::before {
+    content: '#';
+    opacity: 0.5;
+  }
+
   .card__tag:hover,
   .card__tag:focus-visible {
     color: var(--color-primary);
-    border-color: var(--color-primary);
+  }
+
+  .card--featured .card__title {
+    font-size: var(--text-2xl);
+  }
+
+  .card--featured .card__excerpt {
+    -webkit-line-clamp: 4;
+    font-size: var(--text-lg);
+  }
+
+  @media (min-width: 768px) {
+    .card--featured {
+      padding: var(--space-8);
+    }
+
+    .card--featured::before {
+      inset-inline: var(--space-8);
+    }
+
+    .card--featured .card__title {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .card::before {
+      transition: none;
+    }
+
+    .card:hover,
+    .card:focus-within {
+      transform: none;
+    }
   }
 </style>
