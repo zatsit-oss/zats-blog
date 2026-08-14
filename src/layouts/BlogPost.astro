@@ -6,6 +6,7 @@ import Layout from './Layout.astro';
 import { avatarFor } from '../utils/avatars';
 import FormattedDate from '../components/FormattedDate.astro';
 import ShareLinks from '../components/ShareLinks.astro';
+import CodeCopy from '../components/CodeCopy.astro';
 import { metaDescription, readingTime } from '../utils/posts';
 
 interface Props {
@@ -42,7 +43,12 @@ const minutes = readingTime(post);
   authors={authors.map((a) => a.name)}
   tags={tags}
 >
-  <article class="post">
+  {/* Pagefind indexes only the regions carrying this attribute, so declaring
+      it here restricts the index to articles: searching a blog should return
+      articles, not the tag pages and the archive that merely list them. The
+      header and footer are excluded for free, which also stops every result
+      from matching the navigation. */}
+  <article class="post" data-pagefind-body>
     <header class="post__header">
       <h1>{title}</h1>
 
@@ -99,6 +105,8 @@ const minutes = readingTime(post);
 
     <ShareLinks slug={slug} title={title} text={shareText} />
   </article>
+
+  <CodeCopy />
 </Layout>
 
 <style>

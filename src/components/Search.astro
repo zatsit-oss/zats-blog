@@ -1,0 +1,236 @@
+---
+/**
+ * Article search, replacing docusaurus-lunr-search.
+ *
+ * Pagefind builds a fragmented index at build time and fetches only the
+ * fragments a query needs, where lunr shipped the whole index on first load.
+ *
+ * Two decisions that keep it honest on an eco-conscious site. The library is
+ * loaded on first interaction, not on page load, so a visitor who never
+ * searches pays nothing for it. And the low-level API is used rather than
+ * pagefind-ui, whose bundled interface is several times the size of the search
+ * itself and brings its own styling to override.
+ *
+ * The field is hidden until the script runs: a search box that does nothing is
+ * worse than none.
+ */
+---
+
+<div class="search" hidden data-search>
+  <label class="sr-only" for="search-input">Rechercher un article</label>
+  <input
+    id="search-input"
+    class="search__input"
+    type="search"
+    placeholder="Rechercher…"
+    autocomplete="off"
+    aria-describedby="search-status"
+    aria-controls="search-results"
+    aria-expanded="false"
+  />
+
+  <p id="search-status" class="sr-only" role="status" aria-live="polite"></p>
+
+  <ul id="search-results" class="search__results" hidden></ul>
+</div>
+
+<style>
+  .search {
+    position: relative;
+  }
+
+  .search__input {
+    inline-size: 100%;
+    max-inline-size: 14rem;
+    min-block-size: var(--space-10);
+    padding-inline: var(--space-3);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+  }
+
+  .search__input:focus-visible {
+    border-color: var(--color-primary);
+  }
+
+  .search__results {
+    position: absolute;
+    inset-block-start: calc(100% + var(--space-2));
+    inset-inline-end: 0;
+    z-index: 60;
+    inline-size: min(24rem, 90vw);
+    max-block-size: 60vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: var(--space-2);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-card);
+    list-style: none;
+  }
+
+  .search__results:empty {
+    display: none;
+  }
+
+  .search__result a {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .search__result a:hover,
+  .search__result a:focus-visible {
+    background: var(--color-surface);
+  }
+
+  .search__title {
+    display: block;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+  }
+
+  .search__excerpt {
+    display: block;
+    margin-block-start: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+
+  .search__excerpt :global(mark) {
+    background: transparent;
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+  }
+</style>
+
+<script>
+  const MAX_RESULTS = 8;
+
+  let pagefind: any = null;
+  let loading: Promise<void> | null = null;
+
+  /**
+   * Loaded from the built path, and only once someone means to search. The
+   * import specifier is hidden from the bundler on purpose: /pagefind/ is
+   * generated after the Astro build, so Vite would fail to resolve it.
+   */
+  async function load(status: HTMLElement) {
+    if (pagefind || loading) return loading ?? Promise.resolve();
+
+    loading = (async () => {
+      try {
+        pagefind = await import(/* @vite-ignore */ '/pagefind/pagefind.js');
+        await pagefind.options({ excerptLength: 20 });
+      } catch {
+        // Expected in dev, where the index does not exist: it is produced by
+        // the build. Say so rather than leaving the field mutely broken.
+        status.textContent = "La recherche n'est disponible que sur le site construit.";
+        pagefind = null;
+      }
+    })();
+
+    return loading;
+  }
+
+  function init() {
+    const root = document.querySelector<HTMLElement>('[data-search]');
+    const input = document.getElementById('search-input') as HTMLInputElement | null;
+    const list = document.getElementById('search-results');
+    const status = document.getElementById('search-status');
+    if (!root || !input || !list || !status) return;
+
+    // Only now does the field become real.
+    root.hidden = false;
+
+    const render = (results: any[], query: string) => {
+      list.innerHTML = '';
+
+      if (!query) {
+        list.hidden = true;
+        input.setAttribute('aria-expanded', 'false');
+        status.textContent = '';
+        return;
+      }
+
+      if (results.length === 0) {
+        status.textContent = `Aucun résultat pour « ${query} »`;
+        list.hidden = true;
+        input.setAttribute('aria-expanded', 'false');
+        return;
+      }
+
+      status.textContent =
+        results.length === 1 ? 'Un résultat' : `${results.length} résultats`;
+
+      for (const result of results) {
+        const item = document.createElement('li');
+        item.className = 'search__result';
+
+        const link = document.createElement('a');
+        link.href = result.url;
+
+        const title = document.createElement('span');
+        title.className = 'search__title';
+        title.textContent = result.meta?.title ?? result.url;
+
+        const excerpt = document.createElement('span');
+        excerpt.className = 'search__excerpt';
+        // Pagefind returns the excerpt with <mark> around the matches, which is
+        // its own markup and not user input.
+        excerpt.innerHTML = result.excerpt;
+
+        link.append(title, excerpt);
+        item.append(link);
+        list.append(item);
+      }
+
+      list.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+    };
+
+    let timer: number | undefined;
+
+    const search = async () => {
+      const query = input.value.trim();
+      if (!query) return render([], '');
+
+      await load(status);
+      if (!pagefind) return;
+
+      const response = await pagefind.search(query);
+      const results = await Promise.all(
+        response.results.slice(0, MAX_RESULTS).map((r: any) => r.data()),
+      );
+      render(results, query);
+    };
+
+    input.addEventListener('focus', () => void load(status), { once: true });
+
+    input.addEventListener('input', () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(search, 200);
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      input.value = '';
+      render([], '');
+    });
+
+    // A click anywhere else closes the results, which would otherwise sit over
+    // the page until the next query.
+    document.addEventListener('click', (event) => {
+      if (!root.contains(event.target as Node)) render([], '');
+    });
+  }
+
+  init();
+  document.addEventListener('astro:after-swap', init);
+</script>

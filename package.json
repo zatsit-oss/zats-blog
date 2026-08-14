@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist && node scripts/prune-pagefind.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "check:a11y": "node .claude/skills/wcag-check/scripts/contrast.mjs",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "pagefind": "^1.5.2",
     "typescript": "^6.0.3"
   }
 }
