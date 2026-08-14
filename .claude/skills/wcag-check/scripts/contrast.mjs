@@ -14,9 +14,9 @@
  * Exit code 1 when a required pairing fails, so CI can gate on it.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, join } from 'node:path';
 
 // --- WCAG 2.1 relative luminance and contrast ratio -------------------------
 
@@ -137,6 +137,80 @@ const PAIRS = [
 
 const MIN = { text: 4.5, large: 3, nontext: 3, info: 0 };
 
+// --- Syntax highlighting ----------------------------------------------------
+
+const DIST = resolve(HERE, '../../../../dist');
+
+/**
+ * Shiki colours, measured on the built pages rather than on the theme.
+ *
+ * A theme is designed against its own background; we paint code blocks on our
+ * surface token, so its ratios do not carry over. Reading dist/ also means only
+ * the colours our articles actually trigger are judged, instead of every rule
+ * a theme declares for languages we never publish.
+ *
+ * Skipped silently when there is no build: the token audit above is the part
+ * that must always run.
+ */
+function shikiColors() {
+  const light = new Map();
+  const dark = new Map();
+  if (!existsSync(DIST)) return { light, dark };
+
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith('.html')) {
+        const html = readFileSync(full, 'utf8');
+        for (const [, l, d] of html.matchAll(
+          /--shiki-light:(#[0-9a-fA-F]{3,6});--shiki-dark:(#[0-9a-fA-F]{3,6})/g,
+        )) {
+          light.set(l.toLowerCase(), (light.get(l.toLowerCase()) ?? 0) + 1);
+          dark.set(d.toLowerCase(), (dark.get(d.toLowerCase()) ?? 0) + 1);
+        }
+      }
+    }
+  };
+  walk(DIST);
+  return { light, dark };
+}
+
+function auditShiki(themes) {
+  const { light, dark } = shikiColors();
+  if (light.size === 0) return 0;
+
+  console.log('\n  SYNTAX HIGHLIGHTING, measured on dist/');
+  console.log('  ' + '-'.repeat(76));
+
+  let failures = 0;
+  for (const [theme, colors] of [
+    ['light', light],
+    ['dark', dark],
+  ]) {
+    const bg = flatten('--color-surface', themes[theme]);
+    const rows = [...colors.entries()]
+      .map(([hex, count]) => {
+        const full =
+          hex.length === 4 ? '#' + [...hex.slice(1)].map((c) => c + c).join('') : hex;
+        return { hex: full, count, ratio: contrast(full, bg) };
+      })
+      .sort((a, b) => a.ratio - b.ratio);
+
+    const bad = rows.filter((row) => row.ratio < MIN.text);
+    failures += bad.length;
+
+    console.log(
+      `  ${bad.length ? 'KO' : 'ok'}  ${theme.padEnd(6)} ${String(rows.length).padStart(2)} colours on ${bg}` +
+        `, lowest ${rows[0].ratio.toFixed(2)}:1`,
+    );
+    for (const row of bad) {
+      console.log(`      ${row.hex}  ${row.ratio.toFixed(2)}:1  ${row.count} tokens`);
+    }
+  }
+  return failures;
+}
+
 function audit() {
   const themes = readTokens();
   let failures = 0;
@@ -167,6 +241,8 @@ function audit() {
       );
     }
   }
+
+  failures += auditShiki(themes);
 
   console.log('');
   if (failures) {

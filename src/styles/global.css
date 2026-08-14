@@ -209,6 +209,91 @@ td {
 }
 
 /* --------------------------------------------------------------------------
+   Markdown output
+
+   These live here rather than in a component because the rendered article body
+   is injected as raw HTML and never sees a component's scoped styles.
+   -------------------------------------------------------------------------- */
+
+/* Admonitions, produced by src/plugins/remark-admonitions.mjs. Colour never
+   carries the meaning on its own: the title says which kind it is. */
+.admonition {
+  margin-block: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border-inline-start: var(--border-width-strong) solid var(--admonition-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--color-surface);
+}
+
+.admonition > :last-child {
+  margin-block-end: 0;
+}
+
+.admonition__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-block: 0 var(--space-2);
+  color: var(--admonition-accent);
+  font-weight: var(--font-semibold);
+}
+
+.admonition__icon {
+  display: grid;
+  place-items: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border-radius: var(--radius-full);
+  background: var(--admonition-accent);
+  color: var(--color-bg);
+  font-size: var(--text-xs);
+  line-height: 1;
+}
+
+.admonition--note,
+.admonition--info {
+  --admonition-accent: var(--color-primary);
+}
+
+.admonition--tip {
+  --admonition-accent: var(--color-eco);
+}
+
+.admonition--warning,
+.admonition--caution,
+.admonition--danger {
+  --admonition-accent: var(--color-secondary);
+}
+
+/* Code blocks. Shiki emits both themes on every token; the light one is the
+   inline colour and the dark one rides in --shiki-dark. Switching is a CSS
+   selector, not a script. */
+.astro-code {
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  /* Our surface, not the theme's: a code block should sit in our palette
+     rather than punch a hole of someone else's grey into the page. */
+  background-color: var(--color-surface) !important;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  overflow-x: auto;
+}
+
+/* With defaultColor: false, Shiki applies neither theme and hands us both as
+   custom properties on every token. Which one wins is therefore ours to
+   decide, in one selector. */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+}
+
+[data-theme='dark'] .astro-code,
+[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark);
+}
+
+/* --------------------------------------------------------------------------
    Accessibility
    -------------------------------------------------------------------------- */
 

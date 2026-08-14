@@ -1,7 +1,9 @@
 // @ts-check
 
 import sitemap from '@astrojs/sitemap';
+import { satteri } from '@astrojs/markdown-satteri';
 import { defineConfig, fontProviders } from 'astro/config';
+import { mdastAdmonitions } from './src/plugins/mdast-admonitions.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -26,6 +28,28 @@ export default defineConfig({
   // to the home page.
   redirects: {
     '/markdown-page': '/',
+  },
+
+  markdown: {
+    // Sätteri parses the ::: blocks once `directive` is on; our plugin gives
+    // them meaning. No remark, no unified processor: both would be a second
+    // Markdown pipeline for one feature the default one already has.
+    processor: satteri({
+      features: { directive: true },
+      mdastPlugins: [mdastAdmonitions],
+    }),
+
+    shikiConfig: {
+      // Two themes, both emitted on every token. `defaultColor: false` stops
+      // Shiki from picking one, leaving the switch to CSS keyed on data-theme,
+      // so changing theme costs no JavaScript and no second stylesheet.
+      themes: {
+        light: 'github-light-high-contrast',
+        dark: 'catppuccin-frappe',
+      },
+      defaultColor: false,
+      wrap: false,
+    },
   },
 
   // Poppins is the single Zatsit typeface. The Fonts API downloads, subsets
