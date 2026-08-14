@@ -27,7 +27,10 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Ph3 — pages et parité | ✅ terminée |
 | Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
 | Ph5 — CI/CD | 🟡 preview migrée et verte, production encore sur Docusaurus |
-| Ph6 — documentation | 🟡 `README`, `CLAUDE.md`, `AGENTS.md` refaits ; reste la CI du dépôt contenu |
+| Ph6 — documentation | ✅ `README`, `CLAUDE.md`, `AGENTS.md` refaits |
+| Ph7 — mise en forme | 🟡 article et listing faits, hero et rythme vertical restants |
+
+Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le site était fonctionnellement complet et visuellement inabouti, et la demande du 14 août a été explicite, la forme avant l'outillage.
 
 **Acquis mesurés, pas supposés**
 
@@ -69,17 +72,27 @@ La vérification est reproductible :
 find dist -name "*.html" | sed 's|^dist||;s|/index.html$|/|;s|^/404.html$|/404|' | sort -u
 ```
 
-**Mesures du 13 août 2026, sur 21 pages construites**
+**Mesures du 14 août 2026, sur les 45 pages construites**
 
-| | Docusaurus (45 pages) | Astro |
+| | Docusaurus | Astro |
 |---|---|---|
-| Poids initial | 243 à 3 324 ko | **60,5 à 74 ko** |
-| JS client | 135 ko gzip | **1,10 ko gzip** |
-| Requêtes | 5 à 16 | 9 à 11 |
-| Pages sous le budget de 1 Mo au total | 0 / 45 | 17 / 21 |
-| Contrastes vérifiés | 0 | 16 appariements, deux thèmes |
+| Poids initial | 243 à 3 324 ko | **65 à 79 ko** |
+| JS client | 135 ko gzip | **1,10 ko**, plus 1,7 ko si la recherche est utilisée |
+| Requêtes | 5 à 16 | 9 à 10 |
+| Pages sous le budget de 1 Mo au total | 0 / 45 | **43 / 45** |
+| Contrastes vérifiés | 0 | 16 appariements plus les couleurs Shiki, deux thèmes |
 
-Les quatre pages hors budget total le sont à cause d'images non redimensionnées. Le mécanisme est établi dans les deux sens : la médaille EcoVadis du footer, qui déclare `width` et `height`, passe de 57 ko à 2,8 ko, quand les images d'articles, qui n'en déclarent aucun, sont réencodées sans être redimensionnées.
+Les chiffres Astro ont légèrement monté depuis le 13 août, et c'est voulu : la recherche, le sommaire et les cartes du listing coûtent chacun quelques kilo-octets. L'amplitude reste de 14 ko sur l'ensemble du corpus, contre un facteur 13 sous Docusaurus.
+
+Les deux pages hors budget total le sont à cause d'images non redimensionnées, et le mécanisme est établi dans les deux sens : la médaille EcoVadis du footer, qui déclare `width` et `height`, passe de 57 ko à 2,8 ko, quand les images d'articles, qui n'en déclarent aucun, sont réencodées sans être redimensionnées. Elles sont inscrites comme dette nommée dans `check:eco`, qui échoue toujours sur toute autre page.
+
+**Ce que la phase 7 a corrigé, et ce qu'elle a révélé**
+
+Le diagnostic de départ était chiffré : sur onze niveaux de l'échelle typographique, 17 usages de `--text-sm` et 7 de `--text-xs` contre un seul de `--text-3xl`. Et surtout, **aucune des interactions signature du design system n'était implémentée** : `--shadow-lift` et `--shadow-glow` étaient définis et référencés nulle part, `--section-gap` non plus.
+
+Fait : la justification de l'article passe en `ch`, le rythme des titres devient asymétrique pour qu'un `h2` appartienne à sa section, le premier paragraphe sert de chapô, l'entête fusionne en une signature, le listing reçoit le lift et le filet d'accent, et un sommaire à deux niveaux suit la lecture.
+
+Restant : le hero, dont le texte est encore un placeholder, et le rythme vertical, toujours posé composant par composant.
 
 **Garde-fous outillés avant la phase 3**
 
