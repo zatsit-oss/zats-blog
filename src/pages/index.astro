@@ -1,25 +1,35 @@
 ---
 /**
- * First page of the article listing, served at the root.
+ * Home: the hero, then the first page of the article listing.
  *
  * Pages 2 and beyond live in src/pages/page/[page].astro rather than coming
  * from a single paginate() call, because Astro's pagination would emit /2/ and
- * the Docusaurus URL to preserve is /page/2/.
+ * the Docusaurus URL to preserve is /page/2/. They carry no hero: it belongs to
+ * the entrance, not to every page of a list.
  */
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
 import PostList from '../components/PostList.astro';
 import { sortedPosts } from '../utils/posts';
-import { SITE_TITLE, SITE_DESCRIPTION, POSTS_PER_PAGE } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, POSTS_PER_PAGE, HERO } from '../consts';
 
 const posts = await sortedPosts();
 const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <Hero
+    eyebrow={HERO.eyebrow}
+    title={HERO.title}
+    highlight={HERO.highlight}
+    subtitle={HERO.subtitle}
+    actions={HERO.actions}
+    illustration={HERO.illustration}
+  />
+
   <PostList
     posts={posts.slice(0, POSTS_PER_PAGE)}
-    heading="Le blog de zatsit"
-    intro={SITE_DESCRIPTION}
+    heading="Derniers articles"
     current={1}
     total={totalPages}
     nextUrl={totalPages > 1 ? '/page/2/' : undefined}

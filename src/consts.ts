@@ -32,6 +32,46 @@ export const ECOINDEX_URL =
 export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];
 
 /**
+ * Home page hero.
+ *
+ * PLACEHOLDER. The Docusaurus home was the article listing and nothing else,
+ * so there is no previous wording to restore and none of this is a decision
+ * yet. It is here so the layout can be judged with real text in it; replace
+ * every field.
+ *
+ * The copy below is the only thing that already existed: the site tagline, and
+ * the promise from HomepageFeatures, a Docusaurus component that was written
+ * but never rendered on any page.
+ *
+ * Constraints worth keeping when rewriting: one gradient phrase per heading,
+ * per the design system, and `illustration` must stay decorative, since it
+ * carries `alt=""`. Anything meaningful belongs in the text.
+ */
+export const HERO = {
+  eyebrow: 'Le blog de zatsit',
+  title: 'Nos consultants écrivent pour partager',
+  highlight: 'partager',
+  subtitle:
+    'Architecture, cloud, data, IA et éco-conception. Quel que soit votre domaine tech, nous avons un article pour vous.',
+  actions: [
+    { href: '/tags/', label: 'Parcourir les catégories', primary: true },
+    { href: '/blog-conception/', label: 'Comment ce blog est éco-conçu' },
+  ],
+  /**
+   * No illustration by default, and the reason is measured rather than
+   * doctrinal. The three Docusaurus illustrations still in public/img are
+   * 128.5, 52.8 and 37.1 kB; the first one alone takes the home page from 63.0
+   * to 99.3 kB, a 58% increase for a decorative image. svgo only recovers
+   * 15.6% of it, so the weight is inherent to the drawing.
+   *
+   * The component supports `illustration` and it is one line to switch on. If
+   * the hero should carry one, converting it to WebP at its display width is
+   * the way, not shipping the vector.
+   */
+  illustration: undefined as string | undefined,
+} as const;
+
+/**
  * Navigation, kept identical to the Docusaurus navbar so no habit breaks.
  * Categories are tag pages: adding one means publishing an article with that
  * tag first, otherwise the link 404s.
