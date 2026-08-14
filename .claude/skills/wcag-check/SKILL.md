@@ -30,6 +30,12 @@ it too.
 
    It exits 1 if any gated pairing falls below AA, so it can gate CI.
 
+   When a build exists, it also measures every Shiki colour the articles
+   actually emit, against the surface code blocks sit on. A theme is designed
+   against its own background, so its published ratios do not carry over: with
+   `github-light` on our surface, three colours failed, one of them on 212
+   tokens. Run `npm run build` first if you have changed a theme.
+
 2. If the change introduces a pairing the audit does not cover (a new token, a
    color-mix over an unusual backdrop, gradient-clipped text), measure it
    explicitly:
