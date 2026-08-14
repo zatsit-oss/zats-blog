@@ -1,60 +1,61 @@
-# zatsit blog
+# Blog zatsit
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+La coque du blog zatsit, construite avec [Astro](https://astro.build/) et déployée sur Firebase Hosting. Site francophone, statique, sans JavaScript côté client en dehors de la bascule de thème, du bouton copier et de la recherche.
 
-### Installation
+**Le contenu vit ailleurs.** Les articles, les auteurs et leurs images sont dans [zats-blog-content](https://github.com/zatsit-oss/zats-blog-content). Ce dépôt ne contient que la coque : mise en page, thème, composants, build.
 
-```
-$ npm install
-```
+## Démarrer
 
-### Local Development
+Le dépôt de contenu doit être cloné **à côté** de celui-ci, pas dedans :
 
 ```
-$ npm run
+votre-espace-de-travail/
+├── zats-blog/          ← ce dépôt
+└── zats-blog-content/  ← les articles
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-#### Fetch zatsit blog content
-
-The **zatsit** blog content is hosted on a separated repository to facilitate the contribution. To fetch the content, you have to run the following command :
-
-- Clone [the repository](https://github.com/zatsit-oss/zats-blog-content) on your workspace
-- Copy the `zats-blog-content/blog` folder to the `blog` folder
-- Copy the `zats-blog-content/authors/authors.yml` to the `blog` folder
-
-```
-cp -r  ../zats-blog-content/docs/* docs 
-cp -r  ../zats-blog-content/blog/* blog 
-cp -r  ../zats-blog-content/authors/authors.yml blog
-cp -R ../zats-blog-content/authors/img/* static/img/authors
+```bash
+git clone git@github.com:zatsit-oss/zats-blog-content.git
+cd zats-blog
+npm install
+npm run dev
 ```
 
-### Build
+Aucune copie de fichiers n'est nécessaire : le loader lit le dépôt voisin sur place. Modifier un article s'y répercute immédiatement, sans synchronisation.
 
+Le chemin `../zats-blog-content` est en dur à deux endroits, `src/consts.ts` et le glob des avatars dans `src/utils/avatars.ts`. Ce dernier ne peut pas être une variable, Vite n'analysant que les chemins littéraux : le dépôt doit donc porter ce nom exact.
+
+## Commandes
+
+| Commande | Effet |
+|---|---|
+| `npm run dev` | serveur de développement, rechargement à chaud |
+| `npm run build` | build de production dans `dist/`, index Pagefind compris |
+| `npm run preview` | sert le build local, **seule façon de tester la recherche** |
+| `npm run check` | vérification TypeScript |
+| `npm run check:a11y` | contrastes WCAG 2.1 AA, deux thèmes, plus les couleurs du code |
+| `npm run check:eco` | budgets de poids par page, sur `dist/` |
+
+La recherche ne fonctionne pas avec `npm run dev` : son index est produit par le build. C'est attendu, et le champ le dit.
+
+Les deux dernières commandes sortent en erreur si un seuil est franchi, et la CI les exécute sur chaque pull request. Les règles sont dans [.claude/rules/quality.md](.claude/rules/quality.md).
+
+## Publier un article
+
+Rien à faire ici : tout se passe dans le dépôt de contenu, voir son `POSTING.md`. Une publication demande en revanche un rebuild de cette coque pour apparaître en ligne.
+
+## Déploiement
+
+Une pull request déclenche un build et une preview Firebase sur un canal dédié, l'URL est commentée sur la PR.
+
+Un déploiement manuel reste possible :
+
+```bash
+firebase login
+npm run build
+firebase deploy
 ```
-$ npm run build
-```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+## Node
 
-## Deployment on firebase
-
-### Step 1: Install the Firebase CLI
-
-Visit the Firebase CLI documentation to learn how to [install the CLI](https://firebase.google.com/docs/cli#install_the_firebase_cli
-) or [update to its latest version](https://firebase.google.com/docs/cli#update-cli).
-
-### Step 2: Login with your zatsit Google account
-
-```
-$ firebase login
-```
-Your web browser will ask you to fill in the login form.
-
-Then you will deploy the blog with :
-
-```
-$ firebase deploy
-```
+Node ≥ 22.12, exigé par Astro 7. La version est fixée dans [.node-version](.node-version) et la CI la lit de là.
