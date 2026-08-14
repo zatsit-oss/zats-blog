@@ -1,81 +1,72 @@
 # Où en est la migration
 
-Note de reprise, mise à jour le 13 août 2026. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 14 août 2026. À supprimer une fois la migration terminée.
 
-Branche `migration-astro` dans **les deux** repos.
+Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https://github.com/zatsit-oss/zats-blog/pull/82).
+
+**Preview en ligne et validée** : https://zatsit-blog--pr82-migration-astro-9gtho1s6.web.app
 
 ## Le prochain geste
 
-Phase 3, suite. La route d'article est faite ; l'ossature du site ne l'est pas.
+**Reprendre la mise en forme.** C'est la demande explicite du 14 août : l'outillage attend, le rendu passe d'abord. Le site est fonctionnellement complet, il n'est pas fini visuellement.
 
-Dans l'ordre :
+Ensuite seulement, dans l'ordre de risque croissant :
 
-1. **`Header` et `Footer`**, absents. C'est ce qui manque le plus visiblement en local : aucune navigation, aucun pied de page, et la bascule de thème n'existe pas (le thème suit `prefers-color-scheme` sans pouvoir être changé à la main).
-2. **Le listing paginé**, qui remplace `src/pages/index.astro`, aujourd'hui une simple table de contrôle.
-3. Tags, `/archive/`, `/authors/`, 404.
-4. Admonitions (`:::info`, rendues en texte brut pour l'instant), thème Shiki accordé aux jetons, bouton copier.
-5. RSS, Pagefind.
+1. **CI du dépôt contenu.** Aujourd'hui, publier un article ne le met pas en ligne : rien ne déclenche le build de la coque. C'est la lacune la plus structurante et elle se teste sans rien casser.
+2. **Images des deux pages hors budget** (`devlille-2026`, `green-exploitation-miniere`). Inscrites comme dette nommée dans `check:eco`. Le correctif est `width`/`height` déclarés, pas une conversion de format : `astro:assets` réencode mais ne redimensionne que si les dimensions sont connues.
+3. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne.
 
-Puis la vérification des URLs contre les 45 routes de `migration-routes-docusaurus.txt`.
+## État
 
-À ne pas oublier : **importer `base.css`** du design system, il porte `.btn-primary`, `.card`, `.tag`, `.glass`.
+| | |
+|---|---|
+| Routes | **45 / 45**, zéro divergence avec la référence Docusaurus |
+| `astro check` | 0 erreur |
+| Gate a11y | verte, jetons et couleurs Shiki, deux thèmes |
+| Gate éco | verte, 2 dettes connues inscrites |
+| CI de preview | verte, déploie sur un canal Firebase |
+| Production | **intacte, toujours Docusaurus** |
 
-Le gabarit de référence, si besoin (à lire, pas à copier : il vient avec ses propres styles) :
-
-```bash
-npm create astro@latest /tmp/scaffold -- --template blog --no-install --no-git --skip-houston --yes
-```
+| Mesure | Docusaurus | Astro |
+|---|---|---|
+| Poids initial | 243 à 3 324 ko | 56 à 77 ko |
+| JS par page | 135 ko gzip | 1,1 ko, plus 1,7 ko si recherche |
+| Paquets | 1 478 | 299 |
 
 ## Fait
 
-- **Plan** : `PLAN-MIGRATION.md`, D1-D5 et P1-P6 tous arbitrés.
-- **Référence** : les 45 routes dans `migration-routes-docusaurus.txt`, et le build complet archivé dans `/Users/emmanuelperu/dev/zatsit/blog/docusaurus-reference-build`. Seule référence visuelle restante. `npx serve` dessus pour comparer.
-- **Contenu normalisé** : 19/19 articles en `YYYY-MM-DD-slug/index.md`, marqueurs `truncate` complets. Le build Docusaurus repassait et le diff des 45 routes était vide.
-- **Socle Astro 7.2.0** : jetons du design system, Poppins via l'API Fonts native, `global.css` sans aucun hexadécimal brut, `BaseHead` avec OG complet et script de thème anti-flash.
-- **Garde-fous qualité** : `.claude/rules/quality.md`, les skills `wcag-check`, `eco-check` et `accessibility-a11y`, et deux commandes qui sortent en erreur, `npm run check:a11y` et `npm run check:eco`. Ligne de base Docusaurus mesurée dans `.claude/skills/eco-check/references/baseline-docusaurus.md`.
-- **Le build passe.** 19 articles, 19 dates résolues, 12 auteurs. `ShareLinks` remplace le boilerplate de partage, `POSTING.md` est à jour.
-- **Route d'article** (`src/pages/[...slug].astro` + `src/layouts/BlogPost.astro`) : les 19 articles sont rendus à la racine, en `/<slug>/`. En-tête avec date française, temps de lecture, auteurs résolus depuis `authors.yml`, tags cliquables ; `<head>` avec `article:published_time`, `article:author`, `article:tag` et une description dérivée du bloc `<!-- truncate -->`. Utilitaires partagés dans `src/utils/posts.ts`, que le listing et le RSS réutiliseront.
-- **`astro check` installé et au vert.** Il n'était pas dans les dépendances, donc jamais exécuté. Trois erreurs réelles à sa première exécution : `z.record()` exige désormais les schémas de clé et de valeur, et `Astro.props` n'était pas typé dans la route.
+Phases 0 à 4 terminées, phase 5 à moitié, phase 6 aux trois quarts. Le détail ligne par ligne est dans la section 0 de `PLAN-MIGRATION.md`.
 
-## Mesures du 13 août 2026, sur les 19 articles rendus
+En bref : socle et jetons, loader lisant le dépôt voisin en place, les 19 articles à leurs URLs d'origine, header, footer aligné sur le corporate avec badge carbone auto-hébergé, bascule de thème, listing paginé, hero, tags, archive, auteurs, 404, pages portées, admonitions, Shiki vérifié AA, bouton copier, RSS, recherche Pagefind, CI de preview, documentation.
 
-| | Docusaurus (45 pages) | Astro (20 pages) |
-|---|---|---|
-| Poids initial | 243 à 3 324 ko | **56,5 à 68,0 ko** |
-| Requêtes | 5 à 16 | **10 partout** |
-| Pages sous le budget de 1 Mo au total | 0 / 45 | **16 / 20** |
-| Contrastes vérifiés | 0 | 16, deux thèmes, au vert |
+## Six pièges déjà payés, un par session perdue
 
-L'écart qui compte n'est pas la médiane mais l'amplitude : 12 ko de dispersion sur tout le corpus, contre un facteur 13 sous Docusaurus. Le plancher du framework a disparu.
+Ils sont écrits dans `CLAUDE.md`, section « The traps this codebase has already paid for ». Les relire coûte moins cher que les redécouvrir.
 
-Les quatre pages hors budget total le sont à cause d'images non redimensionnées. Voir la dette 2 plus bas.
+Le plus vicieux : **le store de contenu met en cache le Markdown rendu**. Après toute modification du pipeline Markdown, écarter `node_modules/.astro/data-store.json`, sinon on diagnostique des problèmes qui n'existent plus.
 
-## Trois pièges déjà payés, à ne pas réintroduire
+## Deux erreurs de méthode à ne pas refaire
 
-1. **`glob()` dérive l'`id` du `slug` du frontmatter**, pas du chemin. Le repli de date doit lire `entry.filePath`. Avec `id`, les 12 articles sans date en frontmatter échouent.
-2. **`authors.yml` est un seul document de 12 profils.** Il faut `file()` avec un parseur YAML ; `glob()` le charge comme une entrée unique et la validation Zod échoue sur `name: Required`.
-3. **`context.store.set()` est ignoré si le digest de l'entrée n'a pas changé.** Modifier une donnée dérivée sans toucher au fichier source ne s'écrit donc pas. Faire `delete()` puis `set()`. Corollaire de méthode : une garde doit vérifier **l'état final du store**, pas le fait d'avoir tenté l'écriture.
+**Lire la sortie complète d'`astro check`.** La ligne du décompte est au-dessus des warnings ; un `tail -3` la coupe et laisse croire à un succès. J'ai annoncé « zéro erreur » plusieurs tours de suite alors qu'il y en avait deux, et c'est la CI qui les a trouvées.
 
-## Deux dettes mesurées, à traiter en phase 3
+**Ne pas faire confiance à `AGENTS.md` d'avant le 14 août.** Il décrivait un `src/pages/index.js` absent de tout l'historique, ce qui m'a fait affirmer que la home Docusaurus avait un hero. Elle n'en avait pas : c'était le listing, seul.
 
-1. **Polices** : `astro.config.mjs` déclare 7 graisses × 2 styles, soit 14 woff2. Sur la page de contrôle, elles représentent **112 ko sur 121 ko et 14 requêtes sur 18** : la quasi-totalité du poids. La règle éco en autorise 3. C'est le gain le plus rentable disponible.
-2. **Images du repo contenu.** `astro:assets` les réencode automatiquement (`devlille-2026` passe de 10,8 à 5,5 Mo) mais **ne les redimensionne pas** : sans largeur déclarée, une photo de 4 000 px reste une photo de 4 000 px. Quatre pages restent hors du budget de 1 Mo : `devlille-2026` (5 515 ko), `green-exploitation-miniere` (2 849 ko), `ia-et-consommation-energetique` (1 977 ko), `entreprise-a-mission` (1 287 ko). Le correctif est des images responsives avec largeurs explicites, ou des sources plus petites dans le dépôt de contenu. Atténuation en place : ces images sont en `loading="lazy"`, donc hors du poids de première visite.
+## En attente d'arbitrage
 
-3. **Les helpers locaux `dev.sh`, `sync-content.sh` et `watch-content.mjs` sont devenus dangereux.** Ils copient le contenu dans `blog/`, `docs/` et `static/`, c'est-à-dire le modèle Docusaurus que la migration abandonne. Les lancer par réflexe repollue le repo. Avec Astro, `npm run dev` suffit. À supprimer en phase 6.
+- **Le hero est un placeholder assumé**, tout est dans `HERO` de `src/consts.ts`. La home Docusaurus n'avait pas de hero, il n'y a donc rien à restaurer.
+- **La recherche prend une ligne de header en plus sur mobile.** L'alternative est une icône ouvrant un panneau plein écran, avec la machinerie de focus que ça implique.
+- **Les mentions légales ont deux corrections dans du texte juridique** : titres de section en `h2`, et le siège de Google Ireland qui n'est plus « Royaume-Uni ». À faire relire.
+- **Coquilles dans le `shareText` de `bundlephobia`**, reprises verbatim de l'ancien boilerplate.
 
-## Deux points en attente d'arbitrage
+## Récupérer les fichiers Docusaurus
 
-- **L'icône X** (`public/img/icon-x.svg`) est une conversion raster de 4,4 ko, trois tracés superposés avec un carré noir en fond. Elle rendra mal en thème sombre. À remplacer par le glyphe officiel.
-- **Coquilles dans un `shareText`** repris verbatim depuis l'ancien boilerplate (`bundlephobia`) : « appplications », « plus rapide et moins energivore ». Conservées telles quelles pour ne pas modifier la copie sans accord.
-
-## Récupérer les fichiers Docusaurus à porter
-
-L'historique git est la source fiable. Attention, le commit de référence est `5772d1c~1`, pas `HEAD~1` :
+Le commit de référence est **`5772d1c~1`**, pas `HEAD~1` :
 
 ```bash
-git show 5772d1c~1:src/pages/mentions-legales.md
-git show 5772d1c~1:src/pages/blog-conception.js
-git show 5772d1c~1:src/components/zatsCO2JSBadge.js
-git show 5772d1c~1:src/components/zatsWebsiteCarbonBadge.js
 git show 5772d1c~1:src/css/custom.css
+git show 5772d1c~1:docusaurus.config.js
 ```
+
+## Helpers locaux à supprimer
+
+`dev.sh`, `sync-content.sh` et `watch-content.mjs` recopient le contenu dans la coque, modèle abandonné. Ils sont gitignorés, donc seulement sur ta machine. `npm run dev` suffit.
