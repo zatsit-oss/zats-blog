@@ -46,27 +46,25 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Listing paginé `/` et `/page/2/` | ✅ |
 | Hero et les trois blocs de la home | ✅ |
 | Pages de tags : `/tags/` et les 17 `/tags/<tag>/` | ✅ |
-| `/archive/` | ⬜ |
-| `/authors/` | ⬜ |
-| 404 | ⬜ |
-| Pages portées : `/mentions-legales/`, `/blog-conception/`, `/markdown-page/` | ⬜ |
+| `/archive/` | ✅ |
+| `/authors/` | ✅ |
+| 404 | ✅ |
+| Pages portées : `/mentions-legales/`, `/blog-conception/`, `/markdown-page/` | ✅ |
 | Admonitions `:::info` | ⬜ |
 | Thème Shiki accordé aux jetons, bouton copier | ⬜ |
 | RSS | ⬜ |
 | Pagefind | ⬜ |
 
-**Parité des URLs, vérifiée le 14 août 2026**
+**Parité des URLs : atteinte le 14 août 2026**
 
-Le `diff` entre les 45 routes de référence et le build Astro donne **39 routes conformes, zéro route en trop, zéro divergence**. Les six manquantes sont celles des pages restant à écrire :
+Le `diff` entre les 45 routes de référence et le build Astro donne **45 routes conformes, zéro manquante, zéro en trop**. C'est le critère de sortie de la phase 4, rempli.
 
-```
-/404   /archive/   /authors/   /blog-conception/   /markdown-page/   /mentions-legales/
-```
+Un seul écart assumé : `/markdown-page/` est servie en redirection vers la racine plutôt qu'en page. Son contenu Docusaurus était du remplissage de gabarit, en anglais, sur un blog francophone. L'URL continue de résoudre.
 
 La vérification est reproductible :
 
 ```bash
-find dist -name "*.html" | sed 's|^dist||;s|/index.html$|/|' | sort -u
+find dist -name "*.html" | sed 's|^dist||;s|/index.html$|/|;s|^/404.html$|/404|' | sort -u
 ```
 
 **Mesures du 13 août 2026, sur 21 pages construites**

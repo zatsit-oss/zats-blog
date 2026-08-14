@@ -28,6 +28,22 @@ export const CONTACT_EMAIL = 'contact@zatsit.fr';
 export const ECOINDEX_URL =
   'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0';
 
+/**
+ * Weight of the home page on a first visit, feeding the CO2.js estimate on
+ * /blog-conception/.
+ *
+ * Refresh both values together after any change that moves page weight:
+ *
+ *   npm run build && npm run check:eco
+ *
+ * and read the `total` column of index.html. The figure is printed next to the
+ * estimate on the page, so a stale one is visible to the reader rather than
+ * quietly wrong, which is how the Docusaurus badge ended up asserting 400 kB
+ * long after that stopped being true.
+ */
+export const MEASURED_PAGE_BYTES = 107.7 * 1024;
+export const MEASURED_PAGE_DATE = '14 août 2026';
+
 /** Postal address, as the corporate footer prints it. */
 export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];
 
