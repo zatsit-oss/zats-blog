@@ -50,11 +50,15 @@ const isCurrent = (href: string) =>
       }
     </ul>
 
-    <div class="header__actions">
-      <div class="header__search">
-        <Search />
-      </div>
+    {/* A direct child of the nav rather than of the actions group, so it can
+        wrap onto its own full-width row below 1024px. Rendering a second
+        instance inside the mobile menu would have been the other option, and
+        would have duplicated the element ids the search script looks up. */}
+    <div class="header__search">
+      <Search />
+    </div>
 
+    <div class="header__actions">
       <a
         class="header__icon-link"
         href={GITHUB_URL}
@@ -116,12 +120,16 @@ const isCurrent = (href: string) =>
     border-block-end: var(--border-width) solid var(--glass-border);
   }
 
+  /* Wraps on purpose: below 1024px the search takes the second row, which is
+     the only way to keep one instance of it and still fit a logo, a theme
+     toggle and a menu button on a 375px screen. */
   .header__nav {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-4);
-    block-size: 4rem;
+    gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-3);
   }
 
   .header__brand {
@@ -181,10 +189,10 @@ const isCurrent = (href: string) =>
     gap: var(--space-2);
   }
 
-  /* Hidden on small screens along with the rest: the mobile menu is the next
-     place for it, once there is a pattern for a full-width search panel. */
+  /* Full width on its own row, after the brand and the actions. */
   .header__search {
-    display: none;
+    order: 3;
+    flex-basis: 100%;
   }
 
   .header__icon-link,
@@ -264,11 +272,18 @@ const isCurrent = (href: string) =>
 
   @media (min-width: 1024px) {
     .header__nav {
+      flex-wrap: nowrap;
       block-size: 5rem;
+      padding-block: 0;
+    }
+
+    /* Back inline, between the navigation and the actions. */
+    .header__search {
+      order: 0;
+      flex-basis: auto;
     }
 
     .header__links,
-    .header__search,
     .header__icon-link,
     .header__site-link {
       display: flex;
