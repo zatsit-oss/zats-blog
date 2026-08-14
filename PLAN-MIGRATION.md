@@ -44,14 +44,30 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Header, footer, bascule de thème | ✅ |
 | Badge Website Carbon, auto-hébergé | ✅ |
 | Listing paginé `/` et `/page/2/` | ✅ |
-| Pages de tags : `/tags/` et les 17 `/tags/<tag>/` | ⬜ |
+| Hero et les trois blocs de la home | ✅ |
+| Pages de tags : `/tags/` et les 17 `/tags/<tag>/` | ✅ |
 | `/archive/` | ⬜ |
+| `/authors/` | ⬜ |
 | 404 | ⬜ |
-| Pages portées : `/mentions-legales/`, `/blog-conception/` | ⬜ |
+| Pages portées : `/mentions-legales/`, `/blog-conception/`, `/markdown-page/` | ⬜ |
 | Admonitions `:::info` | ⬜ |
 | Thème Shiki accordé aux jetons, bouton copier | ⬜ |
 | RSS | ⬜ |
 | Pagefind | ⬜ |
+
+**Parité des URLs, vérifiée le 14 août 2026**
+
+Le `diff` entre les 45 routes de référence et le build Astro donne **39 routes conformes, zéro route en trop, zéro divergence**. Les six manquantes sont celles des pages restant à écrire :
+
+```
+/404   /archive/   /authors/   /blog-conception/   /markdown-page/   /mentions-legales/
+```
+
+La vérification est reproductible :
+
+```bash
+find dist -name "*.html" | sed 's|^dist||;s|/index.html$|/|' | sort -u
+```
 
 **Mesures du 13 août 2026, sur 21 pages construites**
 

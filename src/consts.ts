@@ -2,7 +2,7 @@
 
 export const SITE_TITLE = 'zatsit';
 export const SITE_DESCRIPTION =
-  'Quelque soit votre domaine tech, nous avons forcément un article pour vous';
+  'Quel que soit votre domaine tech, nous avons forcément un article pour vous';
 
 /** Default social card, used when a page or an article declares no cover. */
 export const SITE_OG_IMAGE = '/img/zatsit-social-card.png';

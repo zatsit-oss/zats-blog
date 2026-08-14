@@ -1,0 +1,62 @@
+---
+/**
+ * Articles carrying one tag, at /tags/<tag>/.
+ *
+ * Not paginated: the busiest tag has a handful of articles, well under the ten
+ * per page of the listing, and Docusaurus never generated a /tags/<tag>/page/2/
+ * either. If a tag ever crosses the threshold, this is where pagination lands,
+ * mirroring src/pages/page/[page].astro.
+ */
+import type { GetStaticPaths } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PostList from '../../components/PostList.astro';
+import { allTags, postsByTag, sortedPosts, taggedHeading } from '../../utils/posts';
+
+interface Props {
+  tag: string;
+  posts: CollectionEntry<'blog'>[];
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const all = await sortedPosts();
+  const tags = await allTags(all);
+
+  return Promise.all(
+    tags.map(async ({ tag }) => ({
+      params: { tag },
+      props: { tag, posts: await postsByTag(tag, all) },
+    })),
+  );
+};
+
+const { tag, posts } = Astro.props;
+const heading = taggedHeading(tag, posts.length);
+---
+
+<Layout title={heading} description={`Tous les articles du blog de zatsit sur le thème « ${tag} ».`}>
+  <PostList posts={posts} heading={heading} current={1} total={1} />
+
+  <p class="back">
+    <a href="/tags/">← Tous les tags</a>
+  </p>
+</Layout>
+
+<style>
+  .back {
+    max-width: 48rem;
+    margin-inline: auto;
+    padding-inline: var(--margin-mobile);
+    padding-block-end: var(--space-16);
+  }
+
+  .back a {
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+  }
+
+  .back a:hover {
+    text-decoration: underline;
+  }
+</style>
