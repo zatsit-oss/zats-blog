@@ -40,6 +40,29 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **Files under `public/` bypass the image pipeline.** They ship at full resolution. `astro:assets` only resizes when width and height are declared, which is why the content images are re-encoded but not resized.
 
+**A sticky child needs a parent taller than itself.** `align-items: start` on a grid shrinks the item to its content height, leaving nothing for the sticky element to travel along: the table of contents looked pinned and scrolled away with the page.
+
+## Testing behaviour
+
+Static HTML tells you what was generated, not what happens. Three rounds were lost reporting "everything checks out from here" while a feature was broken in the browser.
+
+Chrome is installed on this machine. Drive it rather than reading output:
+
+```bash
+# quick: does the script run at all?
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless --disable-gpu --virtual-time-budget=30000 --dump-dom http://localhost:4321/
+
+# real interaction: launch with --remote-debugging-port=9222 and drive it over
+# CDP. Node 22 has a global WebSocket, so no dependency is needed. Runtime.evaluate
+# to type into a field and read the DOM back, Runtime.consoleAPICalled for errors,
+# Emulation.setDeviceMetricsOverride to test a width.
+```
+
+Two things this catches that nothing else does: whether an element is actually visible where the reader is looking, through `getBoundingClientRect` and `elementFromPoint`, and console errors from inline scripts, which `astro check` never sees.
+
+**The search cannot work under `npm run dev`**, since Pagefind's index is produced by the build. Use `npm run preview`. And the search script is inlined into every page, so a cached page serves the old script: force-reload before concluding anything.
+
 ## Architecture
 
 | Concern | Where |
