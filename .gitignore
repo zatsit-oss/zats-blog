@@ -46,3 +46,6 @@ watch-content.mjs
 
 static/assets/*
 .secrets
+
+# Captures de travail, non versionnées
+img.png
