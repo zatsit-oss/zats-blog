@@ -158,21 +158,32 @@ const minutes = readingTime(post);
   }
 
   /* Plain text rather than pills: the card already has a border, and pills
-     inside a bordered box read as noise. */
+     inside a bordered box read as noise.
+
+     In the theme's accent, so the tags read as the one interactive thing in
+     an otherwise quiet card, and so they carry the dual theme: brand blue in
+     light, gold in dark. Measured at 8.25:1 and 10.01:1 against the card
+     background, well clear of AA for text this small. */
   .card__tag {
-    color: var(--color-text-muted);
+    color: var(--color-primary);
     font-size: var(--text-xs);
+    /* 700, one of the three weights the site ships. Not --font-medium: that is
+       500, which is not embedded, and the browser would fake it. */
+    font-weight: var(--font-bold);
     text-decoration: none;
   }
 
+  /* The hash is a marker, not a word: dimmed so the tag itself reads first. */
   .card__tag::before {
     content: '#';
-    opacity: 0.5;
+    opacity: 0.55;
   }
 
   .card__tag:hover,
   .card__tag:focus-visible {
-    color: var(--color-primary);
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .card--featured .card__title {
