@@ -1,7 +1,8 @@
 ---
 /**
  * A page of articles, with its heading and its pagination.
- * Shared by the home page and the /page/N/ routes so the two cannot drift.
+ * Shared by the home page, the tag pages and the archive so the three cannot
+ * drift apart.
  */
 import type { CollectionEntry } from 'astro:content';
 import PostCard from './PostCard.astro';
@@ -16,41 +17,88 @@ interface Props {
   total: number;
   prevUrl?: string;
   nextUrl?: string;
+  /**
+   * Gives the first article the lead treatment. On for the home page, off
+   * everywhere else: page two of a list has no lead, and neither does a tag
+   * page, where every article is there for the same reason.
+   */
+  lead?: boolean;
+  /**
+   * `h1` when this listing is the page's subject, as on a tag page or the
+   * archive. `h2` when something above it already holds the h1, which is the
+   * home page: the hero states what the page is, and a second h1 underneath
+   * would give a screen reader two page titles.
+   */
+  headingLevel?: 'h1' | 'h2';
 }
 
-const { posts, heading, intro, current, total, prevUrl, nextUrl } = Astro.props;
+const {
+  posts,
+  heading,
+  intro,
+  current,
+  total,
+  prevUrl,
+  nextUrl,
+  lead = false,
+  headingLevel = 'h1',
+} = Astro.props;
+
+const Heading = headingLevel;
+
+const [first, ...rest] = posts;
+const showLead = lead && Boolean(first);
+const grid = showLead ? rest : posts;
 ---
 
-<div class="container listing">
+<section class="listing">
   <header class="listing__header">
-    <h1>{heading}</h1>
+    <Heading class="listing__heading">{heading}</Heading>
     {intro && <p class="listing__intro">{intro}</p>}
   </header>
 
+  {posts.length === 0 && <p>Aucun article pour l'instant.</p>}
+
+  {showLead && <PostCard post={first} featured />}
+
   {
-    posts.length > 0 ? (
-      posts.map((post) => <PostCard post={post} />)
-    ) : (
-      <p>Aucun article pour l'instant.</p>
+    grid.length > 0 && (
+      <div class="listing__grid">
+        {grid.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </div>
     )
   }
 
   <Pagination prevUrl={prevUrl} nextUrl={nextUrl} current={current} total={total} />
-</div>
+</section>
 
 <style>
   .listing {
-    max-width: 48rem;
+    max-width: var(--container-max);
+    margin-inline: auto;
     padding-block: var(--space-12) var(--space-24);
   }
 
   .listing__header {
-    margin-block-end: var(--space-6);
+    margin-block-end: var(--space-8);
   }
 
   .listing__intro {
     margin: var(--space-3) 0 0;
+    max-width: 48ch;
     color: var(--color-text-muted);
     font-size: var(--text-lg);
+  }
+
+  /* auto-fit rather than a fixed column count: the same rule serves a tag page
+     with two articles and the home page with nine, without either looking
+     stranded. */
+  .listing__grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    margin-block-start: var(--space-6);
   }
 </style>

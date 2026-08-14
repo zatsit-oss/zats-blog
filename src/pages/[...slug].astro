@@ -29,9 +29,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+// `headings` feeds the table of contents; Sätteri already gives every heading
+// an id, so its slugs are the anchors the links point at.
+const { Content, headings } = await render(post);
 ---
 
-<BlogPost post={post}>
+<BlogPost post={post} headings={headings}>
   <Content />
 </BlogPost>
