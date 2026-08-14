@@ -1,0 +1,118 @@
+---
+/**
+ * Adds a copy button to every code block on the page.
+ *
+ * The buttons are created by the script rather than rendered server-side: a
+ * copy button without JavaScript is a button that lies. Nothing appears unless
+ * the thing works.
+ *
+ * One delegated listener for the whole page, not one per block. The articles
+ * with the most code have dozens.
+ */
+---
+
+<script>
+  const COPY = 'Copier le code';
+  const DONE = 'Code copié';
+
+  function decorate() {
+    for (const pre of document.querySelectorAll<HTMLPreElement>('pre.astro-code')) {
+      if (pre.dataset.copyReady) continue;
+      pre.dataset.copyReady = 'true';
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'code-copy';
+      button.setAttribute('aria-label', COPY);
+      button.textContent = 'Copier';
+      pre.append(button);
+    }
+  }
+
+  async function onClick(event: MouseEvent) {
+    const button = (event.target as HTMLElement)?.closest('.code-copy');
+    if (!(button instanceof HTMLButtonElement)) return;
+
+    const code = button.closest('pre')?.querySelector('code')?.textContent ?? '';
+    if (!code) return;
+
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      // Denied permission or an insecure origin. Say so rather than showing a
+      // success state for something that did not happen.
+      button.textContent = 'Échec';
+      button.setAttribute('aria-label', 'La copie a échoué');
+      return;
+    }
+
+    button.textContent = 'Copié';
+    // aria-label changes too: a screen reader announces the label, not the
+    // visible text, so swapping only the latter would report nothing.
+    button.setAttribute('aria-label', DONE);
+
+    setTimeout(() => {
+      button.textContent = 'Copier';
+      button.setAttribute('aria-label', COPY);
+    }, 2000);
+  }
+
+  function init() {
+    decorate();
+    document.removeEventListener('click', onClick);
+    document.addEventListener('click', onClick);
+  }
+
+  init();
+  document.addEventListener('astro:after-swap', init);
+</script>
+
+<style is:global>
+  /* The button is positioned against the block, so the block becomes the
+     containing element. Set here rather than on .astro-code in global.css so
+     the two stay together. */
+  pre.astro-code:has(.code-copy) {
+    position: relative;
+  }
+
+  .code-copy {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-end: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    cursor: pointer;
+    /* Out of the way until the block is hovered or the button is focused,
+       but never hidden from the keyboard or from a screen reader. */
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  pre.astro-code:hover .code-copy,
+  .code-copy:focus-visible {
+    opacity: 1;
+  }
+
+  .code-copy:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  /* Coarse pointers have no hover, so the button would never appear. */
+  @media (hover: none) {
+    .code-copy {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .code-copy {
+      transition: none;
+    }
+  }
+</style>

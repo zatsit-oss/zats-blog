@@ -24,8 +24,8 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Ph1 — socle Astro et jetons | ✅ terminée |
 | Ph2 — contenu et schéma | ✅ terminée, **le build passe** |
 | Ph2 bis — garde-fous qualité (a11y, éco) | ✅ terminée |
-| Ph3 — pages et parité | 🟡 en cours, voir le détail ci-dessous |
-| Ph4 — vérification des URLs | ⬜ à faire |
+| Ph3 — pages et parité | ✅ terminée |
+| Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
 | Ph5 — CI/CD | ⬜ à faire |
 | Ph6 et A bis, B, C — documentation et CI contenu | ⬜ à faire |
 
@@ -50,10 +50,12 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | `/authors/` | ✅ |
 | 404 | ✅ |
 | Pages portées : `/mentions-legales/`, `/blog-conception/`, `/markdown-page/` | ✅ |
-| Admonitions `:::info` | ⬜ |
-| Thème Shiki accordé aux jetons, bouton copier | ⬜ |
-| RSS | ⬜ |
-| Pagefind | ⬜ |
+| Admonitions `:::info` | ✅ |
+| Thème Shiki vérifié AA, bouton copier | ✅ |
+| RSS | ✅ |
+| Pagefind | ✅ |
+
+**La phase 3 est terminée.** Restent la phase 5 (CI/CD) et la phase 6 (documentation), plus les deux dettes d'images ci-dessous.
 
 **Parité des URLs : atteinte le 14 août 2026**
 

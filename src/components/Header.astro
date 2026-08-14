@@ -10,6 +10,7 @@
 import { Menu, X } from '@lucide/astro';
 import GithubIcon from '../assets/icons/github.svg';
 import ThemeToggle from './ThemeToggle.astro';
+import Search from './Search.astro';
 import { NAV_LINKS, GITHUB_URL, WEBSITE_URL } from '../consts';
 
 const currentPath = Astro.url.pathname;
@@ -50,6 +51,10 @@ const isCurrent = (href: string) =>
     </ul>
 
     <div class="header__actions">
+      <div class="header__search">
+        <Search />
+      </div>
+
       <a
         class="header__icon-link"
         href={GITHUB_URL}
@@ -176,6 +181,12 @@ const isCurrent = (href: string) =>
     gap: var(--space-2);
   }
 
+  /* Hidden on small screens along with the rest: the mobile menu is the next
+     place for it, once there is a pattern for a full-width search panel. */
+  .header__search {
+    display: none;
+  }
+
   .header__icon-link,
   .header__site-link {
     display: none;
@@ -257,6 +268,7 @@ const isCurrent = (href: string) =>
     }
 
     .header__links,
+    .header__search,
     .header__icon-link,
     .header__site-link {
       display: flex;
