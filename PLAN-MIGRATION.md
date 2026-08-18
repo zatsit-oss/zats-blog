@@ -15,7 +15,9 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 ## 0. État d'avancement
 
-*Dernière mise à jour : 13 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
+*Dernière mise à jour : 18 août 2026, migration en pause.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
+
+**La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée, les deux dépôts poussés et propres. Restent un manque fonctionnel, la CI du dépôt contenu, deux finitions de forme, et la bascule de production.
 
 | Phase | État |
 |---|---|
