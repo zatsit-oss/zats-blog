@@ -1,6 +1,8 @@
 # Où en est la migration
 
-Note de reprise, mise à jour le 14 août 2026. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 18 août 2026. À supprimer une fois la migration terminée.
+
+**En pause.** Tout est poussé et propre dans les deux dépôts, CI verte, rien en cours. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
 
 Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https://github.com/zatsit-oss/zats-blog/pull/82).
 
