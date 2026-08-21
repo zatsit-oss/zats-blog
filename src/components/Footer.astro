@@ -167,8 +167,15 @@ const year = new Date().getFullYear();
 
   .footer__columns {
     display: grid;
-    gap: var(--space-10);
+    /* Two columns from the start, so the medal sits beside the address on a
+       phone instead of dropping below everything. The brand spans both. */
+    grid-template-columns: 1fr auto;
+    gap: var(--space-10) var(--space-6);
     padding-block: var(--space-10);
+  }
+
+  .footer__column:first-child {
+    grid-column: 1 / -1;
   }
 
   .footer__brand {
@@ -293,6 +300,11 @@ const year = new Date().getFullYear();
       grid-template-columns: 1fr auto auto;
       gap: var(--space-16);
       padding-block: var(--space-12);
+    }
+
+    /* Three real columns from here, so the brand stops spanning. */
+    .footer__column:first-child {
+      grid-column: auto;
     }
 
     .footer__bar-inner {
