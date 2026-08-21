@@ -38,7 +38,9 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **`is:inline` is required, not stylistic, for the search script.** `/pagefind/pagefind.js` is generated after the Astro build, and a Vite-processed dynamic import emits an unsubstituted `__VITE_PRELOAD__` marker that throws at runtime. The inline script also needs `type="module"`, or Safari refuses the dynamic import that Chrome accepts.
 
-**Files under `public/` bypass the image pipeline.** They ship at full resolution. `astro:assets` only resizes when width and height are declared, which is why the content images are re-encoded but not resized.
+**Files under `public/` bypass the image pipeline.** They ship at full resolution.
+
+**`astro:assets` re-encodes every image but resizes only when it knows the target width, and Markdown has no syntax for one.** Article images were therefore emitted at their source size, up to 7008px into a 779px column, which is what put two articles megabytes over the page-weight budget. `src/plugins/capped-image-service.mjs` wraps the Sharp service and caps any image whose size nobody declared; an explicit `width` on an `<Image>` still passes through untouched.
 
 **A sticky child needs a parent taller than itself.** `align-items: start` on a grid shrinks the item to its content height, leaving nothing for the sticky element to travel along: the table of contents looked pinned and scrolled away with the page.
 
@@ -73,6 +75,7 @@ Two things this catches that nothing else does: whether an element is actually v
 | Page shell, header, footer | `src/layouts/Layout.astro` |
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
 | Admonitions | `src/plugins/mdast-admonitions.mjs` |
+| Image sizing policy | `src/plugins/capped-image-service.mjs` |
 | Design tokens | `src/styles/tokens/`, entry point `src/styles/tokens.css` |
 | Site constants, navigation, hero copy | `src/consts.ts` |
 
@@ -81,6 +84,7 @@ Articles are served at the **root**, as `/<slug>/`, and the slug comes from the 
 ## Conventions
 
 - Never a raw hex in product code: always a semantic token from `src/styles/tokens/colors.css`, so both themes resolve.
+- Vertical space is not set per page. `main` opens and closes the page and its children are separated by the section gap, from the rhythm tokens at the end of `src/styles/tokens/spacing.css`. A block that needs to sit closer than the gap overrides it and says why.
 - No MDX. Articles stay portable plain Markdown.
 - Never reference this repo's assets from an article with a relative path: the content repo no longer sits inside the shell.
 - The visual reference for shared components is the corporate site in `zats-websites`, but it is a Tailwind project: read it, rewrite it, do not copy its classes.

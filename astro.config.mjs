@@ -21,6 +21,14 @@ export default defineConfig({
   // No MDX on purpose: articles stay portable plain Markdown, per the brief.
   integrations: [sitemap()],
 
+  image: {
+    // Sharp, plus a cap on any image whose size nobody declared. Markdown has
+    // no syntax for a width, so Astro sized article images from the source and
+    // shipped 7008px conference photos into a 683px column. The reasoning is
+    // in the service itself.
+    service: { entrypoint: './src/plugins/capped-image-service.mjs' },
+  },
+
   // /markdown-page/ is one of the 45 routes to preserve, but its content was
   // Docusaurus scaffold filler: "You don't need React to write simple
   // standalone pages", in English, on a French blog. Republishing that would
