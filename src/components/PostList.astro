@@ -46,6 +46,10 @@ const {
 
 const Heading = headingLevel;
 
+// One level below the listing's own heading, so the articles sit inside their
+// section in the outline rather than beside it.
+const cardHeadingLevel = headingLevel === 'h1' ? 'h2' : 'h3';
+
 const [first, ...rest] = posts;
 const showLead = lead && Boolean(first);
 const grid = showLead ? rest : posts;
@@ -59,13 +63,13 @@ const grid = showLead ? rest : posts;
 
   {posts.length === 0 && <p>Aucun article pour l'instant.</p>}
 
-  {showLead && <PostCard post={first} featured />}
+  {showLead && <PostCard post={first} featured headingLevel={cardHeadingLevel} />}
 
   {
     grid.length > 0 && (
       <div class="listing__grid">
         {grid.map((post) => (
-          <PostCard post={post} />
+          <PostCard post={post} headingLevel={cardHeadingLevel} />
         ))}
       </div>
     )

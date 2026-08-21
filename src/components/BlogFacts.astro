@@ -25,7 +25,12 @@ const oldest = posts.at(-1)?.data.date;
 const since = oldest?.getUTCFullYear();
 ---
 
-<section class="facts" aria-label="Le blog en trois chiffres">
+{/* No `aria-label`, and that is deliberate: naming a <section> turns it into a
+    region landmark, and a band of three short statements is not a page area
+    worth a stop in the landmark list. Unnamed, it stays a plain grouping, and
+    the <dl> already carries the structure. The label also used to say "trois
+    chiffres" when the third is a sentence. */}
+<section class="facts">
   <dl class="facts__grid">
     {/* The note lives inside the <dd> rather than beside it: a <div> in a <dl>
         may only hold <dt> and <dd>, so a <p> as a third child would be invalid

@@ -54,8 +54,11 @@ const TOOLS = [
 ] as const;
 ---
 
-<section class="built" aria-labelledby="built-with">
-  <p class="built__label" id="built-with">Construit, déployé et mesuré avec</p>
+{/* Not named either, for the same reason as the band above: a region landmark
+    for one row of four links is noise in the landmark list. The label stays
+    visible and reads before the row, which is what actually gives it context. */}
+<section class="built">
+  <p class="built__label">Construit, déployé et mesuré avec</p>
 
   <ul class="built__list">
     {

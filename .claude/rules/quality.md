@@ -24,7 +24,14 @@ Not a stretch goal. Every page and component must meet it, in **both** themes.
   `@media (prefers-reduced-motion: reduce)`; JS-driven motion gated via
   `matchMedia`.
 - Contrast measured, never eyeballed. See the `wcag-check` skill.
-- Interactive targets ≥ 24×24px (WCAG 2.5.8); aim for 44×44px.
+- Interactive targets: 24×24px, **or** enough clear space around a smaller one
+  that a 24px circle centred on it touches no neighbour's, which is the spacing
+  exception 2.5.8 actually grants. Aim for 44×44px on anything a thumb uses.
+  Stated flatly as "≥ 24×24px" this rule flagged about thirty compliant
+  elements, the header navigation and the tag chips among them: their 20px
+  height passes on spacing, and axe's own `target-size` rule agrees. Measure
+  with that rule rather than with a ruler, and note it is experimental so it
+  only runs when asked for by name.
 - `lang="fr"` on `<html>`: the site is French-only.
 
 Verification is a gate, not an afterthought: run `wcag-check` before declaring

@@ -84,11 +84,11 @@ Two things this catches that nothing else does: whether an element is actually v
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
 | Admonitions | `src/plugins/mdast-admonitions.mjs` |
 | Image sizing policy | `src/plugins/capped-image-service.mjs` |
-| Home page bands, hero figures | `src/components/BlogFacts.astro`, `BuiltWith.astro`, `HeroTagCloud.astro`, `HeroOnde.astro` |
+| Home page bands, hero figure | `src/components/BlogFacts.astro`, `BuiltWith.astro`, `HeroTagCloud.astro` |
 | Design tokens | `src/styles/tokens/`, entry point `src/styles/tokens.css` |
 | Site constants, navigation, hero copy | `src/consts.ts` |
 
-The hero illustrations come from the Claude Design project **Illustrations hero banner Zatsit** (`e5663b1b-f0ae-4abb-a5ac-84599fcdac63`), which ships both boards as Astro components. `DesignSync` cannot find it through `list_projects`: that call only returns projects of type design system, and this one is a plain project, so it has to be addressed by the id in its URL. The Zatsit Design System itself is `34f5e88a-fa9f-49cc-9a99-1383413a3a3a`.
+The hero illustrations come from the Claude Design project **Illustrations hero banner Zatsit** (`e5663b1b-f0ae-4abb-a5ac-84599fcdac63`), which ships both boards as Astro components. Only board 3a, the tag cloud, is in the repository: the other was left in the project rather than committed unused. `DesignSync` cannot find it through `list_projects`: that call only returns projects of type design system, and this one is a plain project, so it has to be addressed by the id in its URL. The Zatsit Design System itself is `34f5e88a-fa9f-49cc-9a99-1383413a3a3a`.
 
 Articles are served at the **root**, as `/<slug>/`, and the slug comes from the frontmatter rather than the folder name. `migration-routes-docusaurus.txt` holds the 45 reference routes; the build matches all 45.
 
