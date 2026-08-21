@@ -16,9 +16,20 @@ interface Props {
   title: string;
   /**
    * Word or short phrase inside `title` to render in the brand gradient. The
-   * design system allows one per heading, no more.
+   * design system allows one per heading, no more. Ignored when `counterpoint`
+   * is set: two accents in one heading is one too many.
    */
   highlight?: string;
+  /**
+   * Second clause of the title, set on its own line in italic and in the
+   * accent colour. The device is borrowed from littlemight.com, where a roman
+   * statement is answered by an italic one: the rupture is a change of style,
+   * not just of colour, which is what a bolded word alone never achieves.
+   *
+   * It costs nothing to ship. Poppins italic is already among the six woff2
+   * the site downloads, and until now it served only blockquotes.
+   */
+  counterpoint?: string;
   subtitle?: string;
   /** Readonly, because HERO in consts.ts is declared `as const`. */
   actions?: readonly { readonly href: string; readonly label: string; readonly primary?: boolean }[];
@@ -26,14 +37,14 @@ interface Props {
   illustration?: string;
 }
 
-const { eyebrow, title, highlight, subtitle, actions = [], illustration } = Astro.props;
+const { eyebrow, title, highlight, counterpoint, subtitle, actions = [], illustration } = Astro.props;
 
 // Split the title around the highlighted phrase so the gradient wraps that
 // phrase alone. Falls back to a plain title when there is nothing to match.
 // `hasHighlight` is tracked separately rather than inferred from the halves:
 // a phrase that ends the title leaves an empty second half, which is a
 // successful match and not a failed one.
-const hasHighlight = Boolean(highlight && title.includes(highlight));
+const hasHighlight = Boolean(highlight && title.includes(highlight) && !counterpoint);
 const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
 ---
 
@@ -44,6 +55,7 @@ const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
 
       <h1 class="hero__title">
         {before}{hasHighlight && <span class="text-gradient">{highlight}</span>}{after}
+        {counterpoint && <em class="hero__counterpoint">{counterpoint}</em>}
       </h1>
 
       {subtitle && <p class="hero__subtitle">{subtitle}</p>}
@@ -110,6 +122,23 @@ const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
   .hero__title {
     margin: 0;
     font-size: var(--text-4xl);
+    /* The two clauses sit tighter than the default heading leading, so they
+       read as one sentence in two voices rather than two headings. */
+    line-height: var(--leading-tight);
+  }
+
+  /* Its own line, always: the counterpoint answers the statement, it does not
+     continue it. `display: block` rather than a <br>, so the break belongs to
+     the styling and the text stays one sentence for a screen reader. */
+  .hero__counterpoint {
+    display: block;
+    color: var(--color-primary);
+    font-style: italic;
+    /* Regular, not the heading's bold. Compared side by side at 400, 600 and
+       700: bold italic in a saturated accent amplifies the first clause instead
+       of answering it, which is the opposite of the effect. The three italics
+       all ship already, so the weight costs nothing either way. */
+    font-weight: var(--font-regular);
   }
 
   .hero__subtitle {

@@ -41,8 +41,8 @@ export const ECOINDEX_URL =
  * quietly wrong, which is how the Docusaurus badge ended up asserting 400 kB
  * long after that stopped being true.
  */
-export const MEASURED_PAGE_BYTES = 107.7 * 1024;
-export const MEASURED_PAGE_DATE = '14 août 2026';
+export const MEASURED_PAGE_BYTES = 69.8 * 1024;
+export const MEASURED_PAGE_DATE = '21 août 2026';
 
 /** Postal address, as the corporate footer prints it. */
 export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];
@@ -65,8 +65,13 @@ export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '591
  */
 export const HERO = {
   eyebrow: 'Le blog de zatsit',
-  title: 'Nos consultants écrivent pour partager',
-  highlight: 'partager',
+  /**
+   * Two clauses, two voices: the statement in roman, the answer in italic and
+   * in the accent colour. The words themselves are still a placeholder waiting
+   * on Emmanuel, and splitting them differently is a one-line change here.
+   */
+  title: 'Nos consultants construisent.',
+  counterpoint: 'Puis ils écrivent comment.',
   subtitle:
     'Architecture, cloud, data, IA et éco-conception. Quel que soit votre domaine tech, nous avons un article pour vous.',
   actions: [
