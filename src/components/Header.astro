@@ -367,7 +367,16 @@ const isCurrent = (href: string) =>
       padding-block: 0;
     }
 
-    /* Back inline, between the navigation and the actions. */
+    /* Back inline, and pushed to the right so it sits against the ecosystem
+       icons rather than floating in the middle: with two navigation entries
+       left, `space-between` alone left a gap on either side of it. The auto
+       margin ends the left-hand group instead. */
+    .header__links {
+      /* Detached from the wordmark, or "zatsit Blog" reads as one phrase. */
+      margin-inline-start: var(--space-8);
+      margin-inline-end: auto;
+    }
+
     .header__search {
       order: 0;
       flex-basis: auto;
