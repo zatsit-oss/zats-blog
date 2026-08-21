@@ -43,18 +43,17 @@ const BUDGET = {
 /**
  * Pages allowed to exceed a budget, with the reason and the fix.
  *
- * Recorded debt, not a silenced check: these two are still measured, still
- * printed, and still reported at the end. Anything not on this list fails the
- * build, so a new regression cannot hide behind an old one. Remove an entry
- * once its page is fixed; the run says so if a listed page no longer breaches,
- * which is the signal to delete the line.
+ * Empty, and worth keeping empty: the two conference articles that used to sit
+ * here were over budget because Markdown declares no image width, so Astro
+ * emitted the sources untouched. src/plugins/capped-image-service.mjs caps what
+ * nobody sized, and both pages came back under the limit.
+ *
+ * Recorded debt is never a silenced check: a listed page is still measured,
+ * still printed and still reported at the end, and anything not listed fails
+ * the build, so a new regression cannot hide behind an old one. The run says
+ * when a listed page no longer breaches, which is the signal to delete its line.
  */
-const KNOWN_OVER_BUDGET = {
-  'devlille-2026/index.html':
-    'images de conférence non redimensionnées dans le dépôt contenu',
-  'green-exploitation-miniere/index.html':
-    'illustrations GreenIT non redimensionnées dans le dépôt contenu',
-};
+const KNOWN_OVER_BUDGET = {};
 
 const TEXT = new Set(['.html', '.css', '.js', '.mjs', '.json', '.svg', '.xml', '.txt']);
 
