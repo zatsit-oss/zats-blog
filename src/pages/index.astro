@@ -11,6 +11,7 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import HeroTagCloud from '../components/HeroTagCloud.astro';
 import BlogFacts from '../components/BlogFacts.astro';
+import BuiltWith from '../components/BuiltWith.astro';
 import PostList from '../components/PostList.astro';
 import { sortedPosts } from '../utils/posts';
 import { SITE_TITLE, SITE_DESCRIPTION, POSTS_PER_PAGE, HERO } from '../consts';
@@ -33,6 +34,8 @@ const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
   </Hero>
 
   <BlogFacts posts={posts} />
+
+  <BuiltWith />
 
   <PostList
     posts={posts.slice(0, POSTS_PER_PAGE)}
