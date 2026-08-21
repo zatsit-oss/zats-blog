@@ -19,7 +19,11 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 **La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée. Restent un manque fonctionnel, la CI du dépôt contenu, le texte du hero, et la bascule de production.
 
-Le 21 août : le rythme vertical est unifié (quatre jetons et deux règles remplacent neuf paddings posés à la main) et les images que personne n'avait dimensionnées sont plafonnées, ce qui vide la liste des dettes éco. Les trois gates sont vertes, budgets tenus sur les 45 pages.
+Le 21 août, matin : le rythme vertical est unifié (quatre jetons et deux règles remplacent neuf paddings posés à la main) et les images que personne n'avait dimensionnées sont plafonnées, ce qui vide la liste des dettes éco.
+
+Le 21 août, après-midi : la page d'accueil. Titre du hero en deux voix, illustrations importées du projet Claude Design (nuage de tags câblé, onde disponible) avec le jeton `--color-eco-text` qu'elles ont rendu nécessaire, animation d'arrivée en une seule passe, et deux bandes filetées entre le hero et les articles. Plus un correctif d'accessibilité sur le champ de recherche, `aria-expanded` n'étant pas autorisé sur un `searchbox`.
+
+Les trois gates sont vertes, budgets tenus sur les 45 pages, et axe-core ne remonte **aucune violation** sur dix pages dans les deux thèmes, au chargement comme après bascule de thème.
 
 | Phase | État |
 |---|---|
@@ -32,7 +36,7 @@ Le 21 août : le rythme vertical est unifié (quatre jetons et deux règles remp
 | Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
 | Ph5 — CI/CD | 🟡 preview migrée et verte, production encore sur Docusaurus |
 | Ph6 — documentation | ✅ `README`, `CLAUDE.md`, `AGENTS.md` refaits |
-| Ph7 — mise en forme | 🟡 article, listing et rythme vertical faits, hero restant |
+| Ph7 — mise en forme | 🟡 article, listing, rythme vertical et page d'accueil faits, texte du hero restant |
 
 Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le site était fonctionnellement complet et visuellement inabouti, et la demande du 14 août a été explicite, la forme avant l'outillage.
 

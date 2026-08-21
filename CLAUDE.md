@@ -42,6 +42,10 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **`astro:assets` re-encodes every image but resizes only when it knows the target width, and Markdown has no syntax for one.** Article images were therefore emitted at their source size, up to 7008px into a 779px column, which is what put two articles megabytes over the page-weight budget. `src/plugins/capped-image-service.mjs` wraps the Sharp service and caps any image whose size nobody declared; an explicit `width` on an `<Image>` still passes through untouched.
 
+**`prefers-reduced-motion` in global.css collapses the animation *duration*, never the *delay*.** A staggered entrance therefore still waits its turn with the from-state applied: thirteen of the seventeen words of the hero tag cloud were invisible 200 ms in, for exactly the readers who asked for calm. A component with an `animation-delay` has to cancel its own animation in its own media query.
+
+**Animating a transform on an SVG element is not composited.** Unlike a div, it goes back through layout on every frame: measured at 720 style recalculations and 720 layouts per six seconds for a loop, against 158 of each for a single pass. "It is only transform and opacity, the GPU handles it" is false inside an SVG.
+
 **A sticky child needs a parent taller than itself.** `align-items: start` on a grid shrinks the item to its content height, leaving nothing for the sticky element to travel along: the table of contents looked pinned and scrolled away with the page.
 
 ## Testing behaviour
@@ -80,14 +84,18 @@ Two things this catches that nothing else does: whether an element is actually v
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
 | Admonitions | `src/plugins/mdast-admonitions.mjs` |
 | Image sizing policy | `src/plugins/capped-image-service.mjs` |
+| Home page bands, hero figures | `src/components/BlogFacts.astro`, `BuiltWith.astro`, `HeroTagCloud.astro`, `HeroOnde.astro` |
 | Design tokens | `src/styles/tokens/`, entry point `src/styles/tokens.css` |
 | Site constants, navigation, hero copy | `src/consts.ts` |
+
+The hero illustrations come from the Claude Design project **Illustrations hero banner Zatsit** (`e5663b1b-f0ae-4abb-a5ac-84599fcdac63`), which ships both boards as Astro components. `DesignSync` cannot find it through `list_projects`: that call only returns projects of type design system, and this one is a plain project, so it has to be addressed by the id in its URL. The Zatsit Design System itself is `34f5e88a-fa9f-49cc-9a99-1383413a3a3a`.
 
 Articles are served at the **root**, as `/<slug>/`, and the slug comes from the frontmatter rather than the folder name. `migration-routes-docusaurus.txt` holds the 45 reference routes; the build matches all 45.
 
 ## Conventions
 
 - Never a raw hex in product code: always a semantic token from `src/styles/tokens/colors.css`, so both themes resolve.
+- Third-party brand marks are never redrawn, and never recoloured into our palette. Use the asset the owner publishes, geometry untouched, and only in the one-colour form they provide: Astro and Clever Cloud both ship a mono variant, and the Website Carbon globe travels as a CSS mask so its shape is theirs and the colour is the page's. A vendor with no vector asset gets its name set in type.
 - Vertical space is not set per page. `main` opens and closes the page and its children are separated by the section gap, from the rhythm tokens at the end of `src/styles/tokens/spacing.css`. A block that needs to sit closer than the gap overrides it and says why.
 - No MDX. Articles stay portable plain Markdown.
 - Never reference this repo's assets from an article with a relative path: the content repo no longer sits inside the shell.
