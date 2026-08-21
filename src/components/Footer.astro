@@ -1,7 +1,8 @@
 ---
 /**
  * Site footer, aligned on the corporate one: same three columns, same mission
- * statement, same address, same EcoVadis medal, same carbon badge.
+ * statement, same address, same EcoVadis medal and B Corp badge, same carbon
+ * badge.
  *
  * The social row swaps corporate's "Blog" link for "Site web": pointing a
  * reader of the blog at the blog would be a link to nowhere.
@@ -24,6 +25,7 @@ import {
   SUSTAINABILITY_URL,
   CONTACT_EMAIL,
   ECOINDEX_URL,
+  BCORP_URL,
   ADDRESS,
   SITE_TITLE,
 } from '../consts';
@@ -126,7 +128,7 @@ const year = new Date().getFullYear();
     </section>
 
     <section class="footer__column footer__column--medal">
-      <h2 class="sr-only">Notre évaluation RSE</h2>
+      <h2 class="sr-only">Nos évaluations RSE</h2>
       <Image
         src={ecovadisMedal}
         alt="Médaille EcoVadis Silver, zatsit dans le top 15%"
@@ -134,6 +136,24 @@ const year = new Date().getFullYear();
         height={100}
         loading="lazy"
       />
+      <a
+        href={BCORP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Certification B Corp, dans un nouvel onglet"
+      >
+        <!-- An <img> rather than an inlined SVG: the badge carries 21 paths per
+             theme, and the page-weight budget has better uses for them. The dark
+             variant is swapped in below, like the header logo. -->
+        <img
+          class="footer__bcorp"
+          src="/img/bcorp-black.svg"
+          width="66"
+          height="100"
+          alt=""
+          loading="lazy"
+        />
+      </a>
     </section>
   </div>
 
@@ -242,23 +262,34 @@ const year = new Date().getFullYear();
   }
 
   /* 40px targets: below the 44px aim, but these are secondary links repeated
-     in the copyright bar and the header, never the only path to anything. */
+     in the copyright bar and the header, never the only path to anything.
+     Filled primary discs, as on corporate; the glyph takes the page colour so
+     it inverts with the theme instead of being white on gold. */
   .footer__social {
     display: grid;
     place-items: center;
     inline-size: var(--space-10);
     block-size: var(--space-10);
-    border-radius: var(--radius-md);
-    color: var(--color-primary);
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: var(--color-bg);
+    transition: opacity var(--duration-fast) var(--ease-out);
   }
 
   .footer__social:hover {
-    background: var(--color-bg);
+    opacity: 0.8;
   }
 
   .footer__column--medal {
     display: flex;
     align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  /* Brand asset, swapped with the theme rather than recoloured, and global
+     because a scoped rule cannot reach an <img> src swap. */
+  :global([data-theme='dark']) .footer__bcorp {
+    content: url('/img/bcorp-light.svg');
   }
 
   .footer__bar {

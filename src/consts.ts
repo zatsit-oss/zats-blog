@@ -24,6 +24,7 @@ export const GITHUB_URL = 'https://github.com/zatsit-oss';
 export const LINKEDIN_URL = 'https://www.linkedin.com/company/zatsit/';
 export const WEBSITE_URL = 'https://zatsit.fr';
 export const SUSTAINABILITY_URL = 'https://sustainability.zatsit.fr/';
+export const BCORP_URL = 'https://www.bcorporation.net/';
 export const CONTACT_EMAIL = 'contact@zatsit.fr';
 /**
  * TODO, after the production switch: this result was measured on the Docusaurus
