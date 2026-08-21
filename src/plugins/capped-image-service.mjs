@@ -15,6 +15,24 @@
 import sharpService from 'astro/assets/services/sharp';
 
 /**
+ * 72 rather than Sharp's default 80. Measured on the eight heaviest images of
+ * the site, at the size actually served: 1312 kB becomes 1063 kB, 19% off.
+ *
+ * The fidelity cost, measured as PSNR against the source rather than eyeballed:
+ * photographs drop from 35.6 dB to 33.7, screenshots and diagrams from 43.4 to
+ * 41.8. So 1.9 dB at worst, and the text-heavy images, the ones a lossy encoder
+ * degrades first, stay above 40 dB. Raise it back to 80 if a photograph ever
+ * looks soft in a published article.
+ *
+ * It is set here, per image, and not through the service's encoder config,
+ * because `quality` is one of the properties Astro hashes to name a generated
+ * file. Configured on the service it would change no hash, so every image
+ * already in `node_modules/.astro/assets` would be served from the cache at its
+ * old quality and the setting would look like it did nothing.
+ */
+const DEFAULT_QUALITY = 72;
+
+/**
  * Measured in Chrome, not guessed: an article image lays out at 779px on a wide
  * screen, where it is allowed past the 651px text column, and at 865px inside
  * the lead paragraph, whose larger font stretches the `ch` the escape width is
@@ -32,6 +50,10 @@ export default {
 
   validateOptions(options, config) {
     const validated = sharpService.validateOptions(options, config);
+
+    // A call that asks for a quality keeps it; nothing does today.
+    validated.quality ??= DEFAULT_QUALITY;
+
     const source = typeof validated.src === 'object' ? validated.src : undefined;
 
     // SVG is passed through untransformed, so capping it would only produce
