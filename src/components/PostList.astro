@@ -80,6 +80,15 @@ const grid = showLead ? rest : posts;
     margin-inline: auto;
   }
 
+  /* Closer than a full section gap when something precedes it, which today is
+     only the home page and its stack of three banded rules. After three
+     hairlines the eye does not need another 120px to know a new section has
+     started, so the listing opens at the same distance a page does. Everywhere
+     else the listing is the first child and this never applies. */
+  .listing:not(:first-child) {
+    margin-block-start: var(--rhythm-open);
+  }
+
   .listing__header {
     margin-block-end: var(--rhythm-heading);
   }
