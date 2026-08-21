@@ -22,7 +22,9 @@ interface Props {
   highlight?: string;
   /**
    * Second clause of the title, set on its own line in italic and in the
-   * accent colour. The device is borrowed from littlemight.com, where a roman
+   * accent colour. A `span`, not an `em`: the italic is a typographic device
+   * and not an emphasis, and `em` is announced as one by some screen readers.
+   * The style says it, the markup does not claim it. The device is borrowed from littlemight.com, where a roman
    * statement is answered by an italic one: the rupture is a change of style,
    * not just of colour, which is what a bolded word alone never achieves.
    *
@@ -53,7 +55,7 @@ const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
 
       <h1 class="hero__title">
         {before}{hasHighlight && <span class="text-gradient">{highlight}</span>}{after}
-        {counterpoint && <em class="hero__counterpoint">{counterpoint}</em>}
+        {counterpoint && <span class="hero__counterpoint">{counterpoint}</span>}
       </h1>
 
       {subtitle && <p class="hero__subtitle">{subtitle}</p>}

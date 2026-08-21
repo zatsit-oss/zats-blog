@@ -28,8 +28,9 @@ const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
     subtitle={HERO.subtitle}
     actions={HERO.actions}
   >
-    {/* Board 3a of the design project. Board 2a is HeroOnde.astro: swapping
-        them is changing this line. */}
+    {/* Board 3a of the design project. Board 2a, the terminal broadcasting
+        waves, is in the design project and was not kept: an unused component
+        that no check covers goes stale, and it is one import away if wanted. */}
     <HeroTagCloud slot="figure" />
   </Hero>
 

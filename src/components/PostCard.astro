@@ -21,9 +21,19 @@ interface Props {
    * every item weighs the same makes them work that out for themselves.
    */
   featured?: boolean;
+  /**
+   * One level below the heading of the listing that holds the card, so the
+   * articles read as being inside their section rather than beside it. The
+   * listing passes it down: `h1` on a tag page and the archive gives `h2`
+   * here, `h2` on the home page gives `h3`. Every card was an `h2` before,
+   * which put the eleven titles of the home page at the same level as
+   * "Derniers articles" for anyone browsing by heading.
+   */
+  headingLevel?: 'h2' | 'h3';
 }
 
-const { post, featured = false } = Astro.props;
+const { post, featured = false, headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
 const { title, slug, date, tags } = post.data;
 
 const href = `/${slug}/`;
@@ -38,11 +48,11 @@ const minutes = readingTime(post);
     <span>{minutes} min de lecture</span>
   </div>
 
-  <h2 class="card__title">
+  <Heading class="card__title">
     {/* The title is the link, not the whole card: the accessible name stays
         the title rather than every word of the summary. */}
     <a class="card__link" href={href}>{title}</a>
-  </h2>
+  </Heading>
 
   {summary && <p class="card__excerpt">{summary}</p>}
 
