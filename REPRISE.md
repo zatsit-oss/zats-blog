@@ -1,8 +1,8 @@
 # Où en est la migration
 
-Note de reprise, mise à jour le 18 août 2026. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 21 août 2026. À supprimer une fois la migration terminée.
 
-**En pause.** Tout est poussé et propre dans les deux dépôts, CI verte, rien en cours. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
+**Rien en cours.** Le rythme vertical et le plafonnement des images sont faits et commités, les trois gates sont vertes. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver. Les commits du jour ne sont pas encore poussés.
 
 Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https://github.com/zatsit-oss/zats-blog/pull/82).
 
@@ -10,12 +10,12 @@ Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https
 
 ## Le prochain geste
 
-**Le rythme vertical.** Chaque page pose ses marges au jugé, `space-12` ici, `space-10` là, et `--section-gap` (120 px) n'est utilisé nulle part. Deux ou trois règles de césure appliquées partout remplaceraient les valeurs posées à la main. Mécanique, sans risque, et ça corrige les six pages d'un coup.
+**La CI du dépôt contenu.** Aujourd'hui, publier un article ne le met pas en ligne : rien ne déclenche le build de la coque. C'est le seul manque **fonctionnel** restant. Techniquement : un workflow côté contenu qui envoie un `repository_dispatch` vers la coque, et le déclencheur correspondant ici. Demande un token inter-dépôts, seul point à préparer avec Emmanuel.
 
 Ensuite, dans l'ordre de risque croissant :
 
-1. **CI du dépôt contenu.** Aujourd'hui, publier un article ne le met pas en ligne : rien ne déclenche le build de la coque. C'est le seul manque **fonctionnel** restant. Techniquement : un workflow côté contenu qui envoie un `repository_dispatch` vers la coque, et le déclencheur correspondant ici. Demande un token inter-dépôts, seul point à préparer avec Emmanuel.
-2. **Images des deux pages hors budget** (`devlille-2026`, `green-exploitation-miniere`). Inscrites comme dette nommée dans `check:eco`. Le correctif est `width`/`height` déclarés, pas une conversion de format : `astro:assets` réencode mais ne redimensionne que si les dimensions sont connues.
+1. **Un `srcset` sur les images d'article.** Mesuré : un téléphone de 390 px télécharge le fichier de 1366 px, soit 4,19 fois ce qu'il affiche. Le plafond a réglé le budget, pas ce gaspillage. `layout: 'constrained'` d'Astro le donnerait, mais il ajoute des attributs et des styles globaux qui peuvent entrer en conflit avec l'échappée de colonne des images d'article : à faire avec une vérification navigateur.
+2. **Le texte du hero**, en attente d'Emmanuel, tout est dans `HERO` de `src/consts.ts`. Sa forme n'a pas été retravaillée exprès : la refaire avant de savoir ce qu'elle dit reviendrait à la faire deux fois.
 3. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
 
 **Le hero est délibérément mis de côté.** Son texte est un placeholder non tranché ; retravailler sa forme avant de savoir ce qu'il dit reviendrait à le refaire deux fois.
@@ -27,7 +27,7 @@ Ensuite, dans l'ordre de risque croissant :
 | Routes | **45 / 45**, zéro divergence avec la référence Docusaurus |
 | `astro check` | 0 erreur |
 | Gate a11y | verte, jetons et couleurs Shiki, deux thèmes |
-| Gate éco | verte, 2 dettes connues inscrites |
+| Gate éco | verte, **plus aucune dette inscrite** |
 | CI de preview | verte, déploie sur un canal Firebase |
 | Production | **intacte, toujours Docusaurus** |
 
@@ -44,6 +44,8 @@ Phases 0 à 4 terminées, phase 5 à moitié, phase 6 aux trois quarts. Le déta
 En bref : socle et jetons, loader lisant le dépôt voisin en place, les 19 articles à leurs URLs d'origine, header, footer aligné sur le corporate avec badge carbone auto-hébergé, bascule de thème, listing paginé, hero, tags, archive, auteurs, 404, pages portées, admonitions, Shiki vérifié AA, bouton copier, RSS, recherche Pagefind, CI de preview, documentation.
 
 Puis une passe de mise en forme, née de la preview : justification de l'article en `ch`, rythme des titres asymétrique, chapô, entête fusionnée en une signature, cartes du listing avec l'interaction signature du design system (lift, filet d'accent, ombre), article mis en avant sur la page 1, et sommaire à deux niveaux qui suit la lecture.
+
+Puis, le 21 août, deux chantiers mécaniques. **Le rythme vertical** : quatre jetons en fin de `src/styles/tokens/spacing.css` et deux règles dans `global.css` remplacent les neuf `padding-block` posés page par page ; `main` ouvre et ferme la page, ses enfants sont séparés par `--section-gap`, qui servait à rien jusque-là. Mesuré dans Chrome sur les dix formes de page : 48/64 en mobile, 64/96 en desktop, partout pareil. **Les images** : `src/plugins/capped-image-service.mjs` plafonne à 1366 px ce que personne n'a dimensionné, sans toucher aux 30 images sur 73 déjà plus petites. Les deux articles hors budget sont revenus dedans (5228 ko à 874 ko, 2844 ko à 982 ko) et `KNOWN_OVER_BUDGET` est vide.
 
 Le diagnostic qui a motivé cette passe vaut d'être retenu : **`--shadow-lift`, `--shadow-glow` et `--section-gap` étaient définis dans les jetons et référencés nulle part**, et l'échelle typographique était écrasée vers le bas, 17 usages de `--text-sm` contre un seul de `--text-3xl`. Vérifier ce genre d'écart entre ce que le système offre et ce que le code utilise est plus rapide que de discuter du rendu.
 
