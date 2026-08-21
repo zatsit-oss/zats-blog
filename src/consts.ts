@@ -88,20 +88,16 @@ export const HERO = {
 } as const;
 
 /**
- * Navigation, kept identical to the Docusaurus navbar so no habit breaks.
- * Categories are tag pages: adding one means publishing an article with that
- * tag first, otherwise the link 404s.
+ * Navigation, deliberately shorter than the Docusaurus navbar it came from.
+ * The six categories it listed one by one (Green, Architecture, Cloud,
+ * Data & AI, Général) now live behind "Catégories", which is the page that
+ * lists them all: the header needs that room for the zatsit ecosystem links,
+ * and a navbar that grows with every new category does not scale.
  *
- * The dropdown of upcoming categories (dev, eco-conception, mobile, ops, web)
- * was commented out in the Docusaurus config and stays out until each has an
- * article.
+ * Categories are tag pages: adding one back here means publishing an article
+ * with that tag first, otherwise the link 404s.
  */
 export const NAV_LINKS = [
   { href: '/', label: 'Blog' },
   { href: '/tags/', label: 'Catégories' },
-  { href: '/tags/green/', label: 'Green' },
-  { href: '/tags/architecture/', label: 'Architecture' },
-  { href: '/tags/cloud/', label: 'Cloud' },
-  { href: '/tags/data/', label: 'Data & AI' },
-  { href: '/tags/general/', label: 'Général' },
 ] as const;
