@@ -15,9 +15,11 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 ## 0. État d'avancement
 
-*Dernière mise à jour : 18 août 2026, migration en pause.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
+*Dernière mise à jour : 21 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
 
-**La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée, les deux dépôts poussés et propres. Restent un manque fonctionnel, la CI du dépôt contenu, deux finitions de forme, et la bascule de production.
+**La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée. Restent un manque fonctionnel, la CI du dépôt contenu, le texte du hero, et la bascule de production.
+
+Le 21 août : le rythme vertical est unifié (quatre jetons et deux règles remplacent neuf paddings posés à la main) et les images que personne n'avait dimensionnées sont plafonnées, ce qui vide la liste des dettes éco. Les trois gates sont vertes, budgets tenus sur les 45 pages.
 
 | Phase | État |
 |---|---|
@@ -30,7 +32,7 @@ Branche cible : **`migration-astro`** dans les deux repos.
 | Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
 | Ph5 — CI/CD | 🟡 preview migrée et verte, production encore sur Docusaurus |
 | Ph6 — documentation | ✅ `README`, `CLAUDE.md`, `AGENTS.md` refaits |
-| Ph7 — mise en forme | 🟡 article et listing faits, hero et rythme vertical restants |
+| Ph7 — mise en forme | 🟡 article, listing et rythme vertical faits, hero restant |
 
 Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le site était fonctionnellement complet et visuellement inabouti, et la demande du 14 août a été explicite, la forme avant l'outillage.
 
