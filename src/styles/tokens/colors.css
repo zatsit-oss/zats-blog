@@ -52,6 +52,10 @@
 
   /* Eco signifier */
   --color-eco: var(--zat-eco-green);
+  /* Sustainability as *text*. --color-eco is a signifier for shapes and fills
+     and measures 2.01:1 on the light surface, so setting a word in it fails at
+     any size. This is the same green, dark enough to read. */
+  --color-eco-text: var(--zat-eco-green-deep);
 
   color-scheme: light;
 }
@@ -78,6 +82,9 @@
   --gradient-impact: linear-gradient(135deg, #f1be51, #f59e0b, #ef4444);
   --glass-bg: rgba(27, 27, 29, 0.85);
   --glass-border: rgba(241, 190, 81, 0.2);
+  /* On the dark band the bright green already measures 7.15:1, so text and
+     signifier are the same colour here and only the light theme diverges. */
+  --color-eco-text: var(--zat-eco-green);
 
   color-scheme: dark;
 }

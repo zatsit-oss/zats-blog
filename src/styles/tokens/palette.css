@@ -34,6 +34,11 @@
 
   /* Eco signifier — used sparingly for sustainability metrics */
   --zat-eco-green: #2ecc71;
+  /* The same green taken down to 30% lightness, hue and saturation untouched,
+     so it survives as text on a light background: 5.17:1 on white and 4.94:1
+     on the light surface, where #2ecc71 measures 2.10 and 2.01. Blog-local
+     addition, not from the design system. */
+  --zat-eco-green-deep: #1c7d45;
 
   /* Light-theme accents (mesh gradients, decorative blobs only) */
   --zat-cyan: #06b6d4;
