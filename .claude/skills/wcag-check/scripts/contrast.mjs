@@ -130,6 +130,8 @@ const PAIRS = [
   { fg: '--color-on-primary', bg: '--color-primary', kind: 'text', note: 'button label' },
   { fg: '--color-secondary', bg: '--color-bg', kind: 'text', note: 'secondary accent as text' },
   { fg: '--color-eco', bg: '--color-bg', kind: 'info', note: 'eco signifier, non-text use only' },
+  { fg: '--color-eco-text', bg: '--color-bg', kind: 'text', note: 'sustainability as text' },
+  { fg: '--color-eco-text', bg: '--color-surface', kind: 'text', note: 'sustainability as text, on surface' },
   { fg: '--color-primary', bg: '--color-bg', kind: 'nontext', note: 'focus ring vs page' },
   { fg: '--color-primary', bg: '--color-surface', kind: 'nontext', note: 'focus ring vs surface' },
   { fg: '--color-border', bg: '--color-bg', kind: 'info', note: 'decorative border, exempt unless it conveys state' },

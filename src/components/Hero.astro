@@ -7,7 +7,7 @@
  * below is a starting point rather than a decision.
  *
  * Everything it says comes from props, so changing the wording never means
- * touching this file. The eyebrow, the actions and the illustration are all
+ * touching this file. The eyebrow, the actions and the `figure` slot are all
  * optional: with none of them it degrades to a title and a sentence.
  */
 interface Props {
@@ -33,11 +33,9 @@ interface Props {
   subtitle?: string;
   /** Readonly, because HERO in consts.ts is declared `as const`. */
   actions?: readonly { readonly href: string; readonly label: string; readonly primary?: boolean }[];
-  /** Root-relative path to a decorative illustration. */
-  illustration?: string;
 }
 
-const { eyebrow, title, highlight, counterpoint, subtitle, actions = [], illustration } = Astro.props;
+const { eyebrow, title, highlight, counterpoint, subtitle, actions = [] } = Astro.props;
 
 // Split the title around the highlighted phrase so the gradient wraps that
 // phrase alone. Falls back to a plain title when there is nothing to match.
@@ -76,18 +74,12 @@ const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
       }
     </div>
 
-    {
-      illustration && (
-        <img
-          class="hero__illustration"
-          src={illustration}
-          alt=""
-          aria-hidden="true"
-          width="320"
-          height="320"
-        />
-      )
-    }
+    {/* The figure is passed in rather than named here, so the hero stays
+        agnostic about what fills its other half. A slot, not a `src`, because
+        the illustrations are inline SVG: behind an <img> they would be separate
+        documents that our tokens never reach, and they could not follow the
+        theme. */}
+    <slot name="figure" />
   </div>
 </section>
 
@@ -182,13 +174,6 @@ const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
     background: var(--color-primary-hover);
     border-color: var(--color-primary-hover);
     color: var(--color-on-primary);
-  }
-
-  .hero__illustration {
-    inline-size: 100%;
-    max-inline-size: 20rem;
-    block-size: auto;
-    align-self: center;
   }
 
   @media (min-width: 900px) {

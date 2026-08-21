@@ -78,18 +78,6 @@ export const HERO = {
     { href: '/tags/', label: 'Parcourir les catégories', primary: true },
     { href: '/blog-conception/', label: 'Comment ce blog est éco-conçu' },
   ],
-  /**
-   * No illustration by default, and the reason is measured rather than
-   * doctrinal. The three Docusaurus illustrations still in public/img are
-   * 128.5, 52.8 and 37.1 kB; the first one alone takes the home page from 63.0
-   * to 99.3 kB, a 58% increase for a decorative image. svgo only recovers
-   * 15.6% of it, so the weight is inherent to the drawing.
-   *
-   * The component supports `illustration` and it is one line to switch on. If
-   * the hero should carry one, converting it to WebP at its display width is
-   * the way, not shipping the vector.
-   */
-  illustration: undefined as string | undefined,
 } as const;
 
 /**
