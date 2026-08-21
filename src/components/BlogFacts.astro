@@ -64,10 +64,14 @@ const since = oldest?.getUTCFullYear();
 </section>
 
 <style>
-  /* Hairlines top and bottom rather than a background: the band has to read as
-     a rule across the page, not as a card. */
+  /* Flush against the hero, whose own bottom hairline separates the two, and a
+     hairline of its own at the bottom for the band below. Three bands, three
+     rules, no gaps: the section gap from global.css is overridden here on
+     purpose, and a border-block-start would print a second line 1px under the
+     hero's. */
   .facts {
-    border-block: var(--border-width) solid var(--color-border);
+    margin-block-start: 0;
+    border-block-end: var(--border-width) solid var(--color-border);
     padding-block: var(--space-10);
   }
 
