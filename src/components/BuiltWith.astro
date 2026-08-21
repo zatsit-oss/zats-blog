@@ -1,0 +1,109 @@
+---
+/**
+ * The band under the three facts: what the blog is built and measured with.
+ *
+ * Same place and same anatomy as the "Featured on" row on littlemight.com, a
+ * centred letterspaced label over a row of marks, and the same restraint: it
+ * sits between two hairlines and adds no colour of its own.
+ *
+ * One rule decided the contents: every line has to be checkable by the reader.
+ * Astro is in package.json, the two repositories are public, the Website Carbon
+ * badge is in the footer of the page they are reading, and the EcoIndex link
+ * goes to our own measured result rather than to a brochure. Nothing here is a
+ * partnership or an intention.
+ *
+ * Which is why the host is absent. The blog builds to a Firebase Hosting
+ * preview channel today and production is meant to move to Clever Cloud, so
+ * naming either one would be a claim the page cannot back yet. It goes in once
+ * the deployment does.
+ *
+ * Only two of the four have an official vector mark within reach. Astro
+ * publishes press assets, in a light and a dark one-colour variant with the
+ * same geometry, so the same paths follow our theme through `currentColor`, and
+ * the GitHub mark was already in the repository. Website Carbon and EcoIndex
+ * publish none, and the answer to that is their name set in type, not a logo
+ * redrawn from memory, which would ship a bad forgery of someone's trademark.
+ */
+import AstroIcon from '../assets/icons/astro.svg';
+import GithubIcon from '../assets/icons/github.svg';
+import { GITHUB_URL, ECOINDEX_URL } from '../consts';
+
+const TOOLS = [
+  { name: 'Astro', href: 'https://astro.build', icon: AstroIcon },
+  { name: 'GitHub Actions', href: GITHUB_URL, icon: GithubIcon },
+  { name: 'Website Carbon', href: 'https://www.websitecarbon.com', icon: undefined },
+  { name: 'EcoIndex', href: ECOINDEX_URL, icon: undefined },
+];
+---
+
+<section class="built" aria-labelledby="built-with">
+  <p class="built__label" id="built-with">Construit et mesuré avec</p>
+
+  <ul class="built__list">
+    {
+      TOOLS.map(({ name, href, icon: Icon }) => (
+        <li>
+          <a class="built__item" href={href} rel="noopener noreferrer">
+            {Icon && <Icon class="built__mark" aria-hidden="true" />}
+            <span>{name}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .built {
+    /* Contiguous with the facts band above, whose own bottom hairline separates
+       the two: they read as one stack of rules, which is how the reference
+       stacks them. Overriding the section gap from global.css on purpose. */
+    margin-block-start: 0;
+    border-block-end: var(--border-width) solid var(--color-border);
+    padding-block: var(--space-8);
+  }
+
+  .built__label {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .built__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-4) var(--space-8);
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+  }
+
+  .built__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    /* 2.5.8 asks for 24px of target, and a line of 14px text is shorter than
+       that on its own. */
+    min-block-size: var(--space-6);
+    padding-inline: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+  }
+
+  .built__item:hover {
+    color: var(--color-primary);
+  }
+
+  .built__mark {
+    /* Sized in em so a mark stays proportionate to the name beside it. */
+    block-size: 1.3em;
+    inline-size: auto;
+  }
+</style>

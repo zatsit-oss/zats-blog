@@ -10,7 +10,7 @@
  * Two of the three are computed from the content repository and cannot go
  * stale: the year of the oldest article and how many there are. The archive
  * page derives the same two from the same source, so they can never disagree.
- * The third is editorial and is the one thing to edit by hand.
+ * The third is editorial, and so are the three sentences under the values.
  */
 import type { CollectionEntry } from 'astro:content';
 
@@ -23,14 +23,6 @@ const { posts } = Astro.props;
 // sortedPosts() hands them over newest first, so the oldest is at the end.
 const oldest = posts.at(-1)?.data.date;
 const since = oldest?.getUTCFullYear();
-const monthAndYear = oldest
-  ? new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(oldest)
-  : undefined;
-
-// "de octobre" is wrong French. Three of the twelve months start with a vowel,
-// avril, août and octobre, and they take the elided form. Worth the two lines:
-// the sentence is regenerated on every build and will hit one of them again.
-const elided = monthAndYear && /^[aeiouâêîôûéè]/i.test(monthAndYear) ? `d'${monthAndYear}` : `de ${monthAndYear}`;
 ---
 
 <section class="facts" aria-label="Le blog en trois chiffres">
