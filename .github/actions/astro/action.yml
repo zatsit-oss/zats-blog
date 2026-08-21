@@ -24,6 +24,7 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
         REQUESTED_REF: ${{ inputs.content-ref }}
         HEAD_REF: ${{ github.head_ref }}
+        BASE_REF: ${{ github.base_ref }}
       run: |
         set -euo pipefail
 
@@ -36,16 +37,23 @@ runs:
         TARGET="$(dirname "$GITHUB_WORKSPACE")/zats-blog-content"
         REPO="https://x-access-token:${GH_TOKEN}@github.com/zatsit-oss/zats-blog-content.git"
 
-        # Prefer a content branch named like the pull request branch, so the
-        # migration builds against migrated content, and fall back to main once
-        # that branch is gone.
+        # Prefer a content branch named like the pull request branch, then one
+        # named like its base branch, and fall back to main once neither exists.
+        #
+        # The base branch matters: a pull request onto migration-astro carries a
+        # name of its own, so head_ref alone falls back to content main, whose
+        # articles still hold the Docusaurus share-link images. The build then
+        # dies on ImageNotFound for a reason that has nothing to do with the
+        # change under review.
         REF="${REQUESTED_REF}"
         if [ -z "$REF" ]; then
-          if [ -n "$HEAD_REF" ] && git ls-remote --exit-code --heads "$REPO" "$HEAD_REF" >/dev/null 2>&1; then
-            REF="$HEAD_REF"
-          else
-            REF="main"
-          fi
+          for CANDIDATE in "$HEAD_REF" "$BASE_REF"; do
+            if [ -n "$CANDIDATE" ] && git ls-remote --exit-code --heads "$REPO" "$CANDIDATE" >/dev/null 2>&1; then
+              REF="$CANDIDATE"
+              break
+            fi
+          done
+          REF="${REF:-main}"
         fi
 
         echo "Contenu : branche $REF"
