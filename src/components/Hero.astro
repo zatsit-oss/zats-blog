@@ -89,7 +89,9 @@ const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
-    padding-block: var(--space-16);
+    /* The band's own breathing, and the page's opening space at the same
+       time: main stands its padding down for a page that starts here. */
+    padding-block: var(--rhythm-open);
   }
 
   .hero__text {
@@ -166,7 +168,6 @@ const [before, after] = hasHighlight ? title.split(highlight!) : [title, ''];
       align-items: center;
       justify-content: space-between;
       gap: var(--space-16);
-      padding-block: var(--space-20);
     }
 
     .hero__title {
