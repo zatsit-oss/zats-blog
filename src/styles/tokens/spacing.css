@@ -3,7 +3,8 @@
    Strict 4px base unit drives all vertical rhythm. Generous section gaps
    create a premium, "breathable" feel and reduce visual clutter.
 
-   Source: Zatsit Design System, tokens/spacing.css — copied verbatim.
+   Source: Zatsit Design System, tokens/spacing.css, copied verbatim. The
+   vertical rhythm block at the end of the file is local to the blog.
    ========================================================================== */
 
 :root {
@@ -32,4 +33,31 @@
   --gutter-tablet: 20px;    /* tablet column gutter */
   --margin-mobile: 16px;    /* mobile side margin */
   --section-gap: 120px;     /* premium section rhythm */
+}
+
+/* --------------------------------------------------------------------------
+   Vertical rhythm, local to the blog and derived from the scale above
+
+   Every page used to set its own padding-block by hand, so the space under
+   the header depended on which page you were reading, and the gap between the
+   hero and the listing was the sum of two paddings that knew nothing of each
+   other. These four values carry the whole vertical rhythm instead; the rules
+   that apply them are in global.css, under "Vertical rhythm".
+   -------------------------------------------------------------------------- */
+
+:root {
+  --rhythm-open: var(--space-12);     /* main's opening space, under the header */
+  --rhythm-close: var(--space-16);    /* main's closing space, before the footer */
+  --rhythm-gap: var(--space-16);      /* between two sections of the same page */
+  --rhythm-heading: var(--space-8);   /* a header to the content it introduces */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --rhythm-open: var(--space-16);
+    --rhythm-close: var(--space-24);
+    /* The design system's premium section rhythm, 120px, finally applied. */
+    --rhythm-gap: var(--section-gap);
+    --rhythm-heading: var(--space-10);
+  }
 }

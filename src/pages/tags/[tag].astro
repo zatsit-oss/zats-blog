@@ -47,7 +47,9 @@ const heading = taggedHeading(tag, posts.length);
     max-width: 48rem;
     margin-inline: auto;
     padding-inline: var(--margin-mobile);
-    padding-block-end: var(--space-16);
+    /* Belongs to the listing above it rather than standing as a section of
+       its own: the section gap would strand it halfway to the footer. */
+    margin-block-start: var(--rhythm-heading);
   }
 
   .back a {

@@ -54,6 +54,31 @@ main {
 }
 
 /* --------------------------------------------------------------------------
+   Vertical rhythm
+
+   Two rules for the whole site, so no page sets its own vertical page margin
+   again. `main` opens and closes the page; whatever sits inside it is spaced
+   by the section gap. A block that belongs to the one above it, rather than
+   standing as a section of its own, says so by overriding the gap, and says
+   why in a comment. The values are in tokens/spacing.css.
+   -------------------------------------------------------------------------- */
+
+main {
+  padding-block: var(--rhythm-open) var(--rhythm-close);
+}
+
+main > * + * {
+  margin-block-start: var(--rhythm-gap);
+}
+
+/* A page opening on the hero band lets the band do the opening. Its padding is
+   the band's substance, and main's opening space above it would push the page
+   down by twice the intended amount. */
+main:has(> .hero:first-child) {
+  padding-block-start: 0;
+}
+
+/* --------------------------------------------------------------------------
    Typography
    Display weights and tight leading on headings, muted body copy: the
    high-contrast hierarchy the design system asks for.
