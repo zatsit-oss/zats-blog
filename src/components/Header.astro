@@ -10,9 +10,17 @@
  */
 import { Globe, Menu, X } from '@lucide/astro';
 import GithubIcon from '../assets/icons/github.svg';
+import LinkedinIcon from '../assets/icons/linkedin.svg';
+import SustainabilityIcon from '../assets/icons/sustainability.svg';
 import ThemeToggle from './ThemeToggle.astro';
 import Search from './Search.astro';
-import { NAV_LINKS, GITHUB_URL, WEBSITE_URL } from '../consts';
+import {
+  NAV_LINKS,
+  GITHUB_URL,
+  LINKEDIN_URL,
+  SUSTAINABILITY_URL,
+  WEBSITE_URL,
+} from '../consts';
 
 const currentPath = Astro.url.pathname;
 
@@ -71,6 +79,24 @@ const isCurrent = (href: string) =>
       </a>
       <a
         class="header__icon-link"
+        href={LINKEDIN_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Le LinkedIn de zatsit, dans un nouvel onglet"
+      >
+        <LinkedinIcon class="icon" aria-hidden="true" />
+      </a>
+      <a
+        class="header__icon-link"
+        href={SUSTAINABILITY_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Le portail Sustainability, dans un nouvel onglet"
+      >
+        <SustainabilityIcon class="icon" aria-hidden="true" />
+      </a>
+      <a
+        class="header__icon-link"
         href={GITHUB_URL}
         target="_blank"
         rel="noopener noreferrer"
@@ -119,6 +145,28 @@ const isCurrent = (href: string) =>
         >
           <Globe class="icon" aria-hidden="true" />
           Site web<span class="sr-only">, dans un nouvel onglet</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="header__link header__link--with-icon"
+          href={LINKEDIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <LinkedinIcon class="icon" aria-hidden="true" />
+          LinkedIn<span class="sr-only">, dans un nouvel onglet</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="header__link header__link--with-icon"
+          href={SUSTAINABILITY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <SustainabilityIcon class="icon" aria-hidden="true" />
+          Sustainability<span class="sr-only">, dans un nouvel onglet</span>
         </a>
       </li>
       <li>
