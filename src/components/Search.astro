@@ -14,6 +14,15 @@
  * The field is hidden until the script runs: a search box that does nothing is
  * worse than none.
  *
+ * No `aria-expanded`, and it is not an oversight. An `input type="search"` has
+ * the implicit role `searchbox`, which does not support that state, so axe
+ * reports it as a critical ARIA violation. The state would only be allowed
+ * under `role="combobox"`, and claiming that role would be a lie: a combobox
+ * owes the reader arrow-key navigation through options and an
+ * `aria-activedescendant`, where this is a search field followed by a list of
+ * links reached with Tab. What the reader needs is the result count, and the
+ * live region below already announces it.
+ *
  * The look is carried over from docusaurus-lunr-search, read off the archived
  * build rather than guessed: a borderless pill on a translucent fill, with the
  * magnifier inside on the left. Docusaurus used `#ffffff1a` in dark and a grey
@@ -33,7 +42,6 @@ import { Search as SearchIcon } from '@lucide/astro';
     autocomplete="off"
     aria-describedby="search-status"
     aria-controls="search-results"
-    aria-expanded="false"
   />
 
   <p id="search-status" class="sr-only" role="status" aria-live="polite"></p>
@@ -257,7 +265,6 @@ import { Search as SearchIcon } from '@lucide/astro';
 
         if (!query) {
           list.hidden = true;
-          input.setAttribute('aria-expanded', 'false');
           status.textContent = '';
           return;
         }
@@ -265,7 +272,6 @@ import { Search as SearchIcon } from '@lucide/astro';
         if (results.length === 0) {
           status.textContent = `Aucun résultat pour « ${query} »`;
           list.hidden = true;
-          input.setAttribute('aria-expanded', 'false');
           return;
         }
 
@@ -320,7 +326,6 @@ import { Search as SearchIcon } from '@lucide/astro';
         }
 
         list.hidden = false;
-        input.setAttribute('aria-expanded', 'true');
       };
 
       let timer;

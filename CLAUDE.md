@@ -63,6 +63,10 @@ Chrome is installed on this machine. Drive it rather than reading output:
 
 Two things this catches that nothing else does: whether an element is actually visible where the reader is looking, through `getBoundingClientRect` and `elementFromPoint`, and console errors from inline scripts, which `astro check` never sees.
 
+**Force a frame before measuring a colour in headless.** Headless Chrome produces no frames unless asked, so a CSS transition never advances: after clicking the theme toggle, `getComputedStyle` returned the palette the page was leaving for at least three seconds, and the 200 ms transition on `a { color }` was enough for axe-core to report 42 contrast violations that do not exist. `Page.captureScreenshot` forces a frame and the values snap to the truth. Any colour assertion after a state change needs that, or it measures the previous state.
+
+**axe-core can be run without adding a dependency.** Download `axe.min.js` to the scratchpad, inject it with `Runtime.evaluate`, then `axe.run(document)`. That is the same engine as the axe DevTools extension, so a clean result here is a clean result in the reader's browser, and it catches what `check:a11y` cannot: ARIA misuse, roles, names, structure. `check:a11y` only measures contrast on the tokens.
+
 **The search cannot work under `npm run dev`**, since Pagefind's index is produced by the build. Use `npm run preview`. And the search script is inlined into every page, so a cached page serves the old script: force-reload before concluding anything.
 
 ## Architecture
