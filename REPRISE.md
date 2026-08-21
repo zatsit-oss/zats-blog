@@ -1,12 +1,21 @@
 # Où en est la migration
 
-Note de reprise, mise à jour le 21 août 2026. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 21 août 2026, en fin de journée. À supprimer une fois la migration terminée.
 
-**Rien en cours.** Le rythme vertical et le plafonnement des images sont faits et commités, les trois gates sont vertes. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver. Les commits du jour ne sont pas encore poussés.
+**Rien en cours.** Tout est commité et poussé dans les deux dépôts, les trois gates sont vertes et axe-core ne remonte aucune violation. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
+
+Un seul reste dans l'arbre de travail : `src/assets/icons/website-carbon.svg`, un logotype téléchargé puis abandonné au profit de leur planète. Non suivi par git, à supprimer.
 
 Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https://github.com/zatsit-oss/zats-blog/pull/82).
 
 **Preview en ligne et validée** : https://zatsit-blog--pr82-migration-astro-9gtho1s6.web.app
+
+## À faire après la bascule de production
+
+Deux corrections qui n'ont de sens qu'une fois le site en ligne sur sa vraie adresse, notées ici parce qu'elles seront invisibles autrement :
+
+1. **`ECOINDEX_URL` dans `src/consts.ts`.** Le résultat pointé a été mesuré sur le blog Docusaurus, donc il note un site que celui-ci remplace. Relancer l'analyse sur le build Astro en ligne et remplacer l'identifiant, sinon le lien du pied de page et la bande « construit, déployé et mesuré avec » de l'accueil affichent les chiffres de quelqu'un d'autre. Un `TODO` est posé à côté de la constante.
+2. **`MEASURED_PAGE_BYTES`**, même fichier, à rafraîchir après tout changement qui déplace le poids : le chiffre est imprimé au lecteur sur `/blog-conception/`. Il vaut 79,7 ko au 21 août.
 
 ## Le prochain geste
 
@@ -14,11 +23,9 @@ Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https
 
 Ensuite, dans l'ordre de risque croissant :
 
-1. **Un `srcset` sur les images d'article.** Mesuré : un téléphone de 390 px télécharge le fichier de 1366 px, soit 4,19 fois ce qu'il affiche. Le plafond a réglé le budget, pas ce gaspillage. `layout: 'constrained'` d'Astro le donnerait, mais il ajoute des attributs et des styles globaux qui peuvent entrer en conflit avec l'échappée de colonne des images d'article : à faire avec une vérification navigateur.
-2. **Le texte du hero**, en attente d'Emmanuel, tout est dans `HERO` de `src/consts.ts`. Sa forme n'a pas été retravaillée exprès : la refaire avant de savoir ce qu'elle dit reviendrait à la faire deux fois.
+1. **Le texte du hero.** Sa forme est tranchée, ses mots non : `HERO` dans `src/consts.ts` est toujours un placeholder. Le titre est en deux voix, une clause en romain puis une en italique dans l'accent, et le mécanisme (`counterpoint`) accepte n'importe quel découpage.
+2. **Un `srcset` sur les images d'article.** Mesuré : un téléphone de 390 px télécharge le fichier de 1366 px, soit 4,19 fois ce qu'il affiche. Le plafond a réglé le budget, pas ce gaspillage. `layout: 'constrained'` d'Astro le donnerait, mais il ajoute des attributs et des styles globaux qui peuvent entrer en conflit avec l'échappée de colonne des images d'article : à faire avec une vérification navigateur.
 3. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
-
-**Le hero est délibérément mis de côté.** Son texte est un placeholder non tranché ; retravailler sa forme avant de savoir ce qu'il dit reviendrait à le refaire deux fois.
 
 ## État
 
@@ -46,6 +53,10 @@ En bref : socle et jetons, loader lisant le dépôt voisin en place, les 19 arti
 Puis une passe de mise en forme, née de la preview : justification de l'article en `ch`, rythme des titres asymétrique, chapô, entête fusionnée en une signature, cartes du listing avec l'interaction signature du design system (lift, filet d'accent, ombre), article mis en avant sur la page 1, et sommaire à deux niveaux qui suit la lecture.
 
 Puis, le 21 août, deux chantiers mécaniques. **Le rythme vertical** : quatre jetons en fin de `src/styles/tokens/spacing.css` et deux règles dans `global.css` remplacent les neuf `padding-block` posés page par page ; `main` ouvre et ferme la page, ses enfants sont séparés par `--section-gap`, qui servait à rien jusque-là. Mesuré dans Chrome sur les dix formes de page : 48/64 en mobile, 64/96 en desktop, partout pareil. **Les images** : `src/plugins/capped-image-service.mjs` plafonne à 1366 px ce que personne n'a dimensionné, sans toucher aux 30 images sur 73 déjà plus petites. Les deux articles hors budget sont revenus dedans (5228 ko à 874 ko, 2844 ko à 982 ko) et `KNOWN_OVER_BUDGET` est vide.
+
+Puis, l'après-midi du 21, la page d'accueil. Le titre du hero passe **en deux voix**, une clause en romain et une en italique dans l'accent, en Poppins italique déjà embarquée donc à coût nul. Les **illustrations du hero** viennent du projet Claude Design « Illustrations hero banner Zatsit », qui livrait les deux planches en composants Astro : le nuage des dix-sept tags est câblé, l'onde est disponible, et leur import a exigé un jeton nouveau, `--color-eco-text`, parce que `--color-eco` mesure 2,01:1 sur la bande claire et ne peut pas porter de texte. Le nuage **se condense à l'arrivée**, une seule passe, ce qui le sort du critère 2.2.2 et coûte 158 recalculs contre 720 par tranche de six secondes pour une boucle. Enfin **deux bandes filetées** entre le hero et les articles, l'une avec trois faits calculés depuis le contenu, l'autre avec les briques du site, marques officielles en une couleur. Et la médaille EcoVadis remonte à côté de l'adresse en mobile.
+
+Une tentative jetée en cours de route, gardée dans l'historique : la marque zatsit en filigrane dans la moitié droite du hero (`9c5f1d9`, annulée par `3fc9a64`).
 
 Le diagnostic qui a motivé cette passe vaut d'être retenu : **`--shadow-lift`, `--shadow-glow` et `--section-gap` étaient définis dans les jetons et référencés nulle part**, et l'échelle typographique était écrasée vers le bas, 17 usages de `--text-sm` contre un seul de `--text-3xl`. Vérifier ce genre d'écart entre ce que le système offre et ce que le code utilise est plus rapide que de discuter du rendu.
 

@@ -25,6 +25,13 @@ export const LINKEDIN_URL = 'https://www.linkedin.com/company/zatsit/';
 export const WEBSITE_URL = 'https://zatsit.fr';
 export const SUSTAINABILITY_URL = 'https://sustainability.zatsit.fr/';
 export const CONTACT_EMAIL = 'contact@zatsit.fr';
+/**
+ * TODO, after the production switch: this result was measured on the Docusaurus
+ * blog, so it grades a site this one replaces. Re-run the analysis on the live
+ * Astro build and swap the id, or the footer link and the "mesuré avec" band on
+ * the home page will point at someone else's numbers, which is exactly the kind
+ * of stale claim /blog-conception/ exists to avoid.
+ */
 export const ECOINDEX_URL =
   'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0';
 
@@ -41,7 +48,7 @@ export const ECOINDEX_URL =
  * quietly wrong, which is how the Docusaurus badge ended up asserting 400 kB
  * long after that stopped being true.
  */
-export const MEASURED_PAGE_BYTES = 69.8 * 1024;
+export const MEASURED_PAGE_BYTES = 79.7 * 1024;
 export const MEASURED_PAGE_DATE = '21 août 2026';
 
 /** Postal address, as the corporate footer prints it. */
