@@ -9,6 +9,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import ShareLinks from '../components/ShareLinks.astro';
 import CodeCopy from '../components/CodeCopy.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import { categoryLabel } from '../consts';
 import { metaDescription, readingTime } from '../utils/posts';
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
 }
 
 const { post, headings } = Astro.props;
-const { title, slug, date, tags, shareText } = post.data;
+const { title, slug, date, tags, category, shareText } = post.data;
 
 // Resolve the author keys against authors.yml. An unknown key is not silently
 // dropped: it would leave an article with no byline, which is worse than a
@@ -60,11 +61,22 @@ const minutes = readingTime(post);
     </aside>
 
     <article class="post" data-pagefind-body>
-    {/* Three rows instead of four, and they no longer all carry the same
-        weight: the title, then who wrote it and when as one line, then the
-        themes. A hairline closes the header so the eye knows the article has
-        started. */}
+    {/* Four rows, and they no longer all carry the same weight: where the
+        article is filed, the title, who wrote it and when as one line, then
+        the themes. A hairline closes the header so the eye knows the article
+        has started.
+
+        The category sits above the title rather than beside the themes below
+        it: it is the one thing here that says where the reader is, and putting
+        it in the same row as the themes would have made it the eighteenth chip
+        of a flat list, which is exactly the confusion this pass removes. */}
     <header class="post__header">
+      {category && (
+        <p class="post__category">
+          <a href={`/categories/${category}/`}>{categoryLabel(category)}</a>
+        </p>
+      )}
+
       <h1>{title}</h1>
 
       <div class="post__byline">
@@ -244,6 +256,23 @@ const minutes = readingTime(post);
   .post__meta {
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+  }
+
+  .post__category {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .post__category a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .post__category a:hover {
+    text-decoration: underline;
   }
 
   .post__tags {

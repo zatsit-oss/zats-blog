@@ -83,22 +83,62 @@ export const HERO = {
   subtitle:
     'Architecture, cloud, data, IA et éco-conception. Quel que soit votre domaine tech, nous avons un article pour vous.',
   actions: [
-    { href: '/tags/', label: 'Parcourir les catégories', primary: true },
+    { href: '/categories/', label: 'Parcourir les catégories', primary: true },
     { href: '/blog-conception/', label: 'Comment ce blog est éco-conçu' },
   ],
 } as const;
 
 /**
- * Navigation, deliberately shorter than the Docusaurus navbar it came from.
- * The six categories it listed one by one (Green, Architecture, Cloud,
- * Data & AI, Général) now live behind "Catégories", which is the page that
- * lists them all: the header needs that room for the zatsit ecosystem links,
- * and a navbar that grows with every new category does not scale.
+ * Two taxonomies, and they were being spoken of as one. The content repository
+ * has always carried both: one **category** per article, the folder it lives
+ * in, drawn from the closed list in its config.json; and free **tags**, several
+ * per article, "used for cross-category indexing" in the words of its own
+ * AGENTS.md. Only the tags were ever published, under a menu entry that called
+ * them categories, on a page whose heading called them tags, next to an intro
+ * that called them themes.
  *
- * Categories are tag pages: adding one back here means publishing an article
- * with that tag first, otherwise the link 404s.
+ * So: categories are the coarse, stable, curated axis, six of the ten allowed
+ * ones in use. Tags are the fine, open one, seventeen of them. The word
+ * "catégorie" is now reserved for the first and never used for the second.
+ *
+ * The header lists the two entry points rather than the six categories, which
+ * is what Docusaurus did until its navbar ran out of room. `/categories/` is
+ * that navbar, on a page, and it costs no dropdown script and no focus trap.
  */
 export const NAV_LINKS = [
   { href: '/', label: 'Blog' },
-  { href: '/tags/', label: 'Catégories' },
+  { href: '/categories/', label: 'Catégories' },
+  { href: '/tags/', label: 'Thèmes' },
 ] as const;
+
+/**
+ * Reader-facing name for each category slug. The slugs are the folder names in
+ * the content repository, English and lowercase; these are what the reader sees.
+ *
+ * All ten allowed categories are listed, not just the six with articles, so a
+ * first post in `mobile/` renders as "Mobile" and not as a raw slug. The order
+ * is the one the site uses: config.json is alphabetical on the English slugs,
+ * which is meaningless once translated.
+ *
+ * Labels come from the Docusaurus navbar this replaces, with two changes:
+ * "Green" reads "Green IT", the name the articles themselves use, and its
+ * "Data & AI" entry is split, since config.json makes `data` and `ai` two
+ * separate categories.
+ */
+export const CATEGORY_LABELS: Record<string, string> = {
+  green: 'Green IT',
+  architecture: 'Architecture',
+  cloud: 'Cloud',
+  data: 'Data',
+  ai: 'IA',
+  dev: 'Développement',
+  web: 'Web',
+  mobile: 'Mobile',
+  ops: 'Ops',
+  general: 'Général',
+};
+
+/** The label, or the slug itself if a category ever ships before its label. */
+export function categoryLabel(slug: string): string {
+  return CATEGORY_LABELS[slug] ?? slug;
+}

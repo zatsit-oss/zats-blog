@@ -1,0 +1,124 @@
+---
+/**
+ * The six categories that carry an article, at /categories/.
+ *
+ * This page is the Docusaurus navbar. That navbar listed the categories one by
+ * one and was already full at five, with a sixth commented out and a note
+ * saying a category with no post fails the build. On a page they all fit, the
+ * empty ones simply do not appear, and the header keeps the room its search
+ * field and its icon row need.
+ *
+ * Cards rather than the chips /tags/ uses: six curated entry points are not
+ * seventeen keywords, and the difference should be visible before it is read.
+ */
+import Layout from '../../layouts/Layout.astro';
+import { allCategories, sortedPosts } from '../../utils/posts';
+
+const posts = await sortedPosts();
+const categories = await allCategories(posts);
+---
+
+<Layout
+  title="Catégories"
+  description={`Les ${categories.length} catégories du blog de zatsit : ${categories
+    .map(({ label }) => label)
+    .join(', ')}.`}
+>
+  <div class="container categories">
+    <header class="categories__header">
+      <h1>Catégories</h1>
+      <p class="categories__intro">
+        Chaque article est rangé dans une catégorie, et une seule. Pour ce qu'il aborde en plus,
+        voir <a href="/tags/">les thèmes</a>.
+      </p>
+    </header>
+
+    <ul class="categories__list">
+      {
+        categories.map(({ slug, label, count }) => (
+          <li>
+            <a class="categories__card" href={`/categories/${slug}/`}>
+              <span class="categories__label">{label}</span>
+              <span class="categories__count">
+                {count === 1 ? 'Un article' : `${count} articles`}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Layout>
+
+<style>
+  .categories {
+    max-width: 48rem;
+  }
+
+  .categories__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  .categories__intro {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .categories__intro a {
+    color: var(--color-primary);
+  }
+
+  .categories__list {
+    display: grid;
+    /* Two columns as soon as there is room for them, one below. Six entries
+       read as a set at two per row; three would scatter them. */
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .categories__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    block-size: 100%;
+    padding: var(--space-5) var(--space-6);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .categories__card:hover,
+  .categories__card:focus-visible {
+    border-color: var(--color-primary);
+  }
+
+  .categories__card:hover .categories__label,
+  .categories__card:focus-visible .categories__label {
+    color: var(--color-primary);
+  }
+
+  .categories__label {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .categories__count {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .categories__card,
+    .categories__label {
+      transition: none;
+    }
+  }
+</style>

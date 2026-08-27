@@ -77,8 +77,9 @@ Two things this catches that nothing else does: whether an element is actually v
 
 | Concern | Where |
 |---|---|
-| Loader, schema, date fallback | `src/content.config.ts` |
-| Shared helpers: excerpt, reading time, tags | `src/utils/posts.ts` |
+| Loader, schema, date and category fallback | `src/content.config.ts` |
+| Shared helpers: excerpt, reading time, tags, categories | `src/utils/posts.ts` |
+| Category and tag pages | `src/pages/categories/`, `src/pages/tags/` |
 | Avatars, read from the content repo | `src/utils/avatars.ts` |
 | Page shell, header, footer | `src/layouts/Layout.astro` |
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
@@ -94,6 +95,7 @@ Articles are served at the **root**, as `/<slug>/`, and the slug comes from the 
 
 ## Conventions
 
+- **Two taxonomies, and they are not the same word.** A **category** is the folder an article sits in, one per article, drawn from the closed list in the content repository's `config.json` and enforced by its own CI; it is derived in the loader and served at `/categories/<slug>/`, under labels held in `CATEGORY_LABELS`. A **tag** is free, several per article, open-ended, served at `/tags/<tag>/` and called a **thème** everywhere the reader can see. Never call a tag a category: the site did, in four different words on four different surfaces, and it is what this rule exists to stop. Only the URL still says `tags`, because those seventeen routes are part of the 45 the migration must serve.
 - Never a raw hex in product code: always a semantic token from `src/styles/tokens/colors.css`, so both themes resolve.
 - Third-party brand marks are never redrawn, and never recoloured into our palette. Use the asset the owner publishes, geometry untouched, and only in the one-colour form they provide: Astro and Clever Cloud both ship a mono variant, and the Website Carbon globe travels as a CSS mask so its shape is theirs and the colour is the page's. A vendor with no vector asset gets its name set in type.
 - Vertical space is not set per page. `main` opens and closes the page and its children are separated by the section gap, from the rhythm tokens at the end of `src/styles/tokens/spacing.css`. A block that needs to sit closer than the gap overrides it and says why.

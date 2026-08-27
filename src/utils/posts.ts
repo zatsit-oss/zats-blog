@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
-import { SITE_DESCRIPTION } from '../consts';
+import { CATEGORY_LABELS, categoryLabel, SITE_DESCRIPTION } from '../consts';
 
 type Post = CollectionEntry<'blog'>;
 
@@ -39,10 +39,11 @@ export interface TagSummary {
  * Every tag in use, with how many articles carry it, most used first and
  * alphabetical within a count.
  *
- * Derived from the articles rather than declared anywhere: Docusaurus worked
- * the same way, which is why the navbar exposes six categories while seventeen
- * tag pages exist. All seventeen must survive the migration, including those
- * no menu links to.
+ * Open-ended and derived from the articles, where a category is closed and
+ * declared in the content repository's config.json. That is the whole
+ * difference between the two axes: a tag appears the day someone writes it,
+ * which is why seventeen exist and why all seventeen must survive the
+ * migration, including those nothing links to.
  */
 export async function allTags(posts?: Post[]): Promise<TagSummary[]> {
   const entries = posts ?? (await sortedPosts());
@@ -66,12 +67,66 @@ export async function postsByTag(tag: string, posts?: Post[]): Promise<Post[]> {
 }
 
 /**
- * The heading Docusaurus used, with its agreement bug fixed: its French locale
- * printed "Un article tagués avec « java »".
+ * Heading of a tag page. Docusaurus printed "Un article tagués avec « java »",
+ * wrong in number and in register; this agrees, and says "thème" because that
+ * is the word the whole site now uses for a tag. Only the URL still says tags.
  */
 export function taggedHeading(tag: string, count: number): string {
-  const lead = count === 1 ? 'Un article tagué' : `${count} articles tagués`;
-  return `${lead} avec « ${tag} »`;
+  const lead = count === 1 ? 'Un article' : `${count} articles`;
+  return `${lead} sur le thème « ${tag} »`;
+}
+
+export interface CategorySummary {
+  /** The folder name in the content repository, and the URL segment. */
+  slug: string;
+  /** What the reader sees. */
+  label: string;
+  count: number;
+}
+
+/**
+ * The categories that actually carry an article, in the curated order of
+ * CATEGORY_LABELS rather than by article count.
+ *
+ * Sorting by count is right for tags, where the number is the only thing
+ * distinguishing seventeen flat entries. It is wrong here: six stable
+ * categories that reshuffle on every publication give the reader nothing to
+ * memorise, and "Général", the fullest, would lead a list it says least about.
+ *
+ * Empty categories are skipped: four of the ten allowed ones have no article
+ * yet, and a page saying "0 article" is a page nobody needs to build.
+ */
+export async function allCategories(posts?: Post[]): Promise<CategorySummary[]> {
+  const entries = posts ?? (await sortedPosts());
+  const counts = new Map<string, number>();
+
+  for (const post of entries) {
+    const slug = post.data.category!;
+    counts.set(slug, (counts.get(slug) ?? 0) + 1);
+  }
+
+  // Ordered by the label map, then anything it does not know about, so a new
+  // folder still shows up rather than being silently dropped.
+  const known = Object.keys(CATEGORY_LABELS).filter((slug) => counts.has(slug));
+  const unknown = [...counts.keys()].filter((slug) => !(slug in CATEGORY_LABELS)).sort();
+
+  return [...known, ...unknown].map((slug) => ({
+    slug,
+    label: categoryLabel(slug),
+    count: counts.get(slug)!,
+  }));
+}
+
+/** Articles in a given category, newest first. */
+export async function postsByCategory(slug: string, posts?: Post[]): Promise<Post[]> {
+  const entries = posts ?? (await sortedPosts());
+  return entries.filter((post) => post.data.category === slug);
+}
+
+/** Heading of a category page, agreeing in number like taggedHeading does. */
+export function categoryHeading(slug: string, count: number): string {
+  const lead = count === 1 ? 'Un article' : `${count} articles`;
+  return `${lead} dans « ${categoryLabel(slug)} »`;
 }
 
 /**

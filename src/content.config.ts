@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
@@ -12,6 +13,26 @@ const BLOG_BASE = `${CONTENT_REPO}/blog`;
 
 /** `2024-07-18-bundlephobia` -> 2024-07-18. Every folder follows this shape. */
 const FOLDER_DATE = /(?:^|\/)(\d{4})-(\d{2})-(\d{2})-/;
+
+/**
+ * The folder holding the dated article folder, i.e. `dev` in
+ * `blog/dev/2024-07-18-bundlephobia/index.md`. Anchored on the dated folder
+ * rather than on a fixed depth, so it holds whether the loader hands us an
+ * absolute path or one relative to this project.
+ */
+const FOLDER_CATEGORY = /([^/]+)\/\d{4}-\d{2}-\d{2}-[^/]*\/[^/]+$/;
+
+/**
+ * The categories the content repository allows, read from its own config.json
+ * rather than restated here. That file is the contract its CI already enforces
+ * (`check_categories-list.sh` asserts every `blog/*` folder appears in it), and
+ * a second list in this repo would be one more thing to keep in step.
+ *
+ * Ten are allowed, six carry articles today. Only the populated ones get a page.
+ */
+const ALLOWED_CATEGORIES: string[] = JSON.parse(
+  readFileSync(`${CONTENT_REPO}/config.json`, 'utf8'),
+).categories;
 
 /**
  * Schema aligned on the frontmatter that actually exists, not on what a
@@ -35,6 +56,15 @@ const blogSchema = z.object({
    * name. It is filled in right after loading, then asserted.
    */
   date: z.coerce.date().optional(),
+  /**
+   * Derived like the date, and optional for the same reason: it comes from the
+   * folder the article sits in, which Zod cannot see while glob() is still
+   * loading. Filled in right after, validated against config.json, asserted.
+   *
+   * One per article, by the content repository's own rule: "choose the single
+   * best-fit category; use tags for the rest".
+   */
+  category: z.string().optional(),
   description: z.string().optional(),
   cover: z.string().optional(),
   draft: z.boolean().default(false),
@@ -47,11 +77,15 @@ const blogSchema = z.object({
 });
 
 /**
- * Wraps the glob loader to replay one Docusaurus behaviour Astro does not have:
- * deriving a post's publication date from its folder name when the frontmatter
- * omits it. Twelve of the nineteen articles depend on this.
+ * Wraps the glob loader to fill in two fields the frontmatter does not carry
+ * but the file layout does:
  *
- * Precedence matches Docusaurus: frontmatter first, folder name second.
+ *   - the publication date, from the folder name, replaying a Docusaurus
+ *     behaviour Astro has no equivalent for. Twelve of the nineteen articles
+ *     depend on it, and frontmatter wins when both exist, as it did there.
+ *   - the category, from the folder the article sits in. The content
+ *     repository has organised posts that way from the start and documents the
+ *     rule in its AGENTS.md; nothing was ever reading it.
  */
 function blogLoader() {
   const inner = glob({ base: BLOG_BASE, pattern: '**/index.md' });
@@ -63,25 +97,38 @@ function blogLoader() {
       await inner.load(context);
 
       const undated: string[] = [];
+      const uncategorised: string[] = [];
+      const unknownCategory: string[] = [];
 
       for (const [id, entry] of context.store.entries()) {
-        if (entry.data.date) continue;
-
         // Not `id`: glob() derives the id from the frontmatter `slug` when
-        // there is one, and every article here has one. The folder name only
-        // survives in filePath.
+        // there is one, and every article here has one. The folder layout only
+        // survives in filePath, so both derivations read from it.
         const source = entry.filePath ?? id;
-        const match = source.match(FOLDER_DATE);
-        if (!match) {
-          undated.push(`${id} (${source})`);
-          continue;
+        const derived: Record<string, unknown> = {};
+
+        if (!entry.data.date) {
+          const match = source.match(FOLDER_DATE);
+          if (match) {
+            const [, year, month, day] = match;
+            derived.date = new Date(`${year}-${month}-${day}T00:00:00Z`);
+          } else {
+            undated.push(`${id} (${source})`);
+          }
         }
 
-        const [, year, month, day] = match;
-        const dated = {
-          ...entry,
-          data: { ...entry.data, date: new Date(`${year}-${month}-${day}T00:00:00Z`) },
-        };
+        if (!entry.data.category) {
+          const match = source.match(FOLDER_CATEGORY);
+          if (!match) {
+            uncategorised.push(`${id} (${source})`);
+          } else if (!ALLOWED_CATEGORIES.includes(match[1])) {
+            unknownCategory.push(`${id} -> "${match[1]}"`);
+          } else {
+            derived.category = match[1];
+          }
+        }
+
+        if (Object.keys(derived).length === 0) continue;
 
         // store.set() is a no-op when the entry's digest is unchanged: the
         // content layer uses it to skip rewriting entries whose source file did
@@ -89,7 +136,7 @@ function blogLoader() {
         // digest is identical and the write would be dropped. Deleting first
         // forces it through.
         context.store.delete(id);
-        context.store.set(dated);
+        context.store.set({ ...entry, data: { ...entry.data, ...derived } });
       }
 
       // Fail loudly. A silently undated article would sort last and break the
@@ -102,17 +149,38 @@ function blogLoader() {
         );
       }
 
-      // Post-condition, and not a formality: the loop above can derive a date
+      if (uncategorised.length > 0) {
+        throw new Error(
+          `Ces articles ne sont pas dans un dossier de catégorie :\n` +
+            uncategorised.map((id) => `  - ${id}`).join('\n') +
+            `\nLe chemin attendu est blog/<catégorie>/YYYY-MM-DD-slug/index.md.`,
+        );
+      }
+
+      // The content repository's CI already refuses a folder absent from its
+      // config.json. Repeating the check here means a checkout that predates
+      // that rule fails the build instead of publishing a category page whose
+      // name nobody agreed on.
+      if (unknownCategory.length > 0) {
+        throw new Error(
+          `Catégorie inconnue, absente de ${CONTENT_REPO}/config.json :\n` +
+            unknownCategory.map((id) => `  - ${id}`).join('\n') +
+            `\nCatégories autorisées : ${ALLOWED_CATEGORIES.join(', ')}.` +
+            `\nEn ajouter une passe par la Direction Technique (dirtech@zatsit.fr).`,
+        );
+      }
+
+      // Post-condition, and not a formality: the loop above can derive a value
       // and still fail to persist it. Assert the end state rather than the
       // intent, so a regression surfaces here instead of as an undefined date
       // in whatever page sorts the collection next.
       const unpersisted = [...context.store.entries()]
-        .filter(([, entry]) => !entry.data.date)
-        .map(([id]) => id);
+        .filter(([, entry]) => !entry.data.date || !entry.data.category)
+        .map(([id, entry]) => `${id} (date: ${entry.data.date}, catégorie: ${entry.data.category})`);
 
       if (unpersisted.length > 0) {
         throw new Error(
-          `Date non persistée dans le store pour :\n` +
+          `Donnée dérivée non persistée dans le store pour :\n` +
             unpersisted.map((id) => `  - ${id}`).join('\n'),
         );
       }

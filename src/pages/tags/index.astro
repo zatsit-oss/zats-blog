@@ -2,9 +2,10 @@
 /**
  * Index of every tag in use, at /tags/.
  *
- * Lists all seventeen, not just the six the navbar exposes: Docusaurus
- * generated a page per tag found in the corpus, and every one of those URLs
- * has to survive.
+ * "Thèmes" to the reader, `tags` in the frontmatter and in the URL, which is
+ * fixed: Docusaurus generated a page per tag found in the corpus and all
+ * seventeen of those URLs have to survive. The word "catégorie" belongs to the
+ * other axis and is not used here. See NAV_LINKS in consts.ts.
  */
 import Layout from '../../layouts/Layout.astro';
 import { allTags, sortedPosts } from '../../utils/posts';
@@ -14,15 +15,16 @@ const tags = await allTags(posts);
 ---
 
 <Layout
-  title="Tags"
+  title="Thèmes"
   description={`Les ${tags.length} thèmes abordés sur le blog de zatsit, du plus au moins écrit.`}
 >
   <div class="container tags">
     <header class="tags__header">
-      <h1>Tags</h1>
+      <h1>Thèmes</h1>
       <p class="tags__intro">
-        {tags.length} thèmes, {posts.length} articles. Les catégories du menu en mettent six en avant,
-        les autres existent tout autant.
+        {tags.length} thèmes pour {posts.length} articles. Un article appartient à une seule
+        catégorie, mais porte autant de thèmes qu'il aborde de sujets : c'est ici que se croisent
+        deux articles rangés à des endroits différents.
       </p>
     </header>
 
