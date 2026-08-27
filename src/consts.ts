@@ -49,8 +49,8 @@ export const ECOINDEX_URL =
  * quietly wrong, which is how the Docusaurus badge ended up asserting 400 kB
  * long after that stopped being true.
  */
-export const MEASURED_PAGE_BYTES = 79.7 * 1024;
-export const MEASURED_PAGE_DATE = '21 août 2026';
+export const MEASURED_PAGE_BYTES = 91.6 * 1024;
+export const MEASURED_PAGE_DATE = '25 août 2026';
 
 /** Postal address, as the corporate footer prints it. */
 export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];

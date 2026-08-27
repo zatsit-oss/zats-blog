@@ -40,11 +40,15 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **Files under `public/` bypass the image pipeline.** They ship at full resolution.
 
-**`astro:assets` re-encodes every image but resizes only when it knows the target width, and Markdown has no syntax for one.** Article images were therefore emitted at their source size, up to 7008px into a 779px column, which is what put two articles megabytes over the page-weight budget. `src/plugins/capped-image-service.mjs` wraps the Sharp service and caps any image whose size nobody declared; an explicit `width` on an `<Image>` still passes through untouched.
+**`astro:assets` re-encodes every image but resizes only when it knows the target width, and Markdown has no syntax for one.** Article images were therefore emitted at their source size, up to 7008px into a 779px column, which is what put two articles megabytes over the page-weight budget. `src/plugins/capped-image-service.mjs` wraps the Sharp service, caps any image whose size nobody declared, and gives it a srcset matched to the widths an article image is measured at; an explicit `width` on an `<Image>` still passes through untouched, its own `sizes` included.
 
 **`prefers-reduced-motion` in global.css collapses the animation *duration*, never the *delay*.** A staggered entrance therefore still waits its turn with the from-state applied: thirteen of the seventeen words of the hero tag cloud were invisible 200 ms in, for exactly the readers who asked for calm. A component with an `animation-delay` has to cancel its own animation in its own media query.
 
 **Animating a transform on an SVG element is not composited.** Unlike a div, it goes back through layout on every frame: measured at 720 style recalculations and 720 layouts per six seconds for a loop, against 158 of each for a single pass. "It is only transform and opacity, the GPU handles it" is false inside an SVG.
+
+**`image.layout: 'constrained'` derives `sizes` and the candidate list from the declared width, and for a Markdown image that width *is the source's*.** Turning it on alone made things worse, not better: `sizes` came out as `(min-width: 7086px) 7086px, 100vw`, so a 1600px window resolved it to 1600px and fetched the 3218w file for an image laid out at 779px, and the candidate list ran back up to 7086w, defeating the cap. Both are computed in Astro's `internal.js` *before* `validateOptions` runs, so the service has to rewrite `widths` and `sizes` itself, which is what `capped-image-service.mjs` now does.
+
+**`naturalWidth` is density-corrected when a srcset uses `w` descriptors.** It returns the file's width divided by the density Chrome computed from `sizes`, not the file's own pixel width, so "is this image being upscaled?" cannot be answered with it: a correctly served 780px file reported 358. Read the `w` descriptor of `currentSrc` instead.
 
 **A sticky child needs a parent taller than itself.** `align-items: start` on a grid shrinks the item to its content height, leaving nothing for the sticky element to travel along: the table of contents looked pinned and scrolled away with the page.
 

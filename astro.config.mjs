@@ -25,8 +25,33 @@ export default defineConfig({
     // Sharp, plus a cap on any image whose size nobody declared. Markdown has
     // no syntax for a width, so Astro sized article images from the source and
     // shipped 7008px conference photos into a 683px column. The reasoning is
-    // in the service itself.
+    // in the service itself, which also repairs the two attributes `layout`
+    // below derives from that same wrong width.
     service: { entrypoint: './src/plugins/capped-image-service.mjs' },
+
+    // What gives Markdown images a srcset at all: with no layout, Astro emits
+    // one file per image and a 390px phone downloads the 1366px desktop one,
+    // 4.19 times the pixels it can show. `constrained` is the right mode here,
+    // the image scales down with its container and never exceeds its own size.
+    layout: 'constrained',
+
+    /**
+     * Chosen against the widths an article image is actually laid out at, 326,
+     * 651 and 779 CSS pixels, crossed with the densities that matter:
+     *
+     *    390  a phone at 1x
+     *    640  a phone at ~1.7x
+     *    780  the 651px column at ~1.2x, and a 390px phone at 2x
+     *    880  the widest an article image gets, 865px, at 1x
+     *   1080  the 651px column at ~1.7x, and a 390px phone at 3x
+     *   1366  the cap, which serves the 865px lead image at 1.58x
+     *
+     * Astro's own defaults start at 640 and run to 2560, which is both too
+     * coarse at the bottom, where the savings are, and past the cap at the top.
+     * Six candidates and not fifteen: each one is a file to encode, to store
+     * and to cache, and the ladder is already finer than the layout it serves.
+     */
+    breakpoints: [390, 640, 780, 880, 1080, 1366],
   },
 
   // /markdown-page/ is one of the 45 routes to preserve, but its content was
