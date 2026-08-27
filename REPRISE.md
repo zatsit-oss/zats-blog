@@ -22,9 +22,18 @@ Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur s
 
 Ensuite, dans l'ordre de risque croissant :
 
-1. **Le texte du hero.** Sa forme est tranchée, ses mots non : `HERO` dans `src/consts.ts` est toujours un placeholder. Le titre est en deux voix, une clause en romain puis une en italique dans l'accent, et le mécanisme (`counterpoint`) accepte n'importe quel découpage.
-2. **Une passe axe-core sur les pages de catégories.** Elles sont nées le 27 août, après la dernière passe axe, qui portait sur dix pages d'alors. Elles reprennent la structure des pages de thèmes, déjà vérifiées, donc le risque est faible et la vérification rapide : la marche à suivre est dans `CLAUDE.md`, section « Testing behaviour ».
-3. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
+1. **Fusionner les deux entrées de menu en une seule page.** Tranché par Emmanuel le 27 août : le header ne garde que **« Catégories »**, et le **nuage de thèmes vient sur cette même page**, sous la liste des catégories. `NAV_LINKS` de `src/consts.ts` revient donc à deux entrées, Blog et Catégories.
+
+   Quatre contraintes, toutes vérifiées :
+
+   - **`/tags/` et les dix-sept `/tags/<thème>/` font partie des 45 routes du contrat** et doivent continuer à résoudre. Le nuage renvoie vers les dix-sept, elles restent donc nécessaires en tant que pages. Pour `/tags/` elle-même, deux options ouvertes : la garder en page que plus rien ne lie depuis le header, ou la rediriger vers `/categories/`, comme `/markdown-page/` l'est vers la racine.
+   - **`HeroTagCloud.astro` n'est pas réutilisable tel quel.** C'est un SVG figé, `role="img"` avec un libellé unique, et **aucun de ses mots n'est un lien** : c'est une illustration, pas une navigation. Un nuage cliquable doit être dérivé de `allTags()`, dimensionné par le nombre d'articles, chaque mot étant une ancre vers sa page. Accessoirement son libellé dit « frontend » là où le corpus porte « angular », signe qu'il vient de la planche de design et non des données.
+   - **Le vocabulaire ne change pas** : la catégorie est l'axe fermé, le tag est un **thème**, et la page devra porter les deux mots côte à côte sans les confondre. C'est justement la surface où la confusion était née.
+   - **La passe axe-core attend ce remaniement.** Auditer `/categories/` avant de lui ajouter un nuage, c'est l'auditer deux fois.
+
+2. **Le texte du hero.** Sa forme est tranchée, ses mots non : `HERO` dans `src/consts.ts` est toujours un placeholder. Le titre est en deux voix, une clause en romain puis une en italique dans l'accent, et le mécanisme (`counterpoint`) accepte n'importe quel découpage.
+3. **Une passe axe-core sur la page de catégories**, une fois le nuage en place. Elle est née le 27 août, après la dernière passe axe qui portait sur dix pages d'alors, et le nuage cliquable est exactement le genre d'ajout qui mérite l'audit : cibles de 24 px, contraste des mots les plus petits, et le piège de `prefers-reduced-motion` sur un `animation-delay` si l'arrivée est animée. Marche à suivre dans `CLAUDE.md`, section « Testing behaviour ».
+4. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
 
 ## État
 

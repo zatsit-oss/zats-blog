@@ -285,7 +285,7 @@ L'attribut `data-theme` est posé sur `<html>` par un script `is:inline` exécut
 
 ## 2. Décisions actées
 
-Les cinq décisions ont été arbitrées le 7 août 2026. Elles ne sont plus ouvertes.
+Les cinq premières ont été arbitrées le 7 août 2026, la sixième le 27 août. Elles ne sont plus ouvertes.
 
 ### D1. Version d'Astro → dernière stable
 
@@ -326,6 +326,19 @@ $$
 De `corporate/global.css`, n'emprunter que les patterns d'implémentation Astro : bloc `@theme` Tailwind v4, les trois états de thème, `prefers-reduced-motion`. On évite ainsi de traîner 1431 lignes majoritairement propres au site vitrine.
 
 Comme les jetons sont copiés et donc figés, prévoir une procédure de resynchronisation avec le design system (`/design-sync` la permet).
+
+### D6. Une seule entrée de menu, et le nuage de thèmes sur la page des catégories
+
+**Décidé le 27 août 2026 par Emmanuel**, après la mise en service des deux taxonomies le même jour : le header ne garde que **« Catégories »**, et le nuage de thèmes est placé **sur cette même page**, sous la liste des catégories. `NAV_LINKS` revient donc à deux entrées, Blog et Catégories, et l'entrée « Thèmes » disparaît.
+
+Ce que la décision ne change pas : les deux axes restent deux axes, et le vocabulaire de la convention tient. Une catégorie est le dossier, fermé, une par article ; un thème est un tag, libre, plusieurs par article. La page les portera côte à côte, ce qui est plus exigeant qu'un menu à deux entrées, pas moins : c'est là que la confusion des quatre mots était née.
+
+Quatre contraintes d'implémentation, vérifiées :
+
+1. **`/tags/` et les dix-sept `/tags/<thème>/` sont dans les 45 routes du contrat** et continuent de résoudre. Le nuage pointe vers les dix-sept, elles restent des pages. Pour `/tags/` elle-même, l'arbitrage reste ouvert : page non liée, ou redirection vers `/categories/` sur le modèle de `/markdown-page/`.
+2. **`HeroTagCloud.astro` ne se réemploie pas tel quel.** SVG figé, `role="img"`, libellé unique, aucun mot cliquable : c'est l'illustration de la planche de design, pas une navigation. Un nuage cliquable se dérive de `allTags()`, se dimensionne au nombre d'articles, et chaque mot est une ancre. Son libellé dit d'ailleurs « frontend » là où le corpus porte « angular », ce qui confirme qu'il ne lit pas les données.
+3. **Cibles et contraste** : les mots les plus petits d'un nuage sont des cibles de navigation. La règle de la charte s'applique, 24 px ou l'exception d'espacement de 2.5.8, et le contraste se mesure aux deux extrêmes de l'échelle de tailles.
+4. **Motion** : si l'arrivée est animée, le composant annule sa propre animation dans sa propre requête de média. Le piège de `prefers-reduced-motion` face à un `animation-delay` est déjà payé, il est écrit dans `CLAUDE.md`.
 
 ---
 
