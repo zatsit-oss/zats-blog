@@ -15,7 +15,7 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 ## 0. État d'avancement
 
-*Dernière mise à jour : 21 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
+*Dernière mise à jour : 27 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
 
 **La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée. Restent un manque fonctionnel, la CI du dépôt contenu, le texte du hero, et la bascule de production.
 
@@ -23,7 +23,11 @@ Le 21 août, matin : le rythme vertical est unifié (quatre jetons et deux règl
 
 Le 21 août, après-midi : la page d'accueil. Titre du hero en deux voix, illustrations importées du projet Claude Design (nuage de tags câblé, onde disponible) avec le jeton `--color-eco-text` qu'elles ont rendu nécessaire, animation d'arrivée en une seule passe, et deux bandes filetées entre le hero et les articles. Plus un correctif d'accessibilité sur le champ de recherche, `aria-expanded` n'étant pas autorisé sur un `searchbox`.
 
-Les trois gates sont vertes, budgets tenus sur les 45 pages, et axe-core ne remonte **aucune violation** sur dix pages dans les deux thèmes, au chargement comme après bascule de thème.
+Du 22 au 25 août : l'en-tête et le pied de page passent sur ceux du corporate, rangée d'icônes complète (LinkedIn, Sustainability), badge B Corp, disques sociaux, sigle pleine taille dès 768 px et recherche calée sur la rangée d'icônes.
+
+Le 27 août, trois lots commités. **Les deux taxonomies** : le dépôt contenu porte depuis toujours une catégorie par article, le dossier où il vit, tirée de la liste fermée de son `config.json`, plus des thèmes libres ; seuls les thèmes étaient publiés, derrière un menu qui les appelait catégories, sur une page dont le titre les appelait tags. Le loader dérive maintenant la catégorie du dossier comme il dérive la date, la valide contre `config.json` et asserte l'état final du store ; six des dix catégories autorisées portent des articles et reçoivent une page. **Le `srcset` des images d'article**, qui était le point 2 des prochains gestes du 21 août. Et un correctif d'accessibilité : le lien dans la ligne de copyright du pied de page, que axe remontait en `link-in-text-block` sur toutes les pages.
+
+Les trois gates sont vertes et les budgets tenus sur les 52 pages. La passe axe-core sans violation datant du 21 août portait sur dix pages d'alors : **les six pages de catégories n'y sont pas encore passées**, c'est inscrit dans les prochains gestes.
 
 | Phase | État |
 |---|---|
@@ -36,7 +40,7 @@ Les trois gates sont vertes, budgets tenus sur les 45 pages, et axe-core ne remo
 | Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
 | Ph5 — CI/CD | 🟡 preview migrée et verte, production encore sur Docusaurus |
 | Ph6 — documentation | ✅ `README`, `CLAUDE.md`, `AGENTS.md` refaits |
-| Ph7 — mise en forme | 🟡 article, listing, rythme vertical et page d'accueil faits, texte du hero restant |
+| Ph7 — mise en forme | 🟡 article, listing, rythme vertical, page d'accueil, en-tête et pied de page faits, texte du hero restant |
 
 Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le site était fonctionnellement complet et visuellement inabouti, et la demande du 14 août a été explicite, la forme avant l'outillage.
 
@@ -56,7 +60,8 @@ Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le s
 | Badge Website Carbon, auto-hébergé | ✅ |
 | Listing paginé `/` et `/page/2/` | ✅ |
 | Hero et les trois blocs de la home | ✅ |
-| Pages de tags : `/tags/` et les 17 `/tags/<tag>/` | ✅ |
+| Pages de thèmes : `/tags/` et les 17 `/tags/<tag>/` | ✅ |
+| Pages de catégories : `/categories/` et les 6 `/categories/<slug>/` | ✅ 27 août |
 | `/archive/` | ✅ |
 | `/authors/` | ✅ |
 | 404 | ✅ |
@@ -93,6 +98,21 @@ find dist -name "*.html" | sed 's|^dist||;s|/index.html$|/|;s|^/404.html$|/404|'
 Les chiffres Astro ont légèrement monté depuis le 13 août, et c'est voulu : la recherche, le sommaire et les cartes du listing coûtent chacun quelques kilo-octets. L'amplitude reste de 14 ko sur l'ensemble du corpus, contre un facteur 13 sous Docusaurus.
 
 Les deux pages hors budget total le sont à cause d'images non redimensionnées, et le mécanisme est établi dans les deux sens : la médaille EcoVadis du footer, qui déclare `width` et `height`, passe de 57 ko à 2,8 ko, quand les images d'articles, qui n'en déclarent aucun, sont réencodées sans être redimensionnées. Elles sont inscrites comme dette nommée dans `check:eco`, qui échoue toujours sur toute autre page.
+
+**Mesures du 27 août 2026, sur les 52 pages construites**
+
+| | Budget | Pire page mesurée |
+|---|---|---|
+| Poids initial, texte gzippé | < 500 ko | 81,0 ko (`redpanda-introduction`) |
+| Poids total | < 1 Mo | 821,5 ko (`green-exploitation-miniere`) |
+| Requêtes initiales | < 25 | 10 |
+| Éléments DOM | < 1500 | 570 |
+
+**52 pages sur 52 dans les budgets**, contre 0 sur 45 sous Docusaurus. Les six pages de catégories se placent entre 63,2 et 65,3 ko initial, exactement au niveau des pages de thèmes équivalentes : la taxonomie n'a rien coûté. `MEASURED_PAGE_BYTES` vaut 91,6 ko et reste juste, le `total` de l'accueil n'ayant pas bougé.
+
+Les images d'article portent désormais une échelle de six candidats, 390 à 1366, vérifiée sur les 302 `<img>` du build : aucun candidat ne dépasse le plafond, et une source plus petite s'arrête à sa propre largeur plutôt que d'être agrandie.
+
+**Dette nommée, reportée volontairement** : deux SVG d'article sont émis en double dans `dist/`, 51,5 ko que rien ne référence. Le HTML ne pointe que la copie sortie du service d'images ; l'autre est l'émission de l'import par Astro lui-même, en amont du service, donc hors de portée de `capped-image-service.mjs`. Zéro octet sur le réseau, du poids d'artefact de déploiement seulement, d'où le report. À reprendre après la bascule de production.
 
 **Ce que la phase 7 a corrigé, et ce qu'elle a révélé**
 

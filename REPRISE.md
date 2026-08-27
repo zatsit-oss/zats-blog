@@ -1,10 +1,8 @@
 # Où en est la migration
 
-Note de reprise, mise à jour le 21 août 2026, en fin de journée. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 27 août 2026. À supprimer une fois la migration terminée.
 
-**Rien en cours.** Tout est commité et poussé dans les deux dépôts, les trois gates sont vertes et axe-core ne remonte aucune violation. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
-
-Un seul reste dans l'arbre de travail : `src/assets/icons/website-carbon.svg`, un logotype téléchargé puis abandonné au profit de leur planète. Non suivi par git, à supprimer.
+**Rien en cours.** Arbre de travail propre, trois commits du 27 août poussés sur `migration-astro` (taxonomies, `srcset` des images, correctif a11y du pied de page), `astro check` à zéro erreur et les 52 pages dans les budgets. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
 
 Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https://github.com/zatsit-oss/zats-blog/pull/82).
 
@@ -12,10 +10,11 @@ Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https
 
 ## À faire après la bascule de production
 
-Deux corrections qui n'ont de sens qu'une fois le site en ligne sur sa vraie adresse, notées ici parce qu'elles seront invisibles autrement :
+Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur sa vraie adresse, notés ici parce qu'ils seront invisibles autrement :
 
 1. **`ECOINDEX_URL` dans `src/consts.ts`.** Le résultat pointé a été mesuré sur le blog Docusaurus, donc il note un site que celui-ci remplace. Relancer l'analyse sur le build Astro en ligne et remplacer l'identifiant, sinon le lien du pied de page et la bande « construit, déployé et mesuré avec » de l'accueil affichent les chiffres de quelqu'un d'autre. Un `TODO` est posé à côté de la constante.
-2. **`MEASURED_PAGE_BYTES`**, même fichier, à rafraîchir après tout changement qui déplace le poids : le chiffre est imprimé au lecteur sur `/blog-conception/`. Il vaut 79,7 ko au 21 août.
+2. **Les doublons de SVG dans `dist/`.** Deux SVG d'article sont émis deux fois, 51,5 ko que rien ne référence : le HTML ne pointe que la copie sortie du service d'images, l'autre est l'émission de l'import par Astro lui-même, en amont, donc `capped-image-service.mjs` ne peut rien y faire. Zéro octet sur le réseau, du poids d'artefact de déploiement seulement, d'où le report. Reporté sciemment le 27 août.
+3. **`MEASURED_PAGE_BYTES`**, même fichier, à rafraîchir après tout changement qui déplace le poids : le chiffre est imprimé au lecteur sur `/blog-conception/`. Il vaut 91,6 ko au 27 août.
 
 ## Le prochain geste
 
@@ -24,23 +23,23 @@ Deux corrections qui n'ont de sens qu'une fois le site en ligne sur sa vraie adr
 Ensuite, dans l'ordre de risque croissant :
 
 1. **Le texte du hero.** Sa forme est tranchée, ses mots non : `HERO` dans `src/consts.ts` est toujours un placeholder. Le titre est en deux voix, une clause en romain puis une en italique dans l'accent, et le mécanisme (`counterpoint`) accepte n'importe quel découpage.
-2. **Un `srcset` sur les images d'article.** Mesuré : un téléphone de 390 px télécharge le fichier de 1366 px, soit 4,19 fois ce qu'il affiche. Le plafond a réglé le budget, pas ce gaspillage. `layout: 'constrained'` d'Astro le donnerait, mais il ajoute des attributs et des styles globaux qui peuvent entrer en conflit avec l'échappée de colonne des images d'article : à faire avec une vérification navigateur.
+2. **Une passe axe-core sur les pages de catégories.** Elles sont nées le 27 août, après la dernière passe axe, qui portait sur dix pages d'alors. Elles reprennent la structure des pages de thèmes, déjà vérifiées, donc le risque est faible et la vérification rapide : la marche à suivre est dans `CLAUDE.md`, section « Testing behaviour ».
 3. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
 
 ## État
 
 | | |
 |---|---|
-| Routes | **45 / 45**, zéro divergence avec la référence Docusaurus |
+| Routes | **45 / 45** de la référence Docusaurus, plus les 7 nouvelles de `/categories/` |
 | `astro check` | 0 erreur |
 | Gate a11y | verte, jetons et couleurs Shiki, deux thèmes |
-| Gate éco | verte, **plus aucune dette inscrite** |
+| Gate éco | verte, **52 pages sur 52 dans les budgets** |
 | CI de preview | verte, déploie sur un canal Firebase |
 | Production | **intacte, toujours Docusaurus** |
 
 | Mesure | Docusaurus | Astro |
 |---|---|---|
-| Poids initial | 243 à 3 324 ko | 65 à 79 ko |
+| Poids initial | 243 à 3 324 ko | 63 à 81 ko |
 | JS par page | 135 ko gzip | 1,1 ko, plus 1,7 ko si recherche |
 | Paquets | 1 478 | 299 |
 
@@ -55,6 +54,10 @@ Puis une passe de mise en forme, née de la preview : justification de l'article
 Puis, le 21 août, deux chantiers mécaniques. **Le rythme vertical** : quatre jetons en fin de `src/styles/tokens/spacing.css` et deux règles dans `global.css` remplacent les neuf `padding-block` posés page par page ; `main` ouvre et ferme la page, ses enfants sont séparés par `--section-gap`, qui servait à rien jusque-là. Mesuré dans Chrome sur les dix formes de page : 48/64 en mobile, 64/96 en desktop, partout pareil. **Les images** : `src/plugins/capped-image-service.mjs` plafonne à 1366 px ce que personne n'a dimensionné, sans toucher aux 30 images sur 73 déjà plus petites. Les deux articles hors budget sont revenus dedans (5228 ko à 874 ko, 2844 ko à 982 ko) et `KNOWN_OVER_BUDGET` est vide.
 
 Puis, l'après-midi du 21, la page d'accueil. Le titre du hero passe **en deux voix**, une clause en romain et une en italique dans l'accent, en Poppins italique déjà embarquée donc à coût nul. Les **illustrations du hero** viennent du projet Claude Design « Illustrations hero banner Zatsit », qui livrait les deux planches en composants Astro : le nuage des dix-sept tags est câblé, l'onde est disponible, et leur import a exigé un jeton nouveau, `--color-eco-text`, parce que `--color-eco` mesure 2,01:1 sur la bande claire et ne peut pas porter de texte. Le nuage **se condense à l'arrivée**, une seule passe, ce qui le sort du critère 2.2.2 et coûte 158 recalculs contre 720 par tranche de six secondes pour une boucle. Enfin **deux bandes filetées** entre le hero et les articles, l'une avec trois faits calculés depuis le contenu, l'autre avec les briques du site, marques officielles en une couleur. Et la médaille EcoVadis remonte à côté de l'adresse en mobile.
+
+Puis, du 22 au 25 août, l'**en-tête et le pied de page alignés sur le corporate** : rangée d'icônes complète, badge B Corp, disques sociaux, sigle pleine taille dès 768 px, recherche calée sur la rangée d'icônes.
+
+Puis, le 27 août, **les deux taxonomies**. Le dépôt contenu portait depuis toujours deux axes, une catégorie par article (le dossier où il vit, tiré de la liste fermée de son `config.json`) et des thèmes libres ; seuls les thèmes étaient publiés, derrière un menu qui les appelait catégories, sur une page dont le titre les appelait tags et un chapô qui les appelait thèmes. Le loader dérive maintenant la catégorie du dossier comme il dérive la date, six catégories sur dix reçoivent une page, et le mot « catégorie » est réservé à cet axe : un tag est un **thème** partout où le lecteur le voit, seule l'URL reste `tags` parce que ces dix-sept routes font partie des 45. Plus le **`srcset` des images d'article**, échelle de six candidats de 390 à 1366 calée sur les largeurs réellement mesurées, ce qui a obligé le service à réécrire lui-même `widths` et `sizes` (le piège est dans `CLAUDE.md`). Et un correctif a11y sur le lien de la ligne de copyright.
 
 Une tentative jetée en cours de route, gardée dans l'historique : la marque zatsit en filigrane dans la moitié droite du hero (`9c5f1d9`, annulée par `3fc9a64`).
 
