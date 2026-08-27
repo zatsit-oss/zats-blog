@@ -321,6 +321,18 @@ const year = new Date().getFullYear();
     text-decoration: none;
   }
 
+  /* A link sitting inside a sentence is underlined; the ones standing alone in
+     the columns and in the legal bar are not. Same class, different situation:
+     "Astro" in the copyright line carries the muted colour of the sentence
+     around it, so colour distinguishes nothing and there was no other cue
+     either. axe reported it as link-in-text-block, WCAG 1.4.1, on every page
+     of the site. A standalone link has its position as the cue, which is the
+     exception the rule actually grants. */
+  .footer__copyright .footer__link {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
   .footer__link:hover {
     color: var(--color-primary);
     text-decoration: underline;
