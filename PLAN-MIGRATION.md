@@ -320,12 +320,22 @@ Conséquence d'architecture : **découpler build et déploiement**. L'étape de 
 
 Pourquoi le merge est couplé au déploiement, et non simplement souhaitable après : `publish-on-merge.yml` appelle l'action composite locale `.github/actions/docusaurus`, puis déploie sur le canal `live` de Firebase. Merger la coque Astro dans `main` déclencherait ce workflow dans un dépôt qui ne contient plus Docusaurus. Il ne s'agit donc pas de « migrer la CI un jour », mais d'un verrou : **tant que le déploiement n'est pas basculé, `main` ne peut pas recevoir cette branche**.
 
-Quatre points à trancher pendant le provisionnement, parce qu'ils changent le Terraform et non seulement la CI :
+**Mesuré le 28 août 2026 sur un Cellar réel**, celui de `greenscore.zatsit.fr`, en déposant un objet de test puis en interrogeant les quatre formes d'URL. Ce ne sont plus des hypothèses :
 
-1. **L'index de répertoire.** Le build produit `/<slug>/index.html` pour les 45 routes. Il faut donc que le Cellar serve `index.html` pour un préfixe terminé par `/`, comme le fait le mode « static website » d'un stockage compatible S3. À vérifier tôt : sans cela, les 45 routes deviennent 45 URLs en `/index.html` et le contrat de migration tombe.
-2. **Les 301.** Deux routes du contrat sont aujourd'hui servies par un `meta refresh` généré par Astro, `/markdown-page/` vers la racine et `/tags/` vers `/categories/#tags`. Ça fonctionne partout, mais P2 demande de vraies 301 portées par la couche qui sert le site. Si le Cellar ne sait pas faire de règle de redirection, deux options : garder les `meta refresh`, ou mettre une application Clever devant. À décider, pas à découvrir.
-3. **La page 404.** Le build émet `/404.html` ; il faut dire au Cellar de la servir sur une clé absente.
-4. **Les en-têtes de cache.** Actifs hachés en `immutable`, HTML à durée courte. C'est la dernière ligne de la checklist éco, et elle se règle à la couche d'hébergement.
+| Requête | Réponse |
+|---|---|
+| `/prefixe/` avec un objet `prefixe/index.html` | **200 `text/html`** |
+| `/prefixe/index.html` | 200 |
+| `/prefixe` sans slash final | **403 XML, aucune redirection** |
+| clé absente sous un préfixe existant | **403 XML `AccessDenied`** |
+
+1. **L'index de répertoire fonctionne.** Cellar sert bien `prefixe/index.html` pour un chemin terminé par `/`. Les 45 routes du contrat, toutes en `/<slug>/`, passent donc tel quel. C'était le risque le plus lourd, il est levé. L'avertissement de la doc Clever sur les SPA porte sur les routes sans fichier correspondant, pas sur l'index de répertoire.
+2. **Aucune redirection du chemin sans slash.** `/<slug>` répond 403, pas une 301 vers `/<slug>/`. Les 45 routes de référence portent toutes le slash, donc le contrat est tenu, mais un lien entrant saisi ou recopié sans slash casse. À comparer avec ce que fait l'hébergement actuel avant de basculer.
+3. **Aucune page d'erreur.** Toute clé absente donne le XML `AccessDenied` en 403. Le `/404.html` du build ne sera pas servi, et un 403 n'a pas les mêmes conséquences qu'un 404 pour un moteur de recherche, qui garde l'URL au lieu de la laisser tomber. Inacceptable pour un blog public : c'est ce point qui justifie une couche devant le bucket.
+4. **Aucune politique de bucket sur greenscore** (`NoSuchBucketPolicy`) : la publication repose sur une **ACL `public-read` posée objet par objet**, vérifiée sur l'objet racine. Un dépôt sans `--acl public-read` est écrit mais invisible, en 403, ce qui ressemble à une panne de droits et non à un oubli. Pour le blog, poser une politique de bucket sur `/*` dans le Terraform est plus robuste que de compter sur chaque upload de la CI.
+5. **Les en-têtes de cache** se posent à l'upload, par objet (`--cache-control`), faute de configuration par préfixe : actifs hachés en `immutable`, HTML à durée courte. C'est la dernière ligne de la checklist éco, et elle devient une responsabilité de l'étape de déploiement.
+
+Les points 2 et 3 pointent vers la même conclusion : **le Cellar seul ne suffit pas** pour servir le blog correctement. Une application Clever en frontal, ou tout autre proxy, réglerait la redirection du slash, la vraie 404 et les 301 de P2 d'un coup. À arbitrer, mais l'arbitrage est maintenant documenté.
 
 Le reste du travail, la CI du dépôt contenu, est **indépendant de ce verrou** et peut avancer en parallèle : elle déclenche un build, elle ne choisit pas la cible. C'est d'ailleurs le sens du découplage acté en D3.
 
