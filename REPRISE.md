@@ -1,8 +1,8 @@
 # Où en est la migration
 
-Note de reprise, mise à jour le 27 août 2026. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 28 août 2026. À supprimer une fois la migration terminée.
 
-**Rien en cours.** Arbre de travail propre, trois commits du 27 août poussés sur `migration-astro` (taxonomies, `srcset` des images, correctif a11y du pied de page), `astro check` à zéro erreur et les 52 pages dans les budgets. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
+**Rien en cours.** Arbre de travail propre. Le 27 août : taxonomies, `srcset` des images, correctif a11y du pied de page. Le 28 août : la décision D6, une seule entrée de menu et le nuage de tags sur `/categories/`, plus la bascule du mot lu par le lecteur, de « thème » vers **« tag »**. `astro check` à zéro erreur, 52 pages dans les budgets, axe-core à zéro violation sur `/categories/` dans les deux thèmes. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
 
 Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https://github.com/zatsit-oss/zats-blog/pull/82).
 
@@ -22,18 +22,8 @@ Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur s
 
 Ensuite, dans l'ordre de risque croissant :
 
-1. **Fusionner les deux entrées de menu en une seule page.** Tranché par Emmanuel le 27 août : le header ne garde que **« Catégories »**, et le **nuage de thèmes vient sur cette même page**, sous la liste des catégories. `NAV_LINKS` de `src/consts.ts` revient donc à deux entrées, Blog et Catégories.
-
-   Quatre contraintes, toutes vérifiées :
-
-   - **`/tags/` et les dix-sept `/tags/<thème>/` font partie des 45 routes du contrat** et doivent continuer à résoudre. Le nuage renvoie vers les dix-sept, elles restent donc nécessaires en tant que pages. Pour `/tags/` elle-même, deux options ouvertes : la garder en page que plus rien ne lie depuis le header, ou la rediriger vers `/categories/`, comme `/markdown-page/` l'est vers la racine.
-   - **`HeroTagCloud.astro` n'est pas réutilisable tel quel.** C'est un SVG figé, `role="img"` avec un libellé unique, et **aucun de ses mots n'est un lien** : c'est une illustration, pas une navigation. Un nuage cliquable doit être dérivé de `allTags()`, dimensionné par le nombre d'articles, chaque mot étant une ancre vers sa page. Accessoirement son libellé dit « frontend » là où le corpus porte « angular », signe qu'il vient de la planche de design et non des données.
-   - **Le vocabulaire ne change pas** : la catégorie est l'axe fermé, le tag est un **thème**, et la page devra porter les deux mots côte à côte sans les confondre. C'est justement la surface où la confusion était née.
-   - **La passe axe-core attend ce remaniement.** Auditer `/categories/` avant de lui ajouter un nuage, c'est l'auditer deux fois.
-
-2. **Le texte du hero.** Sa forme est tranchée, ses mots non : `HERO` dans `src/consts.ts` est toujours un placeholder. Le titre est en deux voix, une clause en romain puis une en italique dans l'accent, et le mécanisme (`counterpoint`) accepte n'importe quel découpage.
-3. **Une passe axe-core sur la page de catégories**, une fois le nuage en place. Elle est née le 27 août, après la dernière passe axe qui portait sur dix pages d'alors, et le nuage cliquable est exactement le genre d'ajout qui mérite l'audit : cibles de 24 px, contraste des mots les plus petits, et le piège de `prefers-reduced-motion` sur un `animation-delay` si l'arrivée est animée. Marche à suivre dans `CLAUDE.md`, section « Testing behaviour ».
-4. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
+1. **Le texte du hero.** Sa forme est tranchée, ses mots non : `HERO` dans `src/consts.ts` est toujours un placeholder. Le titre est en deux voix, une clause en romain puis une en italique dans l'accent, et le mécanisme (`counterpoint`) accepte n'importe quel découpage.
+2. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
 
 ## État
 
@@ -67,6 +57,10 @@ Puis, l'après-midi du 21, la page d'accueil. Le titre du hero passe **en deux v
 Puis, du 22 au 25 août, l'**en-tête et le pied de page alignés sur le corporate** : rangée d'icônes complète, badge B Corp, disques sociaux, sigle pleine taille dès 768 px, recherche calée sur la rangée d'icônes.
 
 Puis, le 27 août, **les deux taxonomies**. Le dépôt contenu portait depuis toujours deux axes, une catégorie par article (le dossier où il vit, tiré de la liste fermée de son `config.json`) et des thèmes libres ; seuls les thèmes étaient publiés, derrière un menu qui les appelait catégories, sur une page dont le titre les appelait tags et un chapô qui les appelait thèmes. Le loader dérive maintenant la catégorie du dossier comme il dérive la date, six catégories sur dix reçoivent une page, et le mot « catégorie » est réservé à cet axe : un tag est un **thème** partout où le lecteur le voit, seule l'URL reste `tags` parce que ces dix-sept routes font partie des 45. Plus le **`srcset` des images d'article**, échelle de six candidats de 390 à 1366 calée sur les largeurs réellement mesurées, ce qui a obligé le service à réécrire lui-même `widths` et `sizes` (le piège est dans `CLAUDE.md`). Et un correctif a11y sur le lien de la ligne de copyright.
+
+Puis, le 28 août, **la fusion des deux entrées de menu** (D6 du plan). Le header ne garde que « Catégories » ; `src/components/TagCloud.astro` pose les dix-sept tags sous les six cartes, dimensionnés sur le **rang** du nombre d'articles et non sur le nombre (6, 3, 2, 1 est trop tassé pour une interpolation linéaire, qui laissait un palier inutilisé), quatre paliers de 16 à 24 px, poids 400/600/700, ordre alphabétique puisque la taille dit déjà lesquels sont les plus écrits. `/tags/` redirige vers `/categories/`. Et **le mot lu par le lecteur devient « tag »** : c'est celui du frontmatter et de l'URL, « thème » aura tenu trois jours. La règle qui compte est intacte, un tag n'est jamais appelé une catégorie.
+
+Vérifié dans Chrome sur ce dernier lot, et c'est ce qui a servi : dix-sept mots cliquables une fois la section à l'écran, cibles de 40 px de haut, tailles monotones avec le nombre d'articles, focus clavier à 2 px pleins avec soulignement, aucun débordement à 390 px, axe-core à zéro violation dans les deux thèmes avec `target-size` demandée par son nom, contrastes de 5,86:1 à 16,71:1, aucune erreur console.
 
 Une tentative jetée en cours de route, gardée dans l'historique : la marque zatsit en filigrane dans la moitié droite du hero (`9c5f1d9`, annulée par `3fc9a64`).
 

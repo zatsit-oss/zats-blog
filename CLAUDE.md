@@ -34,6 +34,8 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **`authors.yml` is one document of twelve profiles.** It needs `file()` with a YAML parser; `glob()` loads it as a single entry and Zod fails on `name: Required`.
 
+**`.focus()` does not make `:focus-visible` match, so it cannot verify a focus ring.** Chrome grants `:focus-visible` on keyboard interaction, not on a programmatic focus call: the computed style came back as the browser default, `3px none`, and reads as a missing focus ring on a component that has one. Drive a real Tab with `Input.dispatchKeyEvent` and assert `el.matches(':focus-visible')` alongside the outline.
+
 **Astro scopes component CSS to server-rendered elements.** Anything a script creates at runtime carries no `data-astro-cid` attribute, so scoped rules never match it. Those styles must be `is:global`.
 
 **`is:inline` is required, not stylistic, for the search script.** `/pagefind/pagefind.js` is generated after the Astro build, and a Vite-processed dynamic import emits an unsubstituted `__VITE_PRELOAD__` marker that throws at runtime. The inline script also needs `type="module"`, or Safari refuses the dynamic import that Chrome accepts.
@@ -49,6 +51,8 @@ Each of these cost a debugging session. They are not hypothetical.
 **`image.layout: 'constrained'` derives `sizes` and the candidate list from the declared width, and for a Markdown image that width *is the source's*.** Turning it on alone made things worse, not better: `sizes` came out as `(min-width: 7086px) 7086px, 100vw`, so a 1600px window resolved it to 1600px and fetched the 3218w file for an image laid out at 779px, and the candidate list ran back up to 7086w, defeating the cap. Both are computed in Astro's `internal.js` *before* `validateOptions` runs, so the service has to rewrite `widths` and `sizes` itself, which is what `capped-image-service.mjs` now does.
 
 **`naturalWidth` is density-corrected when a srcset uses `w` descriptors.** It returns the file's width divided by the density Chrome computed from `sizes`, not the file's own pixel width, so "is this image being upscaled?" cannot be answered with it: a correctly served 780px file reported 358. Read the `w` descriptor of `currentSrc` instead.
+
+**A translucent background defeats a naive contrast measurement, and axe knows it.** `--color-card-bg` is `rgba(255, 255, 255, 0.05)` in the dark theme. Walking up the tree for the first non-transparent background finds that layer, and read as an opaque colour it computes as near-white: the card's article count measured 2.56:1 against a real 5.86:1. That is also what axe reports as *incomplete* rather than as a violation, since it declines to guess through a semi-transparent stack. Composite every layer down to the page background before dividing.
 
 **A sticky child needs a parent taller than itself.** `align-items: start` on a grid shrinks the item to its content height, leaving nothing for the sticky element to travel along: the table of contents looked pinned and scrolled away with the page.
 
@@ -71,6 +75,8 @@ Chrome is installed on this machine. Drive it rather than reading output:
 
 Two things this catches that nothing else does: whether an element is actually visible where the reader is looking, through `getBoundingClientRect` and `elementFromPoint`, and console errors from inline scripts, which `astro check` never sees.
 
+**Awaiting inside `requestAnimationFrame` hangs forever in headless.** Same root cause as the frame note below, worse symptom: no frame is produced unless one is asked for, so the callback never runs and the CDP call never returns. A measurement that needs the browser to have settled goes in three steps, act, `Page.captureScreenshot`, measure, never in an rAF chain. This cost a killed script and a 180 s timeout.
+
 **Force a frame before measuring a colour in headless.** Headless Chrome produces no frames unless asked, so a CSS transition never advances: after clicking the theme toggle, `getComputedStyle` returned the palette the page was leaving for at least three seconds, and the 200 ms transition on `a { color }` was enough for axe-core to report 42 contrast violations that do not exist. `Page.captureScreenshot` forces a frame and the values snap to the truth. Any colour assertion after a state change needs that, or it measures the previous state.
 
 **axe-core can be run without adding a dependency.** Download `axe.min.js` to the scratchpad, inject it with `Runtime.evaluate`, then `axe.run(document)`. That is the same engine as the axe DevTools extension, so a clean result here is a clean result in the reader's browser, and it catches what `check:a11y` cannot: ARIA misuse, roles, names, structure. `check:a11y` only measures contrast on the tokens.
@@ -83,7 +89,8 @@ Two things this catches that nothing else does: whether an element is actually v
 |---|---|
 | Loader, schema, date and category fallback | `src/content.config.ts` |
 | Shared helpers: excerpt, reading time, tags, categories | `src/utils/posts.ts` |
-| Category and tag pages | `src/pages/categories/`, `src/pages/tags/` |
+| Category and tag pages | `src/pages/categories/`, `src/pages/tags/[tag].astro` |
+| Tag cloud, the navigational one | `src/components/TagCloud.astro` |
 | Avatars, read from the content repo | `src/utils/avatars.ts` |
 | Page shell, header, footer | `src/layouts/Layout.astro` |
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
@@ -99,7 +106,8 @@ Articles are served at the **root**, as `/<slug>/`, and the slug comes from the 
 
 ## Conventions
 
-- **Two taxonomies, and they are not the same word.** A **category** is the folder an article sits in, one per article, drawn from the closed list in the content repository's `config.json` and enforced by its own CI; it is derived in the loader and served at `/categories/<slug>/`, under labels held in `CATEGORY_LABELS`. A **tag** is free, several per article, open-ended, served at `/tags/<tag>/` and called a **thème** everywhere the reader can see. Never call a tag a category: the site did, in four different words on four different surfaces, and it is what this rule exists to stop. Only the URL still says `tags`, because those seventeen routes are part of the 45 the migration must serve.
+- **Two taxonomies, and they are not the same word.** A **category** is the folder an article sits in, one per article, drawn from the closed list in the content repository's `config.json` and enforced by its own CI; it is derived in the loader and served at `/categories/<slug>/`, under labels held in `CATEGORY_LABELS`. A **tag** is free, several per article, open-ended, and served at `/tags/<tag>/`. Never call a tag a category: the site did, in four different words on four different surfaces, and it is what this rule exists to stop.
+- **A tag is a "tag", to the reader as in the frontmatter.** It is one word for one thing, in the YAML, in the URL, in the heading of `/tags/<tag>/` and in the cloud on `/categories/`. "Thème" was the reader-facing word from 25 to 28 August and was dropped: it asked the reader to translate a term the site never stopped spelling `tags`. Both taxonomies are surfaced on `/categories/` alone, the header carrying a single entry, and `/tags/` redirects there.
 - Never a raw hex in product code: always a semantic token from `src/styles/tokens/colors.css`, so both themes resolve.
 - Third-party brand marks are never redrawn, and never recoloured into our palette. Use the asset the owner publishes, geometry untouched, and only in the one-colour form they provide: Astro and Clever Cloud both ship a mono variant, and the Website Carbon globe travels as a CSS mask so its shape is theirs and the colour is the page's. A vendor with no vector asset gets its name set in type.
 - Vertical space is not set per page. `main` opens and closes the page and its children are separated by the section gap, from the rhythm tokens at the end of `src/styles/tokens/spacing.css`. A block that needs to sit closer than the gap overrides it and says why.
