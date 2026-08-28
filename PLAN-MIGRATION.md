@@ -353,6 +353,14 @@ L'arbitrage se réduit donc à trois options, à trancher avant la bascule :
 
 Les redirections déjà connues, elles, ne dépendent de rien de tout ça : `/markdown-page/` et `/tags/` sont servies par des pages `meta refresh` produites par Astro, qui fonctionnent sur n'importe quel hébergeur.
 
+**Trois constats supplémentaires, établis par Emmanuel le 28 août** en préparant le ticket au support Clever, et qui affinent le tableau :
+
+- `s3cmd ws-create` répond **405 lui aussi**, pas seulement `ws-info` : l'API website est indisponible en écriture comme en lecture. L'erreur de l'AWS CLI, `argument of type 'NoneType' is not iterable`, masque ce 405.
+- **Une policy accordant `s3:ListBucket` à l'anonyme fait bien passer le 403 en 404 `NoSuchKey`**, la page d'accueil restant servie. C'est donc la seule voie connue vers un statut correct sans application devant, mais elle rend le bucket **énumérable**, et la conditionner par `s3:prefix` ramène le 403. Le corps reste du XML : ce serait un vrai 404, pas notre page.
+- `put-object --website-redirect-location` est **accepté et stocké** (`head-object` le restitue) mais **jamais appliqué** : le GET répond 200 sans en-tête `Location`. Aucune redirection par objet n'est donc possible, et l'écriture silencieuse est un piège.
+
+**TLS, mesuré le 28 août** : `greenscore.zatsit.fr` est un simple CNAME vers `cellar-c2.services.clever-cloud.com` et porte un certificat Let's Encrypt émis le 27 août à 12h41 UTC, au nom exact du domaine, sans joker. Un CNAME vers cellar-c2 déclenche donc bien l'émission pour un bucket portant le nom du domaine ; ce qui restait à établir est le délai, pas le principe.
+
 Le reste du travail, la CI du dépôt contenu, est **indépendant de ce verrou** et peut avancer en parallèle : elle déclenche un build, elle ne choisit pas la cible. C'est d'ailleurs le sens du découplage acté en D3.
 
 ### D4. Maths → conservées
