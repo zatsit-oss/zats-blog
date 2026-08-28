@@ -22,9 +22,11 @@ Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur s
 
 Ensuite :
 
-1. **Bascule de la production, bloquée sur l'infra.** Emmanuel doit d'abord créer le **Cellar** chez Clever Cloud avec Terraform, donc on ne peut pas merger tout de suite (28 août). Ce n'est pas un délai de confort : `publish-on-merge.yml` appelle encore l'action composite `.github/actions/docusaurus` avant de déployer sur Firebase, donc merger cette branche dans `main` lancerait un build Docusaurus dans un dépôt qui n'a plus Docusaurus. Quatre points à trancher pendant le provisionnement (index de répertoire pour les 45 routes en `/<slug>/index.html`, vraies 301 ou `meta refresh` conservés, page 404 sur clé absente, en-têtes de cache) : le détail est en **D3 bis** de `PLAN-MIGRATION.md`.
+1. **La bascule de production, qui est maintenant le merge lui-même.** Les deux pipelines de publication ont été migrées le 28 août : plus rien ne construit Docusaurus, et celle du dépôt contenu, la seule qui alimente le bucket, téléverse `zats-blog/dist`. Merger les deux branches ne casse donc plus la publication, **ça remplace le blog en ligne par la version Astro**. À faire ensemble, dans une séance dédiée.
 
-   La CI du dépôt contenu, ci-dessus, n'est pas concernée par ce verrou et peut avancer en parallèle.
+   Deux gestes côté hébergement, à ne pas oublier ce jour-là : régler le **`NotFoundPage` du bucket sur `404.html`** et non sur `index.html`, sinon une URL fausse sert la page d'accueil en 200, Astro n'ayant pas de routeur client pour rattraper ; et savoir que la pipeline **vide le bucket avant de téléverser**, donc une purge suivie d'un échec laisse le site blanc. L'action asserte désormais la présence de `dist/index.html` avant d'en arriver là, mais l'ordre reste à revoir un jour, en `rsync` par exemple.
+
+   Le Cellar n'est plus dans le chemin critique : la production reste sur le bucket Google. Le passage à Clever Cloud attend l'arbitrage sur la page 404, détaillé en **D3 bis**.
 
 ## État
 

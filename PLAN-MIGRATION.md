@@ -17,7 +17,11 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 *Dernière mise à jour : 27 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
 
-**La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée. Ne restent que la CI du dépôt contenu, seul manque fonctionnel, et la bascule de production.
+**La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée.
+
+**Les deux pipelines de publication sont migrées depuis le 28 août** : plus rien ne construit Docusaurus, et celle du dépôt contenu téléverse `zats-blog/dist` dans le bucket au lieu de `build/`. Conséquence à mesurer avant d'agir : **les deux merges constituent désormais la bascule de production elle-même**. Ils ne cassent plus la publication, ils remplacent le blog en ligne par la version Astro. À faire ensemble et dans une séance dédiée, comme prévu.
+
+Et le Cellar n'est plus un verrou : la production reste sur le bucket Google, qui sait faire ce que Cellar ne sait pas. Le passage à Clever Cloud redevient un chantier séparé, à mener quand la question de la page 404 sera tranchée.
 
 Le **texte du hero est validé** depuis le 28 août : les mots posés le 21 en attendant mieux, « Nos consultants construisent. / Puis ils écrivent comment. », sont retenus tels quels. Il n'y a plus de placeholder dans le site.
 
@@ -44,7 +48,7 @@ Les trois gates sont vertes et les budgets tenus sur les 52 pages. La page `/cat
 | Ph2 bis — garde-fous qualité (a11y, éco) | ✅ terminée |
 | Ph3 — pages et parité | ✅ terminée |
 | Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
-| Ph5 — CI/CD | 🟡 preview migrée et verte, production encore sur Docusaurus |
+| Ph5 — CI/CD | 🟡 preview et pipelines de publication migrées, reste à merger |
 | Ph6 — documentation | ✅ `README`, `CLAUDE.md`, `AGENTS.md` refaits |
 | Ph7 — mise en forme | ✅ article, listing, rythme vertical, page d'accueil, en-tête, pied de page, et texte du hero validé le 28 août |
 
@@ -344,7 +348,7 @@ Conséquence directe, et Emmanuel a écarté l'application frontale le 28 août 
 L'arbitrage se réduit donc à trois options, à trancher avant la bascule :
 
 1. **Assumer le XML sur les URLs inconnues.** Coût nul. Les 45 routes du contrat sont servies, donc les inconnues sont des fautes de frappe, des liens morts anciens et des robots. Un lecteur y verra du XML, et un moteur gardera l'URL au lieu de la laisser tomber, un 403 n'étant pas un 404.
-2. **Ne pas déplacer l'hébergement maintenant.** Le bucket Google sait faire une vraie 404 (`NotFoundPage` renvoyé avec un statut 404, à condition de le régler sur `404.html` et non sur `index.html`) et il redirige déjà le slash manquant. Basculer le build vers Astro sans changer d'hébergeur est possible, et découplé par construction depuis D3.
+2. **Ne pas déplacer l'hébergement maintenant.** Le bucket Google sait faire une vraie 404 (`NotFoundPage` renvoyé avec un statut 404, à condition de le régler sur `404.html` et non sur `index.html`) et il redirige déjà le slash manquant. Basculer le build vers Astro sans changer d'hébergeur est possible, et découplé par construction depuis D3. **C'est la voie prise le 28 août** : les deux pipelines de publication sont migrées, l'hébergement ne bouge pas.
 3. **Un CDN devant le bucket**, si ce n'est pas une « application » au sens où Emmanuel l'entend : une règle de redirection y règle le slash manquant, la page d'erreur dépend du produit choisi.
 
 Les redirections déjà connues, elles, ne dépendent de rien de tout ça : `/markdown-page/` et `/tags/` sont servies par des pages `meta refresh` produites par Astro, qui fonctionnent sur n'importe quel hébergeur.
