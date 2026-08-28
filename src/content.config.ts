@@ -15,12 +15,29 @@ const BLOG_BASE = `${CONTENT_REPO}/blog`;
 const FOLDER_DATE = /(?:^|\/)(\d{4})-(\d{2})-(\d{2})-/;
 
 /**
- * The folder holding the dated article folder, i.e. `dev` in
- * `blog/dev/2024-07-18-bundlephobia/index.md`. Anchored on the dated folder
- * rather than on a fixed depth, so it holds whether the loader hands us an
- * absolute path or one relative to this project.
+ * The category is the folder holding the article folder, i.e. `dev` in
+ * `blog/dev/2024-07-18-bundlephobia/index.md`. Read from the path relative to
+ * `blog/`, and deliberately not anchored on the `YYYY-MM-DD-` folder pattern:
+ * that pattern is a convention the content repository enforces with a
+ * pre-commit hook, and a hook only runs where it is installed. On 28 August
+ * `blog/ai/20260717-AgentSquad` reached its main branch, and a category
+ * derivation anchored on the dashes would have failed the whole build over one
+ * folder name, for an article whose date was in its frontmatter all along.
+ *
+ * A naming slip belongs in a review, not in a build that refuses to run. The
+ * date fallback below still needs the pattern, and that is different in kind:
+ * a missing date cannot be invented from a name that does not carry one.
  */
-const FOLDER_CATEGORY = /([^/]+)\/\d{4}-\d{2}-\d{2}-[^/]*\/[^/]+$/;
+function categoryFromPath(source: string): string | undefined {
+  const marker = '/blog/';
+  const at = source.lastIndexOf(marker);
+  if (at === -1) return undefined;
+
+  // <category>/<article folder>/<file>, three segments at least. Anything
+  // shallower sits outside a category folder and is reported as such.
+  const parts = source.slice(at + marker.length).split('/');
+  return parts.length >= 3 ? parts[0] : undefined;
+}
 
 /**
  * The categories the content repository allows, read from its own config.json
@@ -118,13 +135,13 @@ function blogLoader() {
         }
 
         if (!entry.data.category) {
-          const match = source.match(FOLDER_CATEGORY);
-          if (!match) {
+          const category = categoryFromPath(source);
+          if (!category) {
             uncategorised.push(`${id} (${source})`);
-          } else if (!ALLOWED_CATEGORIES.includes(match[1])) {
-            unknownCategory.push(`${id} -> "${match[1]}"`);
+          } else if (!ALLOWED_CATEGORIES.includes(category)) {
+            unknownCategory.push(`${id} -> "${category}"`);
           } else {
-            derived.category = match[1];
+            derived.category = category;
           }
         }
 

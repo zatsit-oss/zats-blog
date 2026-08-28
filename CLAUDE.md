@@ -30,9 +30,9 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **`context.store.set()` is a no-op when the entry digest is unchanged.** Deriving data from a file without touching the file means the write is silently dropped. `delete()` then `set()`. And assert the end state of the store, not the fact of having attempted the write.
 
-**`glob()` derives its `id` from the frontmatter `slug`, not the path.** The date fallback reads `entry.filePath`; with `id`, the twelve articles without a frontmatter date fail.
+**`glob()` derives its `id` from the frontmatter `slug`, not the path.** The date fallback reads `entry.filePath`; with `id`, the thirteen articles without a frontmatter date fail.
 
-**`authors.yml` is one document of twelve profiles.** It needs `file()` with a YAML parser; `glob()` loads it as a single entry and Zod fails on `name: Required`.
+**`authors.yml` is one document of thirteen profiles.** It needs `file()` with a YAML parser; `glob()` loads it as a single entry and Zod fails on `name: Required`.
 
 **`.focus()` does not make `:focus-visible` match, so it cannot verify a focus ring.** Chrome grants `:focus-visible` on keyboard interaction, not on a programmatic focus call: the computed style came back as the browser default, `3px none`, and reads as a missing focus ring on a component that has one. Drive a real Tab with `Input.dispatchKeyEvent` and assert `el.matches(':focus-visible')` alongside the outline.
 
