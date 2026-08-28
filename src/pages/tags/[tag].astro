@@ -34,11 +34,11 @@ const { tag, posts } = Astro.props;
 const heading = taggedHeading(tag, posts.length);
 ---
 
-<Layout title={heading} description={`Tous les articles du blog de zatsit sur le thème « ${tag} ».`}>
+<Layout title={heading} description={`Tous les articles du blog de zatsit sur le tag « ${tag} ».`}>
   <PostList posts={posts} heading={heading} current={1} total={1} />
 
   <p class="back">
-    <a href="/tags/">← Tous les thèmes</a>
+    <a href="/categories/#tags">← Tous les tags</a>
   </p>
 </Layout>
 

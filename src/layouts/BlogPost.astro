@@ -125,7 +125,7 @@ const minutes = readingTime(post);
 
       {
         tags.length > 0 && (
-          <ul class="post__tags" aria-label="Thèmes de cet article">
+          <ul class="post__tags" aria-label="Tags de cet article">
             {tags.map((tag) => (
               <li>
                 <a class="post__tag" href={`/tags/${tag}/`}>{tag}</a>

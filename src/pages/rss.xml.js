@@ -27,7 +27,7 @@ export async function GET(context) {
       link: new URL(`/${post.data.slug}/`, context.site).href,
       // RSS has one <category> element and no notion of two axes, so both
       // go in: a reader filtering on "green" should find the article whether
-      // that is its category or one of its themes. Deduplicated, since six
+      // that is its category or one of its tags. Deduplicated, since six
       // articles carry their own category as a tag as well.
       categories: [...new Set([post.data.category, ...post.data.tags])].filter(Boolean),
     })),

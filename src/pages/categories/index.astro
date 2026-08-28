@@ -1,6 +1,7 @@
 ---
 /**
- * The six categories that carry an article, at /categories/.
+ * The two taxonomies on one page, at /categories/: the six categories that
+ * carry an article, then the seventeen tags as a cloud.
  *
  * This page is the Docusaurus navbar. That navbar listed the categories one by
  * one and was already full at five, with a sixth commented out and a note
@@ -8,19 +9,28 @@
  * empty ones simply do not appear, and the header keeps the room its search
  * field and its icon row need.
  *
- * Cards rather than the chips /tags/ uses: six curated entry points are not
- * seventeen keywords, and the difference should be visible before it is read.
+ * Cards for the categories, a cloud for the tags: six curated entry points
+ * are not seventeen keywords, and the difference should be visible before it is
+ * read. That contrast is the reason the two axes share a page rather than two
+ * menu entries, decided on 27 August: the reader sees at a glance that one axis
+ * is a shelf and the other a subject index.
+ *
+ * /tags/ used to hold the second half and now redirects here. Its seventeen
+ * per-tag pages are untouched: they are part of the 45 routes under contract,
+ * and the cloud is what points at them.
  */
 import Layout from '../../layouts/Layout.astro';
-import { allCategories, sortedPosts } from '../../utils/posts';
+import TagCloud from '../../components/TagCloud.astro';
+import { allCategories, allTags, sortedPosts } from '../../utils/posts';
 
 const posts = await sortedPosts();
 const categories = await allCategories(posts);
+const tags = await allTags(posts);
 ---
 
 <Layout
   title="Catégories"
-  description={`Les ${categories.length} catégories du blog de zatsit : ${categories
+  description={`Les ${categories.length} catégories et les ${tags.length} tags du blog de zatsit : ${categories
     .map(({ label }) => label)
     .join(', ')}.`}
 >
@@ -29,7 +39,7 @@ const categories = await allCategories(posts);
       <h1>Catégories</h1>
       <p class="categories__intro">
         Chaque article est rangé dans une catégorie, et une seule. Pour ce qu'il aborde en plus,
-        voir <a href="/tags/">les thèmes</a>.
+        voir <a href="#tags">les tags</a>, plus bas sur cette page.
       </p>
     </header>
 
@@ -48,6 +58,8 @@ const categories = await allCategories(posts);
       }
     </ul>
   </div>
+
+  <TagCloud tags={tags} />
 </Layout>
 
 <style>

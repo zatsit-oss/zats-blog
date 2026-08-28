@@ -89,6 +89,23 @@ export const HERO = {
 } as const;
 
 /**
+ * Two taxonomies, one entry point. Both are published, but the header names
+ * only "Catégories": `/categories/` carries the six category cards and, under
+ * them, the cloud of seventeen tags. Decided on 27 August, against the
+ * three-entry header that shipped that morning, and for the reader's sake
+ * rather than the header's: side by side, one axis reads as a shelf and the
+ * other as a subject index, which two menu entries never conveyed.
+ *
+ * `/tags/` redirects there, in astro.config.mjs. The seventeen `/tags/<tag>/`
+ * pages stay: they are part of the 45 routes under contract, and the cloud is
+ * what links to them.
+ *
+ * One word for one thing, settled on 28 August: the reader reads "tag", which
+ * is what the frontmatter and the URL have always said. "Thème" lasted two
+ * days and only added a translation.
+ *
+ * The history below is why the wording is watched so closely here.
+ *
  * Two taxonomies, and they were being spoken of as one. The content repository
  * has always carried both: one **category** per article, the folder it lives
  * in, drawn from the closed list in its config.json; and free **tags**, several
@@ -101,14 +118,13 @@ export const HERO = {
  * ones in use. Tags are the fine, open one, seventeen of them. The word
  * "catégorie" is now reserved for the first and never used for the second.
  *
- * The header lists the two entry points rather than the six categories, which
- * is what Docusaurus did until its navbar ran out of room. `/categories/` is
- * that navbar, on a page, and it costs no dropdown script and no focus trap.
+ * The header lists one entry point rather than the six categories, which is
+ * what Docusaurus did until its navbar ran out of room. `/categories/` is that
+ * navbar, on a page, and it costs no dropdown script and no focus trap.
  */
 export const NAV_LINKS = [
   { href: '/', label: 'Blog' },
   { href: '/categories/', label: 'Catégories' },
-  { href: '/tags/', label: 'Thèmes' },
 ] as const;
 
 /**

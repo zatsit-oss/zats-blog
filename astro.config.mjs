@@ -61,6 +61,12 @@ export default defineConfig({
   // to the home page.
   redirects: {
     '/markdown-page': '/',
+
+    // The tag index moved onto /categories/, under the category cards, so
+    // this route would otherwise serve the same list twice. It cannot simply
+    // go: it is one of the 45 routes the migration owes, and it is linked from
+    // outside. The seventeen /tags/<tag>/ pages are untouched.
+    '/tags': '/categories/',
   },
 
   markdown: {
