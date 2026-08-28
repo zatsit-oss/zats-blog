@@ -132,6 +132,8 @@ const PAIRS = [
   { fg: '--color-eco', bg: '--color-bg', kind: 'info', note: 'eco signifier, non-text use only' },
   { fg: '--color-eco-text', bg: '--color-bg', kind: 'text', note: 'sustainability as text' },
   { fg: '--color-eco-text', bg: '--color-surface', kind: 'text', note: 'sustainability as text, on surface' },
+  { fg: '--color-secondary-text', bg: '--color-surface', kind: 'text', note: 'admonition title on surface' },
+  { fg: '--color-secondary', bg: '--color-surface', kind: 'nontext', note: 'admonition border and icon disc' },
   { fg: '--color-primary', bg: '--color-bg', kind: 'nontext', note: 'focus ring vs page' },
   { fg: '--color-primary', bg: '--color-surface', kind: 'nontext', note: 'focus ring vs surface' },
   { fg: '--color-border', bg: '--color-bg', kind: 'info', note: 'decorative border, exempt unless it conveys state' },

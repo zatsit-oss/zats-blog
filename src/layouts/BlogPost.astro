@@ -384,12 +384,21 @@ const minutes = readingTime(post);
     text-align: center;
   }
 
-  /* Wide content scrolls inside its own box, never the page. */
+  /* Wide content scrolls inside its own box, never the page. For a table that
+     box is the wrapper hast-table-scroll adds, which carries tabindex="0": a
+     scroll container with nothing focusable inside cannot be reached without a
+     pointer, and three tables had their right-hand columns out of reach. */
   .post__body :global(pre),
-  .post__body :global(table) {
+  .post__body :global(.table-scroll) {
     margin-block: var(--space-6);
     overflow-x: auto;
     max-width: 100%;
+  }
+
+  /* Visible when the wrapper takes focus, since it is now a tab stop. */
+  .post__body :global(.table-scroll:focus-visible) {
+    outline: var(--border-width-strong) solid var(--color-primary);
+    outline-offset: var(--space-1);
   }
 
   .post__body :global(table) {

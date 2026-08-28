@@ -107,6 +107,10 @@ const total = sections.length + sections.reduce((n, s) => n + s.children.length,
 
   .toc__link {
     display: block;
+    /* 24px, the target minimum. The nested variant sets a tighter padding and
+       a smaller size, and came out at 23px: one pixel short of 2.5.5, on every
+       article with a third-level heading. */
+    min-block-size: 1.5rem;
     padding: var(--space-2) 0 var(--space-2) var(--space-4);
     /* Sits on top of the list's rule, so the active state reads as that rule
        lighting up rather than a second line appearing beside it. */

@@ -17,6 +17,7 @@
   --zat-gold-300: #ffd580;   /* light gold, gradient end */
   --zat-orange-500: #e1601f; /* secondary / accent orange */
   --zat-orange-600: #ff8c00; /* impact gradient end */
+  --zat-orange-700: #b8480d; /* deep orange, the only one legible as text on a light surface */
 
   /* Neutrals — Light */
   --zat-white: #ffffff;

@@ -259,7 +259,10 @@ td {
   align-items: center;
   gap: var(--space-2);
   margin-block: 0 var(--space-2);
-  color: var(--admonition-accent);
+  /* The accent carries the border and the icon disc, which are non-text and
+     need 3:1. A title is text and needs 4.5:1, which the accent does not give
+     on this surface, so the two are separate variables. */
+  color: var(--admonition-text, var(--admonition-accent));
   font-weight: var(--font-semibold);
 }
 
@@ -282,12 +285,15 @@ td {
 
 .admonition--tip {
   --admonition-accent: var(--color-eco);
+  /* 2.01:1 in the light theme: --color-eco has never been a text colour. */
+  --admonition-text: var(--color-eco-text);
 }
 
 .admonition--warning,
 .admonition--caution,
 .admonition--danger {
   --admonition-accent: var(--color-secondary);
+  --admonition-text: var(--color-secondary-text);
 }
 
 /* Code blocks. Shiki emits both themes on every token; the light one is the

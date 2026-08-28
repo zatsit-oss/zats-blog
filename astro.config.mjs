@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { defineConfig, fontProviders } from 'astro/config';
 import { mdastAdmonitions } from './src/plugins/mdast-admonitions.mjs';
+import { hastTableScroll } from './src/plugins/hast-table-scroll.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -80,6 +81,9 @@ export default defineConfig({
     processor: satteri({
       features: { directive: true },
       mdastPlugins: [mdastAdmonitions],
+      // Presentational, hence hast: it makes a table wider than the column
+      // reachable with a keyboard. See the plugin for the defect it fixes.
+      hastPlugins: [hastTableScroll],
     }),
 
     shikiConfig: {

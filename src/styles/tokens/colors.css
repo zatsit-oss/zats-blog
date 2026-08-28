@@ -56,6 +56,10 @@
      and measures 2.01:1 on the light surface, so setting a word in it fails at
      any size. This is the same green, dark enough to read. */
   --color-eco-text: var(--zat-eco-green-deep);
+  /* `--color-secondary` is an accent, not a text colour: it measures 3.41:1 on
+     the surface here, so an admonition title in it failed WCAG AA in the light
+     theme and 4.23:1 in the dark one. Same split as --color-eco-text. */
+  --color-secondary-text: var(--zat-orange-700);
 
   color-scheme: light;
 }
@@ -75,6 +79,7 @@
   --color-on-primary: var(--zat-night);
   --color-secondary: var(--zat-orange-500);
   --color-secondary-hover: var(--zat-gold-400);
+  --color-secondary-text: var(--zat-orange-600);
   --color-accent-1: #f59e0b;
   --color-accent-2: #ef4444;
   --color-accent-3: #f97316;
