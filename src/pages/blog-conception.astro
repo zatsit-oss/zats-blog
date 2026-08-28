@@ -95,8 +95,16 @@ import { MEASURED_PAGE_DATE } from '../consts';
     font-size: var(--text-lg);
   }
 
+  /* Asymmetric on purpose, 40 above and 20 below, so an h2 belongs to the
+     section it opens. Measured before the change: the gap under a title was
+     zero, and two consecutive paragraphs were glued as well, the global reset
+     zeroing every margin and nothing on this page putting them back. */
   .eco h2 {
-    margin-block-start: var(--space-10);
+    margin-block: var(--space-10) var(--space-5);
+  }
+
+  .eco p + p {
+    margin-block-start: var(--space-4);
   }
 
   .eco__badge {
