@@ -85,6 +85,8 @@ Two things this catches that nothing else does: whether an element is actually v
 
 **axe-core can be run without adding a dependency.** Download `axe.min.js` to the scratchpad, inject it with `Runtime.evaluate`, then `axe.run(document)`. That is the same engine as the axe DevTools extension, so a clean result here is a clean result in the reader's browser, and it catches what `check:a11y` cannot: ARIA misuse, roles, names, structure. `check:a11y` only measures contrast on the tokens.
 
+**The carbon badge always reads "No Result" outside production, and that is not a defect.** It asks the API to measure `window.location.href`, so locally it asks for `http://localhost:4321/`, which nothing can reach. Do not debug it from a local build, and do not take a screenshot of the footer as evidence of a failure.
+
 **The search cannot work under `npm run dev`**, since Pagefind's index is produced by the build. Use `npm run preview`. And the search script is inlined into every page, so a cached page serves the old script: force-reload before concluding anything.
 
 ## Architecture
