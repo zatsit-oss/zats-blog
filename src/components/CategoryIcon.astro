@@ -87,9 +87,8 @@ const { slug, class: className } = Astro.props;
   {
     slug === 'ai' && (
       <>
-        <rect x="7" y="7" width="10" height="10" rx="2" />
-        <path d="M10.5 10.5h3v3h-3z" />
-        <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
+        <path d="M13 3l1.8 4.7L19.5 9.5 14.8 11.3 13 16l-1.8-4.7L6.5 9.5l4.7-1.8z" />
+        <path d="M6 15.5l.9 2.3 2.3.9-2.3.9L6 21.9l-.9-2.3-2.3-.9 2.3-.9z" />
       </>
     )
   }
@@ -137,15 +136,17 @@ const { slug, class: className } = Astro.props;
     )
   }
 
-  {/* Général, and anything nobody drew: a shelf of articles. */}
+  {/* Général, and anything nobody drew: a stack of sheets. Three horizontal
+      lines were the first draft and they read as a loading skeleton, or as a
+      burger menu, which is what happens to any glyph made of parallel bars. */}
   {
     !['green', 'architecture', 'cloud', 'data', 'ai', 'dev', 'web', 'mobile', 'ops'].includes(
       slug,
     ) && (
       <>
-        <path d="M4 5h16" />
-        <path d="M4 12h16" />
-        <path d="M4 19h10" />
+        <rect x="3" y="6" width="13" height="15" rx="2" />
+        <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h9A1.5 1.5 0 0 1 20 4.5v12" />
+        <path d="M6.5 11h7M6.5 15h7" />
       </>
     )
   }
