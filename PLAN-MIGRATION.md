@@ -335,7 +335,19 @@ Pourquoi le merge est couplé au déploiement, et non simplement souhaitable apr
 4. **Aucune politique de bucket sur greenscore** (`NoSuchBucketPolicy`) : la publication repose sur une **ACL `public-read` posée objet par objet**, vérifiée sur l'objet racine. Un dépôt sans `--acl public-read` est écrit mais invisible, en 403, ce qui ressemble à une panne de droits et non à un oubli. Pour le blog, poser une politique de bucket sur `/*` dans le Terraform est plus robuste que de compter sur chaque upload de la CI.
 5. **Les en-têtes de cache** se posent à l'upload, par objet (`--cache-control`), faute de configuration par préfixe : actifs hachés en `immutable`, HTML à durée courte. C'est la dernière ligne de la checklist éco, et elle devient une responsabilité de l'étape de déploiement.
 
-Les points 2 et 3 pointent vers la même conclusion : **le Cellar seul ne suffit pas** pour servir le blog correctement. Une application Clever en frontal, ou tout autre proxy, réglerait la redirection du slash, la vraie 404 et les 301 de P2 d'un coup. À arbitrer, mais l'arbitrage est maintenant documenté.
+**L'API de configuration de site statique n'existe pas sur Cellar.** Mesuré le 28 août : `GET /bucket?website` répond **405 MethodNotAllowed** (`s3cmd ws-info`). Donc pas de document d'index configurable, pas de document d'erreur, pas de règles de redirection. L'index de répertoire qui fonctionne au point 1 vient du proxy de Clever, pas de cette API, et il n'y a rien à y régler.
+
+Conséquence directe, et Emmanuel a écarté l'application frontale le 28 août : **le `/404.html` du build ne peut pas être servi sur une clé absente**. Une URL inconnue rendra le XML `AccessDenied` en 403.
+
+**Et le comportement actuel n'est pas un modèle à reproduire.** Sur `blog.zatsit.fr`, une URL inconnue renvoie **200 avec la page d'accueil**, à l'octet près (136 144 o pour `/unkown` comme pour `/`) : le repli est réglé sur `index.html` et c'est le routeur client de Docusaurus qui affiche ensuite son écran d'erreur. Astro n'a pas de routeur client, donc le même réglage servirait l'accueil du blog sur n'importe quelle URL fausse, en 200, sans jamais le dire au lecteur. C'est pire que le XML, qui au moins ne ment pas. À noter aussi que la prod actuelle redirige `/tags` vers `/tags/` en 301, ce que Cellar ne fait pas.
+
+L'arbitrage se réduit donc à trois options, à trancher avant la bascule :
+
+1. **Assumer le XML sur les URLs inconnues.** Coût nul. Les 45 routes du contrat sont servies, donc les inconnues sont des fautes de frappe, des liens morts anciens et des robots. Un lecteur y verra du XML, et un moteur gardera l'URL au lieu de la laisser tomber, un 403 n'étant pas un 404.
+2. **Ne pas déplacer l'hébergement maintenant.** Le bucket Google sait faire une vraie 404 (`NotFoundPage` renvoyé avec un statut 404, à condition de le régler sur `404.html` et non sur `index.html`) et il redirige déjà le slash manquant. Basculer le build vers Astro sans changer d'hébergeur est possible, et découplé par construction depuis D3.
+3. **Un CDN devant le bucket**, si ce n'est pas une « application » au sens où Emmanuel l'entend : une règle de redirection y règle le slash manquant, la page d'erreur dépend du produit choisi.
+
+Les redirections déjà connues, elles, ne dépendent de rien de tout ça : `/markdown-page/` et `/tags/` sont servies par des pages `meta refresh` produites par Astro, qui fonctionnent sur n'importe quel hébergeur.
 
 Le reste du travail, la CI du dépôt contenu, est **indépendant de ce verrou** et peut avancer en parallèle : elle déclenche un build, elle ne choisit pas la cible. C'est d'ailleurs le sens du découplage acté en D3.
 
