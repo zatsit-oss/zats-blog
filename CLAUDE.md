@@ -36,6 +36,8 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **`.focus()` does not make `:focus-visible` match, so it cannot verify a focus ring.** Chrome grants `:focus-visible` on keyboard interaction, not on a programmatic focus call: the computed style came back as the browser default, `3px none`, and reads as a missing focus ring on a component that has one. Drive a real Tab with `Input.dispatchKeyEvent` and assert `el.matches(':focus-visible')` alongside the outline.
 
+**A class passed to a child component does not carry the parent's scope.** `<CategoryIcon class="categories__icon" />` puts the class on the child's root element, but not the parent's `data-astro-cid`, so a rule written in the parent compiles to `.categories__icon[data-astro-cid-…]` and matches nothing: the category icons shipped with neither their margin nor their colour, silently. Reach them with `:global()` behind a scoped ancestor, or drive them with a custom property, which inherits across the boundary.
+
 **Astro scopes component CSS to server-rendered elements.** Anything a script creates at runtime carries no `data-astro-cid` attribute, so scoped rules never match it. Those styles must be `is:global`.
 
 **`is:inline` is required, not stylistic, for the search script.** `/pagefind/pagefind.js` is generated after the Astro build, and a Vite-processed dynamic import emits an unsubstituted `__VITE_PRELOAD__` marker that throws at runtime. The inline script also needs `type="module"`, or Safari refuses the dynamic import that Chrome accepts.

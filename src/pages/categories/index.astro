@@ -25,6 +25,7 @@
  * and the cloud is what points at them.
  */
 import Layout from '../../layouts/Layout.astro';
+import CategoryIcon from '../../components/CategoryIcon.astro';
 import TagIndex from '../../components/TagIndex.astro';
 import { allCategories, allTags, sortedPosts } from '../../utils/posts';
 
@@ -53,6 +54,7 @@ const tags = await allTags(posts);
         categories.map(({ slug, label, count }) => (
           <li>
             <a class="categories__card" href={`/categories/${slug}/`}>
+              <CategoryIcon slug={slug} class="categories__icon" />
               <span class="categories__label">{label}</span>
               {/* The numeral, not "Un": it is a counter, it reads faster, and
                   the row stays legible when the corpus grows. */}
@@ -121,6 +123,30 @@ const tags = await allTags(posts);
   .categories__card:hover .categories__label,
   .categories__card:focus-visible .categories__label {
     color: var(--color-primary);
+  }
+
+  /* `:global` on the icon, and not by taste: the class reaches the child
+     component's root element, but the page's scope attribute does not, so a
+     plain `.categories__icon` rule compiles to
+     `.categories__icon[data-astro-cid-…]` and matches nothing. The card part of
+     the selector stays scoped, so this reaches no other icon on the site.
+
+     Neutral at rest and accent on hover, which is what the header's icon row
+     does; the label already turns with it, so the card reads as one target. */
+  .categories__card :global(.caticon) {
+    margin-block-end: var(--space-2);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .categories__card:hover :global(.caticon),
+  .categories__card:focus-visible :global(.caticon) {
+    color: var(--color-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .categories__card :global(.caticon) {
+      transition: none;
+    }
   }
 
   .categories__label {
