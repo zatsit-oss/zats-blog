@@ -160,6 +160,24 @@ Un second bug, masqué par le premier, a été trouvé et corrigé dans le loade
 
 ---
 
+### D3 ter. Comment la production sert réellement le site
+
+**Établi le 28 août 2026 en lisant l'infrastructure**, parce que « le bucket sert le site » était faux et faussait trois raisonnements de ce document.
+
+`blog.zatsit.fr` résout vers `34.54.251.152`, un load balancer dont l'URL map `zatsit-external-prod` n'a **aucune règle d'hôte** : tout part vers le backend `nginx-prod`, un **NEG serverless** pointant un service **Cloud Run nommé `nginx`**, image `nginx:latest`, dans `europe-west1` du projet `zatsit-dsi-externalsites-prod`.
+
+Ce nginx sert les six sites externes. Les buckets y sont montés **en système de fichiers par gcsfuse** : `zatsit-blog-prod` sur `/var/www/zatsit-blog-prod`, et de même pour sustainability et greenscore. Sa configuration vient de **Secret Manager**, secret `zatsit-external-prod-nginx-conf`, clé `latest`, montée sur `/etc/nginx/conf.d/nginx.conf`.
+
+Trois conséquences, dont deux corrigent ce document :
+
+- **La configuration de site du bucket ne sert à rien ici.** `gs://zatsit-blog-prod` porte déjà `mainPageSuffix: index.html` et `notFoundPage: 404.html`, et ces réglages ne sont jamais consultés : ils n'agissent que si GCS sert lui-même le site. Le conseil « régler `NotFoundPage` sur `404.html` », donné plus haut avant cette lecture, était donc inutile, la valeur y est déjà et n'a aucun effet.
+- **Le faux 404 vient de nginx.** Une URL inconnue reçoit l'accueil en 200 parce que son `try_files` finit sur `/index.html`. Le correctif est `try_files $uri $uri/ =404;` plus `error_page 404 /404.html;`, dans le seul bloc `server` du blog. Garder `$uri/` dans la chaîne : c'est lui qui produit la 301 de `/tags` vers `/tags/` via le module `index`. Et pas de `=200` sur l'`error_page`, sinon le faux 404 revient.
+- **La comparaison avec Cellar était biaisée.** Ce que « le bucket Google sait faire » et Cellar non, c'est en réalité ce que fait nginx. Le jour de la migration Clever, la question n'est donc pas « Cellar sait-il faire une 404 » mais « qui remplace nginx », ce qui explique pourquoi le sujet revient toujours à une couche devant le stockage.
+
+Appliquer une modification demande une nouvelle version du secret puis une **nouvelle révision Cloud Run**, les instances vivantes gardant la configuration résolue à leur démarrage.
+
+---
+
 ## 1. Inventaire réel (établi, non supposé)
 
 ### Contenu : 19 articles, 10 catégories, 12 auteurs
