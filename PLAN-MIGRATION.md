@@ -35,6 +35,8 @@ Le 27 août, trois lots commités. **Les deux taxonomies** : le dépôt contenu 
 
 Le 28 août : la décision D6 est implémentée. Une seule entrée de menu, les dix-sept tags en **index alphabétique sans compteur** sur `/categories/` sous les six cartes de catégories, `/tags/` en redirection, et le mot lu par le lecteur devient **« tag »**, celui du frontmatter et de l'URL. Vérifié dans Chrome, axe-core à zéro violation dans les deux thèmes.
 
+Le 28 août, en fin de journée, **une page par auteur**, hors périmètre de migration et demandée après coup : fiche d'identité (photo, titre, liens sociaux) puis ses articles en cartes, via le `PostList` que l'accueil, les catégories et les tags utilisaient déjà. Un nom cliqué reste sur le site au lieu d'ouvrir un profil GitHub, et `/authors/`, qui figurait dans les 45 routes sans qu'aucun lien n'y mène, entre dans l'en-tête à côté de Blog et Catégories. Adresses lisibles, `/authors/emmanuel-peru/`, dérivées du nom et non de la clé YAML.
+
 Deux choses ont été écartées en cours de route, et c'est le même réflexe dans les deux cas : la graduation des tags par fréquence, et le « Un article » des cartes. Le lecteur n'a pas besoin d'être orienté vers les tags les plus fournis, et un compteur se lit plus vite en chiffres.
 
 Les trois gates sont vertes et les budgets tenus sur les 52 pages. La page `/categories/` a été auditée le 28 août avec le nuage en place : axe-core à zéro violation dans les deux thèmes, 46 règles passées, `target-size` demandée par son nom. Les six pages `/categories/<slug>/`, qui reprennent la structure des pages de tags déjà vérifiées, n'ont pas été auditées une à une.
@@ -73,6 +75,7 @@ Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le s
 | Pages de tags : les 17 `/tags/<tag>/`, plus `/tags/` en redirection | ✅ |
 | Pages de catégories : `/categories/` et les 6 `/categories/<slug>/` | ✅ 27 août |
 | Index de tags sur `/categories/`, une seule entrée de menu | ✅ 28 août, D6 |
+| Pages par auteur : les 13 `/authors/<prénom-nom>/`, en-tête à trois entrées | ✅ 28 août, hors périmètre |
 | `/archive/` | ✅ |
 | `/authors/` | ✅ |
 | 404 | ✅ |
