@@ -36,7 +36,9 @@ Le chemin `../zats-blog-content` est en dur à deux endroits, `src/consts.ts` et
 | `npm run check:a11y` | contrastes WCAG 2.1 AA, deux thèmes, plus les couleurs du code |
 | `npm run check:eco` | budgets de poids par page, sur `dist/` |
 
-La recherche ne fonctionne pas avec `npm run dev` : son index est produit par le build. C'est attendu, et le champ le dit.
+**La recherche ne fonctionne pas avec `npm run dev`**, et c'est attendu : son index est produit par le build, dans `dist/pagefind/`. Pour la tester, `npm run build` puis `npm run preview`, et forcer le rechargement de la page, le script de recherche étant inliné dans chaque page (un onglet ouvert avant le dernier build sert l'ancien).
+
+Attention, en dev **rien ne le signale à l'écran** : le champ répond normalement et ne renvoie simplement aucun résultat. Le message d'échec existe mais part dans une région `sr-only`, donc seul un lecteur d'écran l'entend ; la console, elle, porte l'erreur `[search] Pagefind n'a pas pu être chargé.` C'est le piège qui a déjà fait conclure deux fois à une régression.
 
 Les deux dernières commandes sortent en erreur si un seuil est franchi, et la CI les exécute sur chaque pull request. Les règles sont dans [.claude/rules/quality.md](.claude/rules/quality.md).
 
