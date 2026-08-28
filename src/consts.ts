@@ -132,6 +132,7 @@ export const NAV_LINKS = [
   { href: '/', label: 'Blog' },
   { href: '/categories/', label: 'Catégories' },
   { href: '/authors/', label: 'Auteurs' },
+  { href: '/blog-conception/', label: 'Éco-conception' },
 ] as const;
 
 /**
