@@ -68,13 +68,14 @@ export async function postsByTag(tag: string, posts?: Post[]): Promise<Post[]> {
 
 /**
  * Heading of a tag page. Docusaurus printed "Un article tagués avec « java »",
- * wrong in number and in register; this agrees, and says "tag", the word the
+ * wrong in number and in register; this agrees, counts in numerals, and says
+ * "tag", the word the
  * whole site uses for a tag, in the frontmatter, in the URL and to the reader.
  * "Thème" was tried for two days and dropped on 28 August: it made the reader
  * translate a word the rest of the site never stopped spelling `tags`.
  */
 export function taggedHeading(tag: string, count: number): string {
-  const lead = count === 1 ? 'Un article' : `${count} articles`;
+  const lead = `${count} article${count > 1 ? 's' : ''}`;
   return `${lead} sur le tag « ${tag} »`;
 }
 
@@ -127,7 +128,7 @@ export async function postsByCategory(slug: string, posts?: Post[]): Promise<Pos
 
 /** Heading of a category page, agreeing in number like taggedHeading does. */
 export function categoryHeading(slug: string, count: number): string {
-  const lead = count === 1 ? 'Un article' : `${count} articles`;
+  const lead = `${count} article${count > 1 ? 's' : ''}`;
   return `${lead} dans « ${categoryLabel(slug)} »`;
 }
 

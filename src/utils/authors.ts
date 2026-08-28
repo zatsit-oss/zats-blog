@@ -136,8 +136,11 @@ export async function authorByKey(key: string, profiles?: AuthorProfile[]) {
   return all.find((profile) => profile.key === key);
 }
 
-/** Heading of an author page, agreeing in number like the other headings do. */
+/**
+ * Heading of an author page. The numeral, never "Un" spelled out: it is a
+ * count, it reads faster, and one rule across the site beats a rule per page.
+ */
 export function authoredHeading(count: number): string {
   if (count === 0) return 'Pas encore d’article';
-  return count === 1 ? 'Un article' : `${count} articles`;
+  return `${count} article${count > 1 ? 's' : ''}`;
 }

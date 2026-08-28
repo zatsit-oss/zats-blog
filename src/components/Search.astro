@@ -276,7 +276,7 @@ import { Search as SearchIcon } from '@lucide/astro';
         }
 
         status.textContent =
-          results.length === 1 ? 'Un article trouvé' : `${results.length} articles trouvés`;
+          `${results.length} article${results.length > 1 ? 's' : ''} trouvé${results.length > 1 ? 's' : ''}`;
 
         for (const result of results) {
           const group = document.createElement('li');
