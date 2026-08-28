@@ -13,6 +13,7 @@ import HeroTagCloud from '../components/HeroTagCloud.astro';
 import BlogFacts from '../components/BlogFacts.astro';
 import BuiltWith from '../components/BuiltWith.astro';
 import PostList from '../components/PostList.astro';
+import RandomArticle from '../components/RandomArticle.astro';
 import { sortedPosts } from '../utils/posts';
 import { SITE_TITLE, SITE_DESCRIPTION, POSTS_PER_PAGE, HERO } from '../consts';
 
@@ -46,5 +47,8 @@ const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
     current={1}
     total={totalPages}
     nextUrl={totalPages > 1 ? '/page/2/' : undefined}
-  />
+  >
+    {/* Draws from the whole corpus, not from the ten shown below. */}
+    <RandomArticle slot="action" posts={posts} />
+  </PostList>
 </Layout>

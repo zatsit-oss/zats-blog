@@ -57,7 +57,13 @@ const grid = showLead ? rest : posts;
 
 <section class="listing">
   <header class="listing__header">
-    <Heading class="listing__heading">{heading}</Heading>
+    {/* The heading and, when a page has one, its action side by side. The row
+        exists only where the slot is filled, so the four other surfaces using
+        this component render exactly what they rendered before. */}
+    <div class:list={['listing__top', Astro.slots.has('action') && 'has-action']}>
+      <Heading class="listing__heading">{heading}</Heading>
+      <slot name="action" />
+    </div>
     {intro && <p class="listing__intro">{intro}</p>}
   </header>
 
@@ -95,6 +101,16 @@ const grid = showLead ? rest : posts;
 
   .listing__header {
     margin-block-end: var(--rhythm-heading);
+  }
+
+  /* Wraps rather than shrinks: on a phone the action goes under the heading at
+     full size instead of squeezing beside it. */
+  .listing__top.has-action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
   }
 
   .listing__intro {
