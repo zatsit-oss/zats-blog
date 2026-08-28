@@ -90,7 +90,7 @@ Two things this catches that nothing else does: whether an element is actually v
 | Loader, schema, date and category fallback | `src/content.config.ts` |
 | Shared helpers: excerpt, reading time, tags, categories | `src/utils/posts.ts` |
 | Category and tag pages | `src/pages/categories/`, `src/pages/tags/[tag].astro` |
-| Tag cloud, the navigational one | `src/components/TagCloud.astro` |
+| Tag index, the navigational one | `src/components/TagIndex.astro` |
 | Avatars, read from the content repo | `src/utils/avatars.ts` |
 | Page shell, header, footer | `src/layouts/Layout.astro` |
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
@@ -107,7 +107,8 @@ Articles are served at the **root**, as `/<slug>/`, and the slug comes from the 
 ## Conventions
 
 - **Two taxonomies, and they are not the same word.** A **category** is the folder an article sits in, one per article, drawn from the closed list in the content repository's `config.json` and enforced by its own CI; it is derived in the loader and served at `/categories/<slug>/`, under labels held in `CATEGORY_LABELS`. A **tag** is free, several per article, open-ended, and served at `/tags/<tag>/`. Never call a tag a category: the site did, in four different words on four different surfaces, and it is what this rule exists to stop.
-- **A tag is a "tag", to the reader as in the frontmatter.** It is one word for one thing, in the YAML, in the URL, in the heading of `/tags/<tag>/` and in the cloud on `/categories/`. "Thème" was the reader-facing word from 25 to 28 August and was dropped: it asked the reader to translate a term the site never stopped spelling `tags`. Both taxonomies are surfaced on `/categories/` alone, the header carrying a single entry, and `/tags/` redirects there.
+- **A tag is a "tag", to the reader as in the frontmatter.** It is one word for one thing, in the YAML, in the URL, in the heading of `/tags/<tag>/` and in the index on `/categories/`.
+- **No tag is presented as bigger than another.** The index prints the seventeen words alphabetically, at one size, with no article count, on the page and in the accessible text alike. A graded cloud shipped on 28 August and was dropped the same day: a count ranks seventeen equal words and sends every reader to the same three, where six of the seventeen hold a single article nobody has seen. Categories do carry their count, and that asymmetry is the point, a category is a shelf. Anything that needs visual life in that block takes the accent on the separators, which are decorative and `aria-hidden`, never a size ramp. "Thème" was the reader-facing word from 25 to 28 August and was dropped: it asked the reader to translate a term the site never stopped spelling `tags`. Both taxonomies are surfaced on `/categories/` alone, the header carrying a single entry, and `/tags/` redirects there.
 - Never a raw hex in product code: always a semantic token from `src/styles/tokens/colors.css`, so both themes resolve.
 - Third-party brand marks are never redrawn, and never recoloured into our palette. Use the asset the owner publishes, geometry untouched, and only in the one-colour form they provide: Astro and Clever Cloud both ship a mono variant, and the Website Carbon globe travels as a CSS mask so its shape is theirs and the colour is the page's. A vendor with no vector asset gets its name set in type.
 - Vertical space is not set per page. `main` opens and closes the page and its children are separated by the section gap, from the rhythm tokens at the end of `src/styles/tokens/spacing.css`. A block that needs to sit closer than the gap overrides it and says why.

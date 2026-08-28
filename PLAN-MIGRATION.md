@@ -27,7 +27,9 @@ Du 22 au 25 août : l'en-tête et le pied de page passent sur ceux du corporate,
 
 Le 27 août, trois lots commités. **Les deux taxonomies** : le dépôt contenu porte depuis toujours une catégorie par article, le dossier où il vit, tirée de la liste fermée de son `config.json`, plus des thèmes libres ; seuls les thèmes étaient publiés, derrière un menu qui les appelait catégories, sur une page dont le titre les appelait tags. Le loader dérive maintenant la catégorie du dossier comme il dérive la date, la valide contre `config.json` et asserte l'état final du store ; six des dix catégories autorisées portent des articles et reçoivent une page. **Le `srcset` des images d'article**, qui était le point 2 des prochains gestes du 21 août. Et un correctif d'accessibilité : le lien dans la ligne de copyright du pied de page, que axe remontait en `link-in-text-block` sur toutes les pages.
 
-Le 28 août : la décision D6 est implémentée. Une seule entrée de menu, le nuage des dix-sept tags sur `/categories/` sous les six cartes de catégories, `/tags/` en redirection, et le mot lu par le lecteur devient **« tag »**, celui du frontmatter et de l'URL. Vérifié dans Chrome, axe-core à zéro violation dans les deux thèmes.
+Le 28 août : la décision D6 est implémentée. Une seule entrée de menu, les dix-sept tags en **index alphabétique sans compteur** sur `/categories/` sous les six cartes de catégories, `/tags/` en redirection, et le mot lu par le lecteur devient **« tag »**, celui du frontmatter et de l'URL. Vérifié dans Chrome, axe-core à zéro violation dans les deux thèmes.
+
+Deux choses ont été écartées en cours de route, et c'est le même réflexe dans les deux cas : la graduation des tags par fréquence, et le « Un article » des cartes. Le lecteur n'a pas besoin d'être orienté vers les tags les plus fournis, et un compteur se lit plus vite en chiffres.
 
 Les trois gates sont vertes et les budgets tenus sur les 52 pages. La page `/categories/` a été auditée le 28 août avec le nuage en place : axe-core à zéro violation dans les deux thèmes, 46 règles passées, `target-size` demandée par son nom. Les six pages `/categories/<slug>/`, qui reprennent la structure des pages de tags déjà vérifiées, n'ont pas été auditées une à une.
 
@@ -64,7 +66,7 @@ Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le s
 | Hero et les trois blocs de la home | ✅ |
 | Pages de tags : les 17 `/tags/<tag>/`, plus `/tags/` en redirection | ✅ |
 | Pages de catégories : `/categories/` et les 6 `/categories/<slug>/` | ✅ 27 août |
-| Nuage de tags sur `/categories/`, une seule entrée de menu | ✅ 28 août, D6 |
+| Index de tags sur `/categories/`, une seule entrée de menu | ✅ 28 août, D6 |
 | `/archive/` | ✅ |
 | `/authors/` | ✅ |
 | 404 | ✅ |
@@ -338,12 +340,18 @@ Comme les jetons sont copiés et donc figés, prévoir une procédure de resynch
 
 Ce que la décision ne change pas non plus : les deux axes restent deux axes. Une catégorie est le dossier, fermé, une par article ; un tag est libre, plusieurs par article. La page les porte côte à côte, ce qui est plus exigeant qu'un menu à deux entrées, pas moins : c'est là que la confusion des quatre mots était née.
 
-**Implémenté et vérifié le 28 août.** `src/components/TagCloud.astro`, dix-sept mots dérivés d'`allTags()`, dimensionnés sur le rang du nombre d'articles et non sur le nombre lui-même (la distribution est trop tassée : 6, 3, 2, 1), quatre paliers de 16 à 24 px avec les poids 400/600/700, les seuls que le site télécharge. `/tags/` redirige vers `/categories/`. Mesuré dans Chrome : les dix-sept mots cliquables, cibles de 40 px de haut, tailles monotones avec le nombre d'articles, focus au clavier à 2 px pleins, aucun débordement à 390 px, axe-core à **zéro violation dans les deux thèmes** avec `target-size` demandée par son nom, contrastes de 5,86:1 à 16,71:1, aucune erreur console.
+**Implémenté et vérifié le 28 août**, en deux passes. La première graduait les dix-sept mots en quatre tailles selon le nombre d'articles ; Emmanuel l'a écartée le même jour, *« pas de distinction en fonction de la fréquence, laissons le visiteur être curieux »*. Retenu : `src/components/TagIndex.astro`, un **index alphabétique**, une seule taille de corps, **aucun compteur**, ni à l'écran ni dans le texte accessible.
+
+Le raisonnement vaut d'être gardé, parce qu'il contredit l'intuition : un compteur à côté d'un mot classe dix-sept liens équivalents et envoie tout le monde vers les trois mêmes, alors que six des dix-sept ne portent qu'un article, justement ceux que personne n'a lus. Les cartes de catégories, elles, gardent leur compteur : une catégorie est une étagère, sa taille dit de quoi le blog est fait. Cette asymétrie est voulue.
+
+La présence visuelle vient donc d'ailleurs, et des idiomes du site plutôt que d'un ajout : couche tonale et filet (`--color-surface`, l'élévation au repos de ce dépôt), mots deux crans au-dessus du corps de texte puisqu'ils sont le contenu de la section, et l'accent dépensé sur les séparateurs, décoratifs et `aria-hidden`, donc soumis à aucun minimum de contraste. Le compteur des cartes passe au chiffre, « 1 article » et non « Un article ».
+
+`/tags/` redirige vers `/categories/`. Mesuré dans Chrome : dix-sept mots cliquables, cibles de 40 px de haut, une seule taille et un seul poids, zéro chiffre dans la section, focus clavier à 2 px pleins avec soulignement, trois lignes en 1440 px et neuf en 390 px sans débordement, contrastes de 5,86:1 à 16,71:1, axe-core à **zéro violation dans les deux thèmes** avec `target-size` demandée par son nom, aucune erreur console.
 
 Quatre contraintes d'implémentation, vérifiées :
 
 1. **`/tags/` et les dix-sept `/tags/<tag>/` sont dans les 45 routes du contrat** et continuent de résoudre. Le nuage pointe vers les dix-sept, elles restent des pages. Pour `/tags/` elle-même, **tranché** : redirection vers `/categories/`, sur le modèle de `/markdown-page/`, sinon la même liste était servie deux fois. Attention, c'est un `meta refresh` produit par Astro et non une 301 : la vraie redirection reste à porter par la couche qui sert le site, comme le dit déjà P2.
-2. **`HeroTagCloud.astro` ne se réemploie pas tel quel.** SVG figé, `role="img"`, libellé unique, aucun mot cliquable : c'est l'illustration de la planche de design, pas une navigation. Le nuage de navigation est donc un composant distinct, dérivé des données. Le libellé de l'illustration dit d'ailleurs « frontend » là où le corpus porte « angular », ce qui confirme qu'il ne lit pas les données ; il a été aligné sur le mot « tags » le 28 août, sa liste de mots reste celle de la planche.
+2. **`HeroTagCloud.astro` ne se réemploie pas tel quel.** SVG figé, `role="img"`, libellé unique, aucun mot cliquable : c'est l'illustration de la planche de design, pas une navigation. Le bloc de navigation est donc un composant distinct, dérivé des données. Noter que l'illustration, elle, garde sa graduation de tailles : c'est une figure, elle n'oriente aucun clic. Le libellé de l'illustration dit d'ailleurs « frontend » là où le corpus porte « angular », ce qui confirme qu'il ne lit pas les données ; il a été aligné sur le mot « tags » le 28 août, sa liste de mots reste celle de la planche.
 3. **Cibles et contraste** : les mots les plus petits d'un nuage sont des cibles de navigation. La règle de la charte s'applique, 24 px ou l'exception d'espacement de 2.5.8, et le contraste se mesure aux deux extrêmes de l'échelle de tailles.
 4. **Motion** : si l'arrivée est animée, le composant annule sa propre animation dans sa propre requête de média. Le piège de `prefers-reduced-motion` face à un `animation-delay` est déjà payé, il est écrit dans `CLAUDE.md`.
 

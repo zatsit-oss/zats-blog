@@ -1,7 +1,7 @@
 ---
 /**
  * The two taxonomies on one page, at /categories/: the six categories that
- * carry an article, then the seventeen tags as a cloud.
+ * carry an article, then the seventeen tags as an alphabetical index.
  *
  * This page is the Docusaurus navbar. That navbar listed the categories one by
  * one and was already full at five, with a sixth commented out and a note
@@ -9,18 +9,23 @@
  * empty ones simply do not appear, and the header keeps the room its search
  * field and its icon row need.
  *
- * Cards for the categories, a cloud for the tags: six curated entry points
- * are not seventeen keywords, and the difference should be visible before it is
- * read. That contrast is the reason the two axes share a page rather than two
- * menu entries, decided on 27 August: the reader sees at a glance that one axis
- * is a shelf and the other a subject index.
+ * Cards for the categories, a plain index for the tags: six curated entry
+ * points are not seventeen keywords, and the difference should be visible
+ * before it is read. That contrast is the reason the two axes share a page
+ * rather than two menu entries, decided on 27 August: the reader sees at a
+ * glance that one axis is a shelf and the other a subject index.
+ *
+ * The cards carry their article count, the tags carry none. That asymmetry is
+ * deliberate: a category is a shelf whose size tells the reader what the blog
+ * is made of, while a count on a tag would rank seventeen equal words and send
+ * everyone to the same three.
  *
  * /tags/ used to hold the second half and now redirects here. Its seventeen
  * per-tag pages are untouched: they are part of the 45 routes under contract,
  * and the cloud is what points at them.
  */
 import Layout from '../../layouts/Layout.astro';
-import TagCloud from '../../components/TagCloud.astro';
+import TagIndex from '../../components/TagIndex.astro';
 import { allCategories, allTags, sortedPosts } from '../../utils/posts';
 
 const posts = await sortedPosts();
@@ -49,8 +54,10 @@ const tags = await allTags(posts);
           <li>
             <a class="categories__card" href={`/categories/${slug}/`}>
               <span class="categories__label">{label}</span>
+              {/* The numeral, not "Un": it is a counter, it reads faster, and
+                  the row stays legible when the corpus grows. */}
               <span class="categories__count">
-                {count === 1 ? 'Un article' : `${count} articles`}
+                {count} article{count > 1 ? 's' : ''}
               </span>
             </a>
           </li>
@@ -59,7 +66,7 @@ const tags = await allTags(posts);
     </ul>
   </div>
 
-  <TagCloud tags={tags} />
+  <TagIndex tags={tags} />
 </Layout>
 
 <style>
