@@ -28,7 +28,7 @@ const counted = await authorProfiles(posts);
     <header class="authors__header">
       <h1>Les auteurs</h1>
       <p class="authors__intro">
-        {counted.length} personnes ont écrit les {posts.length} articles de ce blog.
+        {counted.length} talents vous ont écrit les {posts.length} articles de ce blog.
       </p>
     </header>
 
@@ -41,8 +41,8 @@ const counted = await authorProfiles(posts);
                 class="author__avatar"
                 src={author.avatar}
                 alt=""
-                width={64}
-                height={64}
+                width={96}
+                height={96}
                 densities={[1, 2]}
                 loading="lazy"
               />
@@ -55,9 +55,7 @@ const counted = await authorProfiles(posts);
               <p class="author__count">
                 {author.posts.length === 0
                   ? 'Pas encore publié'
-                  : author.posts.length === 1
-                    ? 'Un article'
-                    : `${author.posts.length} articles`}
+                  : `${author.posts.length} article${author.posts.length > 1 ? 's' : ''}`}
               </p>
             </div>
           </li>
@@ -82,18 +80,41 @@ const counted = await authorProfiles(posts);
     font-size: var(--text-lg);
   }
 
+  /* Portraits rather than rows. Thirteen identical lines stacked vertically
+     was the most monotonous surface of the site, and the faces are the one
+     source of variety that costs nothing: the avatars are already there. It
+     also scales, three rows here where the list took thirteen, and it still
+     holds at thirty people.
+
+     Flex and not grid, for one reason: the last row has to centre its
+     leftovers. Thirteen people over four columns leave one alone, and a grid
+     leaves it hard against the left edge; `justify-content` on a grid centres
+     the tracks, not the items that remain. In flex, the orphans of the last
+     line centre on their own, one in the middle or two straddling the middle,
+     and the count of people stays none of our business.
+
+     The basis grows so a full row fills the measure, and `max-inline-size`
+     caps it so the one leftover does not stretch to 48rem. */
   .authors__list {
-    display: grid;
-    gap: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-8) var(--space-4);
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
+  /* Centred under the portrait, which is what makes a grid of faces read as a
+     gallery rather than as a table that lost its borders. */
   .author {
+    flex: 1 1 9rem;
+    max-inline-size: 11rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
+    text-align: center;
   }
 
   .author__avatar {
@@ -105,6 +126,8 @@ const counted = await authorProfiles(posts);
   .author__name {
     margin: 0;
     font-size: var(--text-lg);
+    /* Two words on two lines rather than a hyphenated surname. */
+    text-wrap: balance;
   }
 
   .author__name a {
@@ -124,10 +147,7 @@ const counted = await authorProfiles(posts);
     font-size: var(--text-sm);
   }
 
-  @media (min-width: 640px) {
-    .authors__list {
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-8);
-    }
-  }
+  /* No breakpoint of its own any more: `auto-fit` above does the work, two
+     portraits on a phone and four at full measure, and the fixed two-column
+     rule that used to live here was overriding it. */
 </style>
