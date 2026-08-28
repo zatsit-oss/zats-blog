@@ -88,9 +88,10 @@ function socialsOf(socials: Record<string, string> | undefined, name: string): A
  * and the per-author page. One function so the two cannot disagree on what a
  * given person has written.
  *
- * Ordered by output, most published first, then alphabetically. The byline
- * order inside an article is meaningful and is left alone; the order of a list
- * of people is not, and "who writes here most" is the more useful answer.
+ * Ordered alphabetically by name. Ranking people by output was the first cut
+ * and it is the wrong rule for a list of colleagues: it reads as a leaderboard,
+ * and it moves someone down the page the day somebody else publishes. The
+ * byline order inside an article is meaningful and is left alone.
  */
 export async function authorProfiles(posts?: Post[]): Promise<AuthorProfile[]> {
   const entries = posts ?? (await sortedPosts());
@@ -126,7 +127,7 @@ export async function authorProfiles(posts?: Post[]): Promise<AuthorProfile[]> {
     seen.set(profile.slug, profile.name);
   }
 
-  return profiles.sort((a, b) => b.posts.length - a.posts.length || a.name.localeCompare(b.name, 'fr'));
+  return profiles.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 }
 
 /** The profile behind an authors.yml key, for a byline that wants to link it. */
