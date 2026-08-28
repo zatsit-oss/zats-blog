@@ -17,7 +17,6 @@
  * replacement is 258 bytes.
  */
 import LinkedinIcon from '../assets/icons/linkedin.svg';
-import TwitterIcon from '../assets/icons/twitter.svg';
 
 interface Props {
   /** Article slug, from the frontmatter. Drives the canonical URL. */
@@ -38,8 +37,12 @@ const { slug, title, text } = Astro.props;
 const url = new URL(`/${slug}/`, Astro.site).href;
 const shareText = text ?? title;
 
+// LinkedIn only, since 28 August: zatsit is no longer active on X, and a share
+// button to a network nobody reads there sends readers into a void. `shareText`
+// stays in the frontmatter, five articles carry a hand-written one, and it is
+// what the next network added here will use.
 const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-const x = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
+void shareText;
 ---
 
 <aside class="share" aria-labelledby="share-heading">
@@ -49,12 +52,6 @@ const x = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)
       <a class="share__link" href={linkedin} target="_blank" rel="noopener noreferrer"
         aria-label={`Partager « ${title} » sur LinkedIn, dans un nouvel onglet`}>
         <LinkedinIcon class="icon" aria-hidden="true" />
-      </a>
-    </li>
-    <li>
-      <a class="share__link" href={x} target="_blank" rel="noopener noreferrer"
-        aria-label={`Partager « ${title} » sur X, dans un nouvel onglet`}>
-        <TwitterIcon class="icon" aria-hidden="true" />
       </a>
     </li>
   </ul>
