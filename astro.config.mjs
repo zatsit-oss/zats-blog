@@ -66,7 +66,11 @@ export default defineConfig({
     // this route would otherwise serve the same list twice. It cannot simply
     // go: it is one of the 45 routes the migration owes, and it is linked from
     // outside. The seventeen /tags/<tag>/ pages are untouched.
-    '/tags': '/categories/',
+    //
+    // To the anchor and not to the top of the page: someone typing /tags/ is
+    // after the tags, and the index sits under the six category cards, which
+    // would otherwise be all they land on.
+    '/tags': '/categories/#tags',
   },
 
   markdown: {

@@ -23,14 +23,17 @@
  *     (`--color-surface` over the page, never a shadow at rest);
  *   - the words set two steps above body size, since they *are* the content of
  *     this section and not a caption to it;
- *   - the accent colour spent on the separators, where it is free. They are
- *     decorative and `aria-hidden`, so no contrast minimum applies to them and
- *     the rhythm costs the text nothing. The words themselves stay on
- *     `--color-text`, measured at 16.71:1 in light and 13.4:1 in dark.
+ *   - the accent on a 2px rule along the top of the panel, the same one the
+ *     listing cards reveal on hover, here permanent. The words themselves stay
+ *     on `--color-text`, measured at 15.97:1 in light and 11.71:1 in dark.
  *
- * No motion beyond the colour of a word under the pointer. The band of accent
- * dots is doing the work a size ramp was doing, and it does not lie about which
- * tag matters.
+ * The accent first went on middots between the words, and that was wrong on a
+ * phone: a wrapped run has no "last on this line" selector, so seven lines out
+ * of eight ended on a dangling dot and read as an unfinished sentence. Space
+ * alone separates the words now. Worth remembering before reaching for a
+ * separator in any wrapped list.
+ *
+ * No motion beyond the colour of a word under the pointer.
  */
 import type { TagSummary } from '../utils/posts';
 
@@ -64,9 +67,6 @@ const words = [...tags].sort((a, b) => a.tag.localeCompare(b.tag, 'fr'));
           <a class="tagindex__word" href={`/tags/${tag}/`}>
             {tag}
           </a>
-          <span class="tagindex__sep" aria-hidden="true">
-            ·
-          </span>
         </li>
       ))
     }
@@ -87,11 +87,19 @@ const words = [...tags].sort((a, b) => a.tag.localeCompare(b.tag, 'fr'));
   }
 
   .tagindex__list {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     /* Baseline, so the words sit on a common line the way type does. */
     align-items: baseline;
-    row-gap: var(--space-1);
+    /* Space, and nothing but space, between two words. The first version put a
+       middot between them: with a wrapped run there is no selector for "last on
+       this line", so seven lines out of eight on a phone ended on a dangling
+       dot and read as an unfinished sentence. 20px carries the separation on
+       its own, and the accent moved to the rule above, where it cannot dangle.
+       Rows are left to the 40px of the words themselves. */
+    column-gap: var(--space-5);
+    row-gap: 0;
     /* The panel: a tonal layer and a hairline, this codebase's elevation at
        rest. It is what stops seventeen equal words from reading as a leftover
        list under the cards. */
@@ -101,6 +109,31 @@ const words = [...tags].sort((a, b) => a.tag.localeCompare(b.tag, 'fr'));
     background: var(--color-surface);
     list-style: none;
     margin: 0;
+  }
+
+  /* The accent, and the only colour in the block besides the text. The same
+     2px rule the listing cards reveal on hover, here permanent and on a panel
+     nothing can point at: it signs the block instead of decorating it.
+     A 48px stub and not the card's full width: run edge to edge and a
+     permanent rule reads as a banner across the top of the panel, which is
+     more weight than a list of seventeen words should carry. */
+  .tagindex__list::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -1px;
+    inset-inline-start: var(--space-6);
+    inline-size: var(--space-12);
+    block-size: 2px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+  }
+
+  /* A tag never breaks across two lines, "open-source" included: the hyphen is
+     a break opportunity the browser will take. */
+  .tagindex__list li {
+    display: inline-flex;
+    align-items: baseline;
+    white-space: nowrap;
   }
 
   .tagindex__word {
@@ -121,18 +154,6 @@ const words = [...tags].sort((a, b) => a.tag.localeCompare(b.tag, 'fr'));
     color: var(--color-primary);
     text-decoration: underline;
     text-underline-offset: 0.15em;
-  }
-
-  /* Where the accent goes, and the only colour in the block besides the text.
-     Decorative and aria-hidden, so it carries no contrast requirement. */
-  .tagindex__sep {
-    padding-inline: var(--space-3);
-    color: var(--color-primary);
-    font-size: var(--text-xl);
-  }
-
-  .tagindex__list li:last-child .tagindex__sep {
-    display: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
