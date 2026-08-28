@@ -318,11 +318,11 @@ Conséquence directe : la comparaison côte à côte devient impossible une fois
 
 Conséquence d'architecture : **découpler build et déploiement**. L'étape de build ne doit rien savoir de la cible ; le déploiement est un job séparé, pour que le passage à CleverCloud soit un changement d'un seul fichier et non une refonte de pipeline. Les redirections 301 (P2) ne peuvent pas s'appuyer sur `firebase.json` en prod : elles devront être portées par la couche qui sert le bucket, puis retranscrites côté CleverCloud.
 
-### D3 bis. La bascule attend un Cellar provisionné par Terraform
+### D3 bis. Cellar : mesuré, puis reporté après la refonte
 
-**Contrainte posée par Emmanuel le 28 août 2026.** L'hébergement cible chez Clever Cloud est un **Cellar**, à créer par Terraform avant toute bascule. Le merge de la PR #82 n'attend donc plus une relecture mais une infrastructure.
+**Ordre arrêté par Emmanuel le 28 août 2026** : on reste sur l'infrastructure existante, le bucket Google Cloud Storage, et **la migration vers Clever Cloud sera faite après la refonte technique du blog**. Ce qui suit est donc un dossier d'instruction, pas un plan d'exécution : tout y a été mesuré sur un Cellar réel, et rien n'est à refaire le jour où le sujet revient.
 
-Pourquoi le merge est couplé au déploiement, et non simplement souhaitable après : `publish-on-merge.yml` appelle l'action composite locale `.github/actions/docusaurus`, puis déploie sur le canal `live` de Firebase. Merger la coque Astro dans `main` déclencherait ce workflow dans un dépôt qui ne contient plus Docusaurus. Il ne s'agit donc pas de « migrer la CI un jour », mais d'un verrou : **tant que le déploiement n'est pas basculé, `main` ne peut pas recevoir cette branche**.
+Ce que ce report change dans l'immédiat : le merge de la PR #82 n'attend plus aucune infrastructure. Les deux pipelines de publication construisent Astro depuis le 28 août, et celle du dépôt contenu téléverse dans le bucket actuel.
 
 **Mesuré le 28 août 2026 sur un Cellar réel**, celui de `greenscore.zatsit.fr`, en déposant un objet de test puis en interrogeant les quatre formes d'URL. Ce ne sont plus des hypothèses :
 

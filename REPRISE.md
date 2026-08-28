@@ -18,7 +18,9 @@ Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur s
 
 ## Le prochain geste
 
-**La CI du dépôt contenu.** Aujourd'hui, publier un article ne le met pas en ligne : rien ne déclenche le build de la coque. C'est le seul manque **fonctionnel** restant. Techniquement : un workflow côté contenu qui envoie un `repository_dispatch` vers la coque, et le déclencheur correspondant ici. Demande un token inter-dépôts, seul point à préparer avec Emmanuel.
+**La coque vers la production.** Cette note affirmait le contraire pendant deux semaines : « publier un article ne le met pas en ligne ». C'est faux, vérifié le 28 août en lisant les pipelines. Le `publish-on-merge.yml` du dépôt contenu se déclenche sur un push de `blog/**` ou `docs/**` dans `main`, checkoute la coque, la construit et téléverse dans le bucket. **Publier un article déploie.**
+
+Le manque est l'inverse, et il n'avait pas été nommé : **une modification de la coque seule n'atteint pas le bucket.** Ce dépôt-ci ne déploie que sur le canal `live` de Firebase, donc un correctif de composant reste hors ligne jusqu'à la prochaine publication d'article. Contournement disponible dès aujourd'hui, sans rien écrire : le workflow du dépôt contenu a un `workflow_dispatch`, donc un déclenchement manuel republie. Le correctif propre est un `repository_dispatch` envoyé par ce dépôt vers celui du contenu, ce qui demande un token inter-dépôts, à préparer avec Emmanuel.
 
 Ensuite :
 
