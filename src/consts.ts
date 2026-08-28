@@ -75,8 +75,9 @@ export const HERO = {
   eyebrow: 'Le blog de zatsit',
   /**
    * Two clauses, two voices: the statement in roman, the answer in italic and
-   * in the accent colour. The words themselves are still a placeholder waiting
-   * on Emmanuel, and splitting them differently is a one-line change here.
+   * in the accent colour. These words went in as a placeholder on 21 August
+   * and Emmanuel kept them on the 28th, so they are the copy, not a draft.
+   * Splitting them differently stays a one-line change here.
    */
   title: 'Nos consultants construisent.',
   counterpoint: 'Puis ils écrivent comment.',

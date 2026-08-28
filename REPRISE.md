@@ -20,10 +20,9 @@ Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur s
 
 **La CI du dépôt contenu.** Aujourd'hui, publier un article ne le met pas en ligne : rien ne déclenche le build de la coque. C'est le seul manque **fonctionnel** restant. Techniquement : un workflow côté contenu qui envoie un `repository_dispatch` vers la coque, et le déclencheur correspondant ici. Demande un token inter-dépôts, seul point à préparer avec Emmanuel.
 
-Ensuite, dans l'ordre de risque croissant :
+Ensuite :
 
-1. **Le texte du hero.** Sa forme est tranchée, ses mots non : `HERO` dans `src/consts.ts` est toujours un placeholder. Le titre est en deux voix, une clause en romain puis une en italique dans l'accent, et le mécanisme (`counterpoint`) accepte n'importe quel découpage.
-2. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
+1. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
 
 ## État
 
@@ -88,7 +87,6 @@ Corollaire : le script de recherche est **inliné dans chaque page**, donc un on
 
 ## En attente d'arbitrage
 
-- **Le hero est un placeholder assumé**, tout est dans `HERO` de `src/consts.ts`. La home Docusaurus n'avait pas de hero, il n'y a donc rien à restaurer.
 - **La recherche prend une ligne de header en plus sur mobile.** L'alternative est une icône ouvrant un panneau plein écran, avec la machinerie de focus que ça implique.
 - **Les mentions légales ont deux corrections dans du texte juridique** : titres de section en `h2`, et le siège de Google Ireland qui n'est plus « Royaume-Uni ». À faire relire.
 - **Coquilles dans le `shareText` de `bundlephobia`**, reprises verbatim de l'ancien boilerplate.

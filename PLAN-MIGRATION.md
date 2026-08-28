@@ -17,7 +17,9 @@ Branche cible : **`migration-astro`** dans les deux repos.
 
 *Dernière mise à jour : 27 août 2026.* Pour le détail du prochain geste, voir [`REPRISE.md`](REPRISE.md).
 
-**La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée. Restent un manque fonctionnel, la CI du dépôt contenu, le texte du hero, et la bascule de production.
+**La migration est fonctionnellement finie.** PR [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon, CI verte, preview validée. Ne restent que la CI du dépôt contenu, seul manque fonctionnel, et la bascule de production.
+
+Le **texte du hero est validé** depuis le 28 août : les mots posés le 21 en attendant mieux, « Nos consultants construisent. / Puis ils écrivent comment. », sont retenus tels quels. Il n'y a plus de placeholder dans le site.
 
 Le 21 août, matin : le rythme vertical est unifié (quatre jetons et deux règles remplacent neuf paddings posés à la main) et les images que personne n'avait dimensionnées sont plafonnées, ce qui vide la liste des dettes éco.
 
@@ -44,7 +46,7 @@ Les trois gates sont vertes et les budgets tenus sur les 52 pages. La page `/cat
 | Ph4 — vérification des URLs | ✅ 45/45, zéro divergence |
 | Ph5 — CI/CD | 🟡 preview migrée et verte, production encore sur Docusaurus |
 | Ph6 — documentation | ✅ `README`, `CLAUDE.md`, `AGENTS.md` refaits |
-| Ph7 — mise en forme | 🟡 article, listing, rythme vertical, page d'accueil, en-tête et pied de page faits, texte du hero restant |
+| Ph7 — mise en forme | ✅ article, listing, rythme vertical, page d'accueil, en-tête, pied de page, et texte du hero validé le 28 août |
 
 Cette phase 7 n'était pas au plan d'origine. Elle est née de la preview : le site était fonctionnellement complet et visuellement inabouti, et la demande du 14 août a été explicite, la forme avant l'outillage.
 
@@ -125,7 +127,7 @@ Le diagnostic de départ était chiffré : sur onze niveaux de l'échelle typogr
 
 Fait : la justification de l'article passe en `ch`, le rythme des titres devient asymétrique pour qu'un `h2` appartienne à sa section, le premier paragraphe sert de chapô, l'entête fusionne en une signature, le listing reçoit le lift et le filet d'accent, et un sommaire à deux niveaux suit la lecture.
 
-Restant : le hero, dont le texte est encore un placeholder, et le rythme vertical, toujours posé composant par composant.
+Restant à l'époque : le hero, dont le texte n'était encore qu'un placeholder, et le rythme vertical, alors posé composant par composant. Les deux sont faits.
 
 **Garde-fous outillés avant la phase 3**
 
