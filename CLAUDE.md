@@ -42,6 +42,8 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **`is:inline` is required, not stylistic, for the search script.** `/pagefind/pagefind.js` is generated after the Astro build, and a Vite-processed dynamic import emits an unsubstituted `__VITE_PRELOAD__` marker that throws at runtime. The inline script also needs `type="module"`, or Safari refuses the dynamic import that Chrome accepts.
 
+**Crossing 4 kB flips a shared component's CSS from inlined to a request.** `build.inlineStylesheets: 'auto'` inlines a stylesheet under 4 kB; 150 bytes added to `PostList.astro` took its chunk to 4.1 kB and Astro emitted `_astro/PostList.*.css`, which put the home page's initial weight up 4.4 kB and its request count from 10 to 11. It cuts both ways rather than being a regression: that CSS was inlined into each of the six pages using the component, so a visit of more than one page now downloads it once. Worth knowing before blaming a feature for a jump it did not cause.
+
 **Files under `public/` bypass the image pipeline.** They ship at full resolution.
 
 **`astro:assets` re-encodes every image but resizes only when it knows the target width, and Markdown has no syntax for one.** Article images were therefore emitted at their source size, up to 7008px into a 779px column, which is what put two articles megabytes over the page-weight budget. `src/plugins/capped-image-service.mjs` wraps the Sharp service, caps any image whose size nobody declared, and gives it a srcset matched to the widths an article image is measured at; an explicit `width` on an `<Image>` still passes through untouched, its own `sizes` included.
