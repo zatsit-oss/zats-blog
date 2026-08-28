@@ -22,7 +22,9 @@ Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur s
 
 Ensuite :
 
-1. **Bascule de la production.** `publish-on-merge.yml` utilise toujours l'action Docusaurus, volontairement. Le jour où on le migre, le premier merge remplace le blog en ligne. À faire dans une séance dédiée.
+1. **Bascule de la production, bloquée sur l'infra.** Emmanuel doit d'abord créer le **Cellar** chez Clever Cloud avec Terraform, donc on ne peut pas merger tout de suite (28 août). Ce n'est pas un délai de confort : `publish-on-merge.yml` appelle encore l'action composite `.github/actions/docusaurus` avant de déployer sur Firebase, donc merger cette branche dans `main` lancerait un build Docusaurus dans un dépôt qui n'a plus Docusaurus. Quatre points à trancher pendant le provisionnement (index de répertoire pour les 45 routes en `/<slug>/index.html`, vraies 301 ou `meta refresh` conservés, page 404 sur clé absente, en-têtes de cache) : le détail est en **D3 bis** de `PLAN-MIGRATION.md`.
+
+   La CI du dépôt contenu, ci-dessus, n'est pas concernée par ce verrou et peut avancer en parallèle.
 
 ## État
 

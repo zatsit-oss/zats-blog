@@ -314,6 +314,21 @@ Conséquence directe : la comparaison côte à côte devient impossible une fois
 
 Conséquence d'architecture : **découpler build et déploiement**. L'étape de build ne doit rien savoir de la cible ; le déploiement est un job séparé, pour que le passage à CleverCloud soit un changement d'un seul fichier et non une refonte de pipeline. Les redirections 301 (P2) ne peuvent pas s'appuyer sur `firebase.json` en prod : elles devront être portées par la couche qui sert le bucket, puis retranscrites côté CleverCloud.
 
+### D3 bis. La bascule attend un Cellar provisionné par Terraform
+
+**Contrainte posée par Emmanuel le 28 août 2026.** L'hébergement cible chez Clever Cloud est un **Cellar**, à créer par Terraform avant toute bascule. Le merge de la PR #82 n'attend donc plus une relecture mais une infrastructure.
+
+Pourquoi le merge est couplé au déploiement, et non simplement souhaitable après : `publish-on-merge.yml` appelle l'action composite locale `.github/actions/docusaurus`, puis déploie sur le canal `live` de Firebase. Merger la coque Astro dans `main` déclencherait ce workflow dans un dépôt qui ne contient plus Docusaurus. Il ne s'agit donc pas de « migrer la CI un jour », mais d'un verrou : **tant que le déploiement n'est pas basculé, `main` ne peut pas recevoir cette branche**.
+
+Quatre points à trancher pendant le provisionnement, parce qu'ils changent le Terraform et non seulement la CI :
+
+1. **L'index de répertoire.** Le build produit `/<slug>/index.html` pour les 45 routes. Il faut donc que le Cellar serve `index.html` pour un préfixe terminé par `/`, comme le fait le mode « static website » d'un stockage compatible S3. À vérifier tôt : sans cela, les 45 routes deviennent 45 URLs en `/index.html` et le contrat de migration tombe.
+2. **Les 301.** Deux routes du contrat sont aujourd'hui servies par un `meta refresh` généré par Astro, `/markdown-page/` vers la racine et `/tags/` vers `/categories/#tags`. Ça fonctionne partout, mais P2 demande de vraies 301 portées par la couche qui sert le site. Si le Cellar ne sait pas faire de règle de redirection, deux options : garder les `meta refresh`, ou mettre une application Clever devant. À décider, pas à découvrir.
+3. **La page 404.** Le build émet `/404.html` ; il faut dire au Cellar de la servir sur une clé absente.
+4. **Les en-têtes de cache.** Actifs hachés en `immutable`, HTML à durée courte. C'est la dernière ligne de la checklist éco, et elle se règle à la couche d'hébergement.
+
+Le reste du travail, la CI du dépôt contenu, est **indépendant de ce verrou** et peut avancer en parallèle : elle déclenche un build, elle ne choisit pas la cible. C'est d'ailleurs le sens du découplage acté en D3.
+
 ### D4. Maths → conservées
 
 **Vérifié puis décidé** : il y a bien une formule KaTeX réelle, la définition du WUE en `blog/green/20251129-greenIT-episode-2/index.md:105`.
