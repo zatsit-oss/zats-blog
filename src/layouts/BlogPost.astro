@@ -10,6 +10,7 @@ import ShareLinks from '../components/ShareLinks.astro';
 import CodeCopy from '../components/CodeCopy.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import { categoryLabel } from '../consts';
+import { authorSlug } from '../utils/authors';
 import { metaDescription, readingTime } from '../utils/posts';
 
 interface Props {
@@ -31,7 +32,11 @@ const authors = await Promise.all(
         `L'article "${slug}" référence l'auteur "${key}", absent de authors.yml.`,
       );
     }
-    return { ...entry.data, avatar: avatarFor(key) };
+    // The byline links inside the site now, to the person's own page, rather
+    // than out to the GitHub profile authors.yml declares: a reader clicking
+    // an author wants their other articles. The outbound profiles are on that
+    // page. The slug comes from the shared helper so the two never diverge.
+    return { ...entry.data, href: `/authors/${authorSlug(entry.data.name)}/`, avatar: avatarFor(key) };
   }),
 );
 
@@ -106,11 +111,7 @@ const minutes = readingTime(post);
               authors.map((author, index) => (
                 <>
                   {index > 0 && <span>, </span>}
-                  {author.url ? (
-                    <a href={author.url} rel="noopener noreferrer">{author.name}</a>
-                  ) : (
-                    <span>{author.name}</span>
-                  )}
+                  <a href={author.href}>{author.name}</a>
                 </>
               ))
             }

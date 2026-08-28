@@ -119,13 +119,19 @@ export const HERO = {
  * ones in use. Tags are the fine, open one, seventeen of them. The word
  * "catégorie" is now reserved for the first and never used for the second.
  *
- * The header lists one entry point rather than the six categories, which is
- * what Docusaurus did until its navbar ran out of room. `/categories/` is that
- * navbar, on a page, and it costs no dropdown script and no focus trap.
+ * The header lists one entry point per axis rather than the six categories,
+ * which is what Docusaurus did until its navbar ran out of room. `/categories/`
+ * is that navbar, on a page, and it costs no dropdown script and no focus trap.
+ *
+ * `/authors/` joins them on 28 August. It was among the 45 routes from the
+ * start and **nothing in the site linked to it**: reachable only by typing the
+ * URL, for a page about the thirteen people who write here. Now that each name
+ * leads to their own page, the list is worth an entry of its own.
  */
 export const NAV_LINKS = [
   { href: '/', label: 'Blog' },
   { href: '/categories/', label: 'Catégories' },
+  { href: '/authors/', label: 'Auteurs' },
 ] as const;
 
 /**
