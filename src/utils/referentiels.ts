@@ -29,6 +29,10 @@ export interface Groupe {
 
 export interface Referentiel {
   id: string;
+  /** URL segment, distinct from the id: the W3C reads as "w3c", not "wsg". */
+  slug: string;
+  /** Short name, for a heading that already has context around it. */
+  court: string;
   nom: string;
   source: string;
   version: string;
@@ -45,13 +49,39 @@ export const REFERENTIELS: Referentiel[] = [greenit as Referentiel, wsg as Refer
  * company and not the site: calling them non-applicable would suggest the
  * question does not arise, which is not the same thing.
  */
-export const STATUTS: Record<Statut, { label: string; court: string }> = {
-  OK: { label: 'Respecté', court: 'Respectés' },
-  PART: { label: 'Partiel', court: 'Partiels' },
-  KO: { label: 'Non respecté', court: 'Non respectés' },
-  NA: { label: 'Sans objet', court: 'Sans objet' },
-  ORG: { label: 'Relève de zatsit', court: 'Relèvent de zatsit' },
+export const STATUTS: Record<Statut, { label: string; singulier: string; pluriel: string }> = {
+  // Feminine throughout: the subject is a *règle* or a *ligne directrice*, and
+  // both are feminine in French. The Markdown files already agreed.
+  OK: { label: 'Respectée', singulier: 'respectée', pluriel: 'respectées' },
+  PART: { label: 'Partielle', singulier: 'partielle', pluriel: 'partielles' },
+  KO: { label: 'Non respectée', singulier: 'non respectée', pluriel: 'non respectées' },
+  NA: { label: 'Sans objet', singulier: 'sans objet', pluriel: 'sans objet' },
+  ORG: { label: 'Relève de zatsit', singulier: 'relève de zatsit', pluriel: 'relèvent de zatsit' },
 };
+
+/**
+ * The comments are written in the same prose as the Markdown files, backticks
+ * included. On a page those backticks would print as themselves, so they become
+ * `<code>` here. The text is escaped first: it is ours, but a rule about not
+ * trusting content is not worth an exception the day someone pastes an angle
+ * bracket into a verdict.
+ */
+export function formaterCommentaire(texte: string): string {
+  const escaped = texte
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  return escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
+/** The label a count of `n` takes, so a chip never reads "1 non respectées". */
+export function accorder(statut: Statut, n: number): string {
+  return n > 1 ? STATUTS[statut].pluriel : STATUTS[statut].singulier;
+}
+
+/** Display order of the statuses, worst-known first after the good news. */
+export const ORDRE: Statut[] = ['OK', 'PART', 'KO', 'NA', 'ORG'];
 
 export interface Comptes {
   parStatut: Record<Statut, number>;

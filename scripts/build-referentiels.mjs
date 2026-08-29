@@ -5,7 +5,7 @@
  *   npm run docs:referentiels
  *
  * The JSON is the source and this script is the only writer of those two files:
- * editing the Markdown by hand puts the page at /referentiels/ and the document
+ * editing the Markdown by hand puts the pages under /audits/ and the document
  * out of step, and an audit that contradicts itself is worse than no audit. The
  * same duplication, one calculation in two places, is what produced the
  * pagination bug of 29 August.
@@ -52,7 +52,7 @@ const PREAMBULE = {
     intro: [
       "Évaluation du référentiel [cnumr/best-practices](https://github.com/cnumr/best-practices) appliquée à ce dépôt.",
       "Le référentiel est souvent cité comme « les 115 règles » ; sa version publiée en compte **119 en français**, et c'est ce nombre qui est repris ici. Chaque verdict s'appuie sur une mesure du build ou sur un fichier du dépôt, jamais sur une intention.",
-      "Ce document a un pendant, [`REFERENTIEL-W3C-WSG.md`](REFERENTIEL-W3C-WSG.md), et une version en ligne sur [/referentiels/](https://blog.zatsit.fr/referentiels/). Les trois sont générés depuis `src/data/referentiel-greenit.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.",
+      "Ce document a un pendant, [`REFERENTIEL-W3C-WSG.md`](REFERENTIEL-W3C-WSG.md), et une version en ligne sur [/audits/](https://blog.zatsit.fr/audits/). Les trois sont générés depuis `src/data/referentiel-greenit.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.",
     ],
     apres: [
       "### Ce qui reste à faire\n",
@@ -71,7 +71,7 @@ const PREAMBULE = {
     intro: [
       "Évaluation des [Web Sustainability Guidelines](https://www.w3.org/TR/web-sustainability-guidelines/) appliquée à ce dépôt.",
       "Le référentiel compte **71 lignes directrices** regroupant **196 critères de succès**, en quatre domaines. Ce document évalue les 71 lignes directrices, chacune couvrant ses critères ; c'est l'unité lisible, et le nombre de critères de chaque ligne figure dans la colonne « Critères ».",
-      "Ce document a un pendant, [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), et une version en ligne sur [/referentiels/](https://blog.zatsit.fr/referentiels/). Les trois sont générés depuis `src/data/referentiel-wsg.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.",
+      "Ce document a un pendant, [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), et une version en ligne sur [/audits/](https://blog.zatsit.fr/audits/). Les trois sont générés depuis `src/data/referentiel-wsg.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.",
     ],
     apres: [
       "### Une distinction que le référentiel Green IT n'imposait pas\n",

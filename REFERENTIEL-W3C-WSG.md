@@ -4,7 +4,7 @@
 
 Le référentiel compte **71 lignes directrices** regroupant **196 critères de succès**, en quatre domaines. Ce document évalue les 71 lignes directrices, chacune couvrant ses critères ; c'est l'unité lisible, et le nombre de critères de chaque ligne figure dans la colonne « Critères ».
 
-Ce document a un pendant, [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), et une version en ligne sur [/referentiels/](https://blog.zatsit.fr/referentiels/). Les trois sont générés depuis `src/data/referentiel-wsg.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.
+Ce document a un pendant, [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), et une version en ligne sur [/audits/](https://blog.zatsit.fr/audits/). Les trois sont générés depuis `src/data/referentiel-wsg.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.
 
 ## Résultat
 

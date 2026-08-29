@@ -1,5 +1,7 @@
 {
  "id": "wsg",
+ "slug": "w3c",
+ "court": "W3C",
  "nom": "Web Sustainability Guidelines du W3C",
  "source": "https://www.w3.org/TR/web-sustainability-guidelines/",
  "version": "WSG 1.0, Group Note Draft du 28 juillet 2026",

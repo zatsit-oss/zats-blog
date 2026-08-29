@@ -1,5 +1,7 @@
 {
  "id": "greenit",
+ "slug": "greenit",
+ "court": "Green IT",
  "nom": "Bonnes pratiques du collectif Green IT",
  "source": "https://github.com/cnumr/best-practices",
  "version": "119 règles, version française publiée",

@@ -4,7 +4,7 @@
 
 Le référentiel est souvent cité comme « les 115 règles » ; sa version publiée en compte **119 en français**, et c'est ce nombre qui est repris ici. Chaque verdict s'appuie sur une mesure du build ou sur un fichier du dépôt, jamais sur une intention.
 
-Ce document a un pendant, [`REFERENTIEL-W3C-WSG.md`](REFERENTIEL-W3C-WSG.md), et une version en ligne sur [/referentiels/](https://blog.zatsit.fr/referentiels/). Les trois sont générés depuis `src/data/referentiel-greenit.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.
+Ce document a un pendant, [`REFERENTIEL-W3C-WSG.md`](REFERENTIEL-W3C-WSG.md), et une version en ligne sur [/audits/](https://blog.zatsit.fr/audits/). Les trois sont générés depuis `src/data/referentiel-greenit.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.
 
 ## Résultat
 
