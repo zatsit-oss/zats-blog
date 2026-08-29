@@ -13,11 +13,10 @@
  * the budget, for a wall nobody reads end to end.
  */
 import Layout from '../../layouts/Layout.astro';
-import AuditScore from '../../components/AuditScore.astro';
+import AuditCards from '../../components/AuditCards.astro';
 import { REFERENTIELS, compter } from '../../utils/referentiels';
 
-const audits = REFERENTIELS.map((ref) => ({ ...ref, comptes: compter(ref.groupes) }));
-const total = audits.reduce((sum, a) => sum + a.comptes.total, 0);
+const total = REFERENTIELS.reduce((sum, ref) => sum + compter(ref.groupes).total, 0);
 ---
 
 <Layout
@@ -34,25 +33,7 @@ const total = audits.reduce((sum, a) => sum + a.comptes.total, 0);
       </p>
     </header>
 
-    <ul class="audits__list">
-      {
-        audits.map((audit) => (
-          <li class="audit">
-            <h2 class="audit__titre">
-              <a href={`/audits/${audit.slug}/`}>{audit.nom}</a>
-            </h2>
-
-            <AuditScore audit={audit} />
-
-            <p class="audit__lien">
-              <a href={`/audits/${audit.slug}/`}>
-                Le détail des {audit.comptes.total} {audit.unite}
-              </a>
-            </p>
-          </li>
-        ))
-      }
-    </ul>
+    <AuditCards />
 
     <p class="audits__source">
       Les mêmes données sont versionnées dans le dépôt, en{' '}
@@ -83,41 +64,6 @@ const total = audits.reduce((sum, a) => sum + a.comptes.total, 0);
     margin: var(--space-3) 0 0;
     color: var(--color-text-muted);
     font-size: var(--text-lg);
-  }
-
-  .audits__list {
-    display: grid;
-    gap: var(--space-8);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .audit {
-    padding: var(--space-6);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-card-bg);
-  }
-
-  .audit__titre {
-    margin: 0;
-    font-size: var(--text-2xl);
-  }
-
-  .audit__titre a {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-
-  .audit__titre a:hover,
-  .audit__titre a:focus-visible {
-    color: var(--color-primary);
-    text-decoration: underline;
-  }
-
-  .audit__lien {
-    margin: var(--space-5) 0 0;
   }
 
   .audits__source {

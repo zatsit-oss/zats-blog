@@ -384,6 +384,22 @@ Les redirections déjà connues, elles, ne dépendent de rien de tout ça : `/ma
 
 Le reste du travail, la CI du dépôt contenu, est **indépendant de ce verrou** et peut avancer en parallèle : elle déclenche un build, elle ne choisit pas la cible. C'est d'ailleurs le sens du découplage acté en D3.
 
+### D7. Un audit RGAA, plus tard
+
+**Noté le 29 août 2026, volontairement reporté** : Emmanuel veut s'y pencher avant qu'on le lance. Le principe est acquis, faire pour l'accessibilité ce que `/audits/` fait pour l'éco-conception.
+
+La source existe et est exploitable : la DINUM publie le **RGAA 4.1** en JSON officiel dans [DISIC/accessibilite.numerique.gouv.fr](https://github.com/DISIC/accessibilite.numerique.gouv.fr/tree/main/RGAA), **106 critères en 13 thématiques**, chacun avec ses tests. Même mécanique que les deux référentiels déjà traités, donc la page et les documents se génèrent depuis `src/data/`.
+
+**Ce qu'il ne faut pas faire, et c'est le piège de ce chantier** : publier un rapport axe comme s'il valait audit. axe est une mesure automatique qui couvre de l'ordre du tiers des critères. Il voit un `alt` manquant, jamais un `alt` qui ment ; un contraste, jamais un ordre de lecture absurde ; un bouton sans nom accessible, jamais un nom trompeur. Le résultat d'axe a sa place **comme preuve d'un critère donné**, pas comme substitut à l'évaluation.
+
+Trois limites à poser d'emblée, sinon l'audit ment :
+
+1. **Pas de lecteur d'écran ici.** Une dizaine de critères demandent une restitution réelle par VoiceOver ou NVDA, et devront être marqués « à vérifier ».
+2. **Beaucoup de critères sans objet** sur ce site : formulaires, multimédia, cadres, tableaux de données complexes. Comme pour l'éco, c'est l'information la plus honnête du compte.
+3. **La déclaration d'accessibilité** que le RGAA impose reste à arbitrer : savoir si zatsit y est légalement tenue, et si la publier volontairement a du sens.
+
+---
+
 ### D4. Maths → conservées
 
 **Vérifié puis décidé** : il y a bien une formule KaTeX réelle, la définition du WUE en `blog/green/20251129-greenIT-episode-2/index.md:105`.

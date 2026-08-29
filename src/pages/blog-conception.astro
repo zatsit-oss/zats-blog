@@ -10,6 +10,7 @@
 import Layout from '../layouts/Layout.astro';
 import WebsiteCarbonBadge from '../components/WebsiteCarbonBadge.astro';
 import EcoIndexBadge from '../components/EcoIndexBadge.astro';
+import AuditCards from '../components/AuditCards.astro';
 import CO2JSBadge from '../components/CO2JSBadge.astro';
 import { MEASURED_PAGE_DATE } from '../consts';
 ---
@@ -90,10 +91,15 @@ import { MEASURED_PAGE_DATE } from '../consts';
 
     <p>
       Une note se conteste mal, une liste se vérifie. Le blog est évalué ligne à ligne contre deux
-      référentiels publics, les 119 bonnes pratiques du collectif Green IT et les 71 lignes
-      directrices du W3C, avec les écarts nommés plutôt que passés sous silence :
-      <a href="/audits/">nos audits d'éco-conception</a>.
+      référentiels publics, avec les écarts nommés plutôt que passés sous silence.
     </p>
+
+    {/* The scores themselves, not a link to them: a sentence saying we audited
+        ourselves asks to be believed, two figures show it. `h3` because the
+        section heading above is already an `h2`. */}
+    <div class="eco__audits">
+      <AuditCards headingLevel="h3" meta={false} />
+    </div>
 
     <p>
       Cette approche ne rend pas un site vertueux par magie. Elle rend ses coûts visibles, ce qui
@@ -133,5 +139,19 @@ import { MEASURED_PAGE_DATE } from '../consts';
 
   .eco__badge {
     margin-block: var(--space-6);
+  }
+
+  /* Wider than the reading column: two cards squeezed into 45rem of prose
+     measure would make the score bars unreadable. Escapes symmetrically so the
+     block stays centred on the text above it. */
+  .eco__audits {
+    margin-block: var(--space-6);
+  }
+
+  @media (min-width: 60rem) {
+    .eco__audits {
+      inline-size: calc(100% + 2 * var(--space-10));
+      margin-inline: calc(var(--space-10) * -1);
+    }
   }
 </style>
