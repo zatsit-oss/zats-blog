@@ -268,9 +268,22 @@ for (const width of widths) {
 }
 
 ws.close();
-chrome.kill();
 server.close();
-await rm(profile, { recursive: true, force: true });
+
+// Wait for Chrome to actually exit before removing its profile: killing it and
+// deleting straight away raced with its own writes and threw ENOTEMPTY on the
+// service worker directory, failing a run whose audit had already passed.
+// Cleanup must never be what fails a gate, hence the catch as well.
+await new Promise((done) => {
+  chrome.once('exit', done);
+  chrome.kill();
+  setTimeout(done, 3000);
+});
+try {
+  await rm(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+} catch {
+  // A leftover temporary profile is harmless; the operating system clears it.
+}
 
 console.log('\n================ RÉSULTAT ================\n');
 

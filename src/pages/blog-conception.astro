@@ -79,10 +79,20 @@ import { MEASURED_PAGE_DATE } from '../consts';
     <h2>Ce que nous mesurons nous-mêmes</h2>
 
     <p>
-      Deux vérifications tournent à chaque modification du site et échouent si un seuil est
-      dépassé : l'une mesure le poids de chaque page contre un budget, l'autre les contrastes de
-      couleur contre le niveau AA des WCAG, dans les thèmes clair et sombre. Les chiffres de cette
-      page datent du {MEASURED_PAGE_DATE}.
+      Trois vérifications tournent à chaque modification du site et échouent si un seuil est
+      dépassé : la première mesure le poids de chaque page contre un budget, la deuxième les
+      contrastes de couleur contre le niveau AA des WCAG dans les thèmes clair et sombre, la
+      troisième passe axe-core sur toutes les pages, aux deux largeurs. Les chiffres de cette page
+      datent du {MEASURED_PAGE_DATE}.
+    </p>
+
+    <h2>Et ce que nous ne faisons pas</h2>
+
+    <p>
+      Une note se conteste mal, une liste se vérifie. Le blog est évalué ligne à ligne contre deux
+      référentiels publics, les 119 bonnes pratiques du collectif Green IT et les 71 lignes
+      directrices du W3C, avec les écarts nommés plutôt que passés sous silence :
+      <a href="/referentiels/">nos audits d'éco-conception</a>.
     </p>
 
     <p>

@@ -1,0 +1,528 @@
+{
+ "id": "wsg",
+ "nom": "Web Sustainability Guidelines du W3C",
+ "source": "https://www.w3.org/TR/web-sustainability-guidelines/",
+ "version": "WSG 1.0, Group Note Draft du 28 juillet 2026",
+ "evalue_le": "2026-08-29",
+ "unite": "lignes directrices",
+ "note": "71 lignes directrices regroupant 196 critères de succès. Le chiffre de la colonne « Critères » est le nombre de critères de succès que la ligne couvre.",
+ "groupes": [
+  {
+   "nom": "Conception et expérience",
+   "criteres": [
+    {
+     "ref": "2",
+     "titre": "Identify, assess, disclose, review, and mitigate sustainability impacts",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#identify-assess-disclose-review-and-mitigate-sustainability-impacts",
+     "statut": "OK",
+     "comment": "L'impact est mesuré à chaque build et publié au lecteur : `/blog-conception/` porte trois badges, dont deux vérifiables par un tiers, et le poids servant au calcul est affiché avec sa date."
+    },
+    {
+     "ref": "1",
+     "titre": "Understand user requirements or constraints",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#understand-user-requirements-or-constraints",
+     "statut": "OK",
+     "comment": "Les contraintes sont écrites et chiffrées dans `.claude/rules/quality.md` : budgets de poids, de requêtes, de DOM, plus WCAG 2.1 AA dans les deux thèmes."
+    },
+    {
+     "ref": "4",
+     "titre": "Integrate sustainability into every stage of the ideation process",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#integrate-sustainability-into-every-stage-of-the-ideation-process",
+     "statut": "OK",
+     "comment": "La sobriété est un critère de sortie, pas une intention : trois portes de qualité échouent le build, et chaque kilo-octet de script est une exception argumentée dans le code."
+    },
+    {
+     "ref": "3",
+     "titre": "Design efficient and streamlined user journeys",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#design-efficient-and-streamlined-user-journeys",
+     "statut": "OK",
+     "comment": "Deux niveaux depuis l'accueil jusqu'à l'article. Les deux taxonomies tiennent sur une page unique plutôt que dans un menu déroulant, et le parcours a été vérifié dans un navigateur réel."
+    },
+    {
+     "ref": "3",
+     "titre": "Design to assist and not to distract",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#design-to-assist-and-not-to-distract",
+     "statut": "OK",
+     "comment": "Aucune publicité, aucune notification, aucun bandeau de consentement puisque aucun cookie n'est posé. Une seule animation, en une passe, neutralisée sous `prefers-reduced-motion`."
+    },
+    {
+     "ref": "4",
+     "titre": "Avoid being manipulative or deceptive",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#avoid-being-manipulative-or-deceptive",
+     "statut": "OK",
+     "comment": "Aucun schéma sombre : pas de compte à rebours, pas d'inscription forcée, pas de collecte. Le chiffre d'empreinte affiché porte sa date pour qu'un chiffre périmé se voie."
+    },
+    {
+     "ref": "3",
+     "titre": "Make deliverables understandable and reusable",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#make-deliverables-understandable-and-reusable",
+     "statut": "OK",
+     "comment": "Dépôt public sous licence, décisions et pièges documentés dans `CLAUDE.md` et `PLAN-MIGRATION.md`, contenu en Markdown portable dans un dépôt distinct."
+    },
+    {
+     "ref": "1",
+     "titre": "Use a design system for interface consistency",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-a-design-system-for-interface-consistency",
+     "statut": "OK",
+     "comment": "Jetons sémantiques dans `src/styles/tokens/`, alignés sur le Zatsit Design System. Aucune valeur hexadécimale brute n'est admise dans le code produit."
+    },
+    {
+     "ref": "5",
+     "titre": "Optimize media to reduce resource use",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#optimize-media-to-reduce-resource-use",
+     "statut": "OK",
+     "comment": "WebP, dimensions plafonnées à 1366 px, `srcset` de six paliers calé sur les largeurs réellement mesurées, chargement différé sous la ligne de flottaison. Un article est passé de 734 à 322 ko d'images sur téléphone."
+    },
+    {
+     "ref": "4",
+     "titre": "Ensure animation is proportionate and easy to control",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#ensure-animation-is-proportionate-and-easy-to-control",
+     "statut": "OK",
+     "comment": "Une animation sur tout le site, en une passe et non en boucle, ce qui la sort du critère 2.2.2. Chaque composant animé annule son animation dans sa propre requête de média."
+    },
+    {
+     "ref": "3",
+     "titre": "Use optimized web typography",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-optimized-web-typography",
+     "statut": "OK",
+     "comment": "Poppins auto-hébergée en woff2 latin, sous-ensemble par l'API Fonts d'Astro, trois graisses, six fichiers pour 48,5 ko. Aucune requête vers un fournisseur tiers."
+    },
+    {
+     "ref": "2",
+     "titre": "Avoid unwanted notifications",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#avoid-unwanted-notifications",
+     "statut": "OK",
+     "comment": "Le site ne demande aucune permission et n'envoie rien : ni notification, ni courriel, ni fenêtre modale."
+    },
+    {
+     "ref": "4",
+     "titre": "Reduce the impact of downloadable and physical documents",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#reduce-the-impact-of-downloadable-and-physical-documents",
+     "statut": "PART",
+     "comment": "Aucun document téléchargeable n'est publié. En revanche aucune feuille d'impression n'est fournie, alors qu'un article technique est un candidat naturel au PDF."
+    },
+    {
+     "ref": "1",
+     "titre": "Involve users early in the project",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#involve-users-early-in-the-project",
+     "statut": "OK",
+     "comment": "La refonte a été mise en relecture auprès des treize consultants sur une preview dédiée avant toute bascule."
+    },
+    {
+     "ref": "3",
+     "titre": "Audit and test for bugs or issues requiring resolution",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#audit-and-test-for-bugs-or-issues-requiring-resolution",
+     "statut": "OK",
+     "comment": "axe-core sur les 68 pages, deux thèmes, deux largeurs, avec `target-size` demandée par son nom, plus le contraste sur les jetons et les couleurs de code. Les trois portes échouent le build."
+    },
+    {
+     "ref": "2",
+     "titre": "Validate usability through testing and real-world usage",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#validate-usability-through-testing-and-real-world-usage",
+     "statut": "PART",
+     "comment": "Vérifications systématiques dans un navigateur réel piloté en CDP, et relecture par les consultants. Aucun test d'utilisabilité formel avec des lecteurs extérieurs."
+    },
+    {
+     "ref": "3",
+     "titre": "Provide cross-platform compatibility support",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#provide-cross-platform-compatibility-support",
+     "statut": "OK",
+     "comment": "HTML sémantique sans framework client : la page fonctionne sans JavaScript, navigation, articles et tirage au hasard compris. Vérifié de 390 à 1440 px."
+    }
+   ]
+  },
+  {
+   "nom": "Développement web",
+   "criteres": [
+    {
+     "ref": "2",
+     "titre": "Set goals based on performance and energy impact",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#set-goals-based-on-performance-and-energy-impact",
+     "statut": "OK",
+     "comment": "Budgets chiffrés et opposables : moins de 500 ko initiaux, 1 Mo au total, 25 requêtes, 1500 éléments de DOM. Le build échoue au dépassement."
+    },
+    {
+     "ref": "2",
+     "titre": "Minify and remove unused code",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#minify-and-remove-unused-code",
+     "statut": "OK",
+     "comment": "`compressHTML: true`, minification par Astro, et un pruneur maison retire 408 ko d'interfaces Pagefind inutilisées à chaque build."
+    },
+    {
+     "ref": "1",
+     "titre": "Modularize bandwidth-heavy components",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#modularize-bandwidth-heavy-components",
+     "statut": "OK",
+     "comment": "L'index de recherche n'est chargé qu'à la première frappe, et la CSS est découpée par composant, donc la feuille d'un article ne part pas sur la page des auteurs."
+    },
+    {
+     "ref": "3",
+     "titre": "Avoid redundancy and duplication in code",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#avoid-redundancy-and-duplication-in-code",
+     "statut": "OK",
+     "comment": "Un `PostCard` pour cinq surfaces, un `listingPages` partagé par les deux routes de liste, un `authorSlug` pour toutes les pages d'auteur. Les duplications trouvées ont été supprimées, la dernière ayant produit un bug de pagination."
+    },
+    {
+     "ref": "4",
+     "titre": "Treat third parties the same as first parties",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#treat-third-parties-the-same-as-first-parties",
+     "statut": "PART",
+     "comment": "Aucun CDN, aucun traceur, aucune police tierce, aucun bouton de partage officiel. Deux appels tiers subsistent, les badges Website Carbon et EcoIndex, chacun argumenté et dégradant proprement."
+    },
+    {
+     "ref": "4",
+     "titre": "Ensure code follows good semantic practices",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#ensure-code-follows-good-semantic-practices",
+     "statut": "OK",
+     "comment": "`<nav>`, `<main>`, `<article>`, `<time>`, un seul `h1` par page, hiérarchie sans saut. Vérifié par axe sur les 68 pages sans violation."
+    },
+    {
+     "ref": "2",
+     "titre": "Defer the loading of non-critical resources",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#defer-the-loading-of-non-critical-resources",
+     "statut": "OK",
+     "comment": "`loading=\"lazy\"` sous la ligne de flottaison, index de recherche à la demande, badges en chargement différé."
+    },
+    {
+     "ref": "3",
+     "titre": "Structure metadata for machine readability",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#structure-metadata-for-machine-readability",
+     "statut": "PART",
+     "comment": "Titres, méta-descriptions, Open Graph, carte Twitter, flux RSS et sitemap segmenté sont en place. Manquent un `robots.txt` déclarant le sitemap et des données structurées `schema.org` sur les articles."
+    },
+    {
+     "ref": "1",
+     "titre": "Use media queries that support sustainability goals",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-media-queries-that-support-sustainability-goals",
+     "statut": "OK",
+     "comment": "`prefers-reduced-motion` respecté partout, `prefers-color-scheme` pour le thème par défaut, et des requêtes de largeur qui servent une seule feuille adaptative."
+    },
+    {
+     "ref": "4",
+     "titre": "Ensure layouts work for different devices and requirements",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#ensure-layouts-work-for-different-devices-and-requirements",
+     "statut": "OK",
+     "comment": "Grilles en `auto-fit`, unités relatives, aucun débordement horizontal sur les 68 pages à 390 px, mesuré."
+    },
+    {
+     "ref": "3",
+     "titre": "Use sustainable JavaScript and APIs",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-sustainable-javascript-and-apis",
+     "statut": "OK",
+     "comment": "4 ko de JavaScript pour tout le site, aucun framework, aucun traitement long. Le tirage au hasard réécrit une adresse plutôt que d'intercepter un clic, ce qui préserve le fonctionnement sans script."
+    },
+    {
+     "ref": "3",
+     "titre": "Use dependencies sparingly and maintain them",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-dependencies-sparingly-and-maintain-them",
+     "statut": "OK",
+     "comment": "215 paquets contre 1478 sous Docusaurus. Les mises à jour sont suivies, et celles qui cassent sont refusées avec la raison écrite."
+    },
+    {
+     "ref": "2",
+     "titre": "Include expected and beneficial files",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#include-expected-and-beneficial-files",
+     "statut": "PART",
+     "comment": "`sitemap-index.xml`, `sitemap-0.xml` et `rss.xml` sont générés, `404.html` aussi. Il manque `robots.txt`, et `security.txt` n'a pas été envisagé."
+    },
+    {
+     "ref": "5",
+     "titre": "Use the most efficient solution for your service",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-the-most-efficient-solution-for-your-service",
+     "statut": "OK",
+     "comment": "Génération statique complète : aucun serveur n'exécute quoi que ce soit pendant la lecture. C'est la raison même du départ de Docusaurus."
+    },
+    {
+     "ref": "2",
+     "titre": "Use the latest stable language version",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-the-latest-stable-language-version",
+     "statut": "OK",
+     "comment": "Astro 7.2, Node 22.12 minimum, TypeScript vérifié à zéro erreur sur 52 fichiers."
+    },
+    {
+     "ref": "4",
+     "titre": "Reduce the number and complexity of database queries",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#reduce-the-number-and-complexity-of-database-queries",
+     "statut": "NA",
+     "comment": "Aucune base de données : le contenu est lu en place dans des fichiers Markdown au moment du build."
+    }
+   ]
+  },
+  {
+   "nom": "Hébergement et infrastructure",
+   "criteres": [
+    {
+     "ref": "6",
+     "titre": "Use sustainable hosting",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-sustainable-hosting",
+     "statut": "PART",
+     "comment": "Stockage d'objets managé, sans serveur allumé pour servir des fichiers. L'hébergeur n'est pas choisi sur un critère d'énergie renouvelable, et le badge CO2.js retient volontairement l'hypothèse pessimiste."
+    },
+    {
+     "ref": "2",
+     "titre": "Optimize caching and support offline access",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#optimize-caching-and-support-offline-access",
+     "statut": "PART",
+     "comment": "Cache HTTP réglé par famille : un an immuable pour les actifs hachés, revalidation pour l'index, dix minutes pour les pages. Aucun accès hors ligne, choix assumé : un service worker rejouerait ce que le cache HTTP fait déjà."
+    },
+    {
+     "ref": "2",
+     "titre": "Reduce data transfer with compression",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#reduce-data-transfer-with-compression",
+     "statut": "OK",
+     "comment": "Compression par la couche d'hébergement, et le gate de poids mesure le texte gzippé plutôt que brut, ce qui est la mesure honnête."
+    },
+    {
+     "ref": "2",
+     "titre": "Setup necessary error pages and redirection links",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#setup-necessary-error-pages-and-redirection-links",
+     "statut": "PART",
+     "comment": "`404.html` est généré et statique, et les deux redirections du contrat sont servies. Mais la production répond aujourd'hui par la page d'accueil en 200 sur une URL inconnue, ce qui est mesuré et inscrit au plan."
+    },
+    {
+     "ref": "1",
+     "titre": "Avoid maintaining unnecessary virtualized environments or containers",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#avoid-maintaining-unnecessary-virtualized-environments-or-containers",
+     "statut": "OK",
+     "comment": "Aucun conteneur ni machine virtuelle pour ce site : des fichiers dans un stockage d'objets."
+    },
+    {
+     "ref": "4",
+     "titre": "Use automation wisely",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-automation-wisely",
+     "statut": "OK",
+     "comment": "La CI construit, vérifie et déploie une preview par pull request, sans tâche périodique inutile. Les portes de qualité sont automatisées, la vérification axe reste locale parce qu'elle exige un navigateur."
+    },
+    {
+     "ref": "1",
+     "titre": "Define the frequency of data refreshes",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#define-the-frequency-of-data-refreshes",
+     "statut": "OK",
+     "comment": "Rien ne se rafraîchit tout seul : le site est reconstruit à la publication d'un article, et le badge carbone met son résultat en cache un jour."
+    },
+    {
+     "ref": "1",
+     "titre": "Back up critical data at routine intervals",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#back-up-critical-data-at-routine-intervals",
+     "statut": "OK",
+     "comment": "Le contenu et la coque sont deux dépôts git distincts, donc versionnés et répliqués. Aucune donnée n'existe hors de git."
+    },
+    {
+     "ref": "5",
+     "titre": "Assess the impact and requirements of data processing",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#assess-the-impact-and-requirements-of-data-processing",
+     "statut": "OK",
+     "comment": "Aucun traitement de données : pas de collecte, pas de compte, pas de formulaire, pas de journalisation applicative."
+    },
+    {
+     "ref": "3",
+     "titre": "Use Content Delivery Networks (CDNs) when beneficial",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-content-delivery-networks-cdns-when-beneficial",
+     "statut": "PART",
+     "comment": "Aucun CDN, et c'est un choix : l'audience est nationale et un CDN ajouterait une couche pour un gain de latence marginal. La question reste ouverte pour la bascule."
+    },
+    {
+     "ref": "1",
+     "titre": "Ensure infrastructure fits project requirements",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#ensure-infrastructure-fits-project-requirements",
+     "statut": "OK",
+     "comment": "Un stockage d'objets pour un site statique : c'est le dimensionnement minimal qui rende le service."
+    },
+    {
+     "ref": "5",
+     "titre": "Store data according to the needs of your users",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#store-data-according-to-the-needs-of-your-users",
+     "statut": "OK",
+     "comment": "Aucune donnée d'utilisateur n'est stockée. Les seules préférences, thème et dernier tirage, restent dans le navigateur du lecteur."
+    }
+   ]
+  },
+  {
+   "nom": "Stratégie et gestion de produit",
+   "criteres": [
+    {
+     "ref": "4",
+     "titre": "Have an ethical and sustainable product strategy",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#have-an-ethical-and-sustainable-product-strategy",
+     "statut": "ORG",
+     "comment": "Relève de zatsit : société à mission et certifiée B Corp, ce que le pied de page documente. Ce dépôt en applique la conséquence technique."
+    },
+    {
+     "ref": "1",
+     "titre": "Assign a sustainability advocate",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#assign-a-sustainability-advocate",
+     "statut": "ORG",
+     "comment": "Relève de zatsit, qui publie un portail Sustainability distinct."
+    },
+    {
+     "ref": "5",
+     "titre": "Inform, raise awareness, and train for sustainability",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#inform-raise-awareness-and-train-for-sustainability",
+     "statut": "OK",
+     "comment": "C'est l'objet même du blog : les articles GreenIT, et une page qui explique et mesure sa propre éco-conception."
+    },
+    {
+     "ref": "1",
+     "titre": "Communicate the environmental impact of user choices",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#communicate-the-environmental-impact-of-user-choices",
+     "statut": "OK",
+     "comment": "Trois badges publiés au lecteur, dont un calculé chez nous et deux vérifiables par un tiers, avec le poids et la date du relevé affichés."
+    },
+    {
+     "ref": "3",
+     "titre": "Calculate the environmental impact",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#calculate-the-environmental-impact",
+     "statut": "OK",
+     "comment": "CO2.js exécuté au build sur notre poids réellement mesuré, plus EcoIndex et Website Carbon en corroboration externe."
+    },
+    {
+     "ref": "1",
+     "titre": "Define clear organizational sustainability goals and metrics",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#define-clear-organizational-sustainability-goals-and-metrics",
+     "statut": "PART",
+     "comment": "Les objectifs du site sont chiffrés et opposables. Les objectifs de l'organisation sont hors de ce dépôt."
+    },
+    {
+     "ref": "2",
+     "titre": "Validate web sustainability efforts through external verification",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#validate-web-sustainability-efforts-through-external-verification",
+     "statut": "OK",
+     "comment": "EcoIndex et Website Carbon sont deux vérifications tierces, publiées et cliquables par le lecteur."
+    },
+    {
+     "ref": "4",
+     "titre": "Support mandatory disclosures and reporting",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#support-mandatory-disclosures-and-reporting",
+     "statut": "ORG",
+     "comment": "Relève de zatsit : notation EcoVadis et certification B Corp, affichées dans le pied de page."
+    },
+    {
+     "ref": "1",
+     "titre": "Create one or more impact business models",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#create-one-or-more-impact-business-models",
+     "statut": "ORG",
+     "comment": "Relève de zatsit."
+    },
+    {
+     "ref": "5",
+     "titre": "Follow a product management and maintenance strategy",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#follow-a-product-management-and-maintenance-strategy",
+     "statut": "OK",
+     "comment": "Plan de migration écrit, décisions numérotées et datées, journal des pièges déjà payés. Le dépôt se relit plus qu'il ne se redécouvre."
+    },
+    {
+     "ref": "4",
+     "titre": "Implement continuous improvement procedures",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#implement-continuous-improvement-procedures",
+     "statut": "OK",
+     "comment": "Trois portes automatisées, une quatrième locale, et un journal des régressions évitées. Les budgets sont revérifiés à chaque changement."
+    },
+    {
+     "ref": "1",
+     "titre": "Document updates and evolutions",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#document-updates-and-evolutions",
+     "statut": "OK",
+     "comment": "Historique git en messages explicites, `PLAN-MIGRATION.md` pour les décisions, `REPRISE.md` pour l'état courant."
+    },
+    {
+     "ref": "3",
+     "titre": "Evaluate if a digital product or service is necessary",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#evaluate-if-a-digital-product-or-service-is-necessary",
+     "statut": "OK",
+     "comment": "La question a été posée à chaque fonctionnalité, et plusieurs ont été écartées : le nuage gradué, le filigrane des cartes, le bouton de partage X, le garde-fou sur les tags."
+    },
+    {
+     "ref": "3",
+     "titre": "Provide a supplier standards of practice document",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#provide-a-supplier-standards-of-practice-document",
+     "statut": "ORG",
+     "comment": "Relève de zatsit."
+    },
+    {
+     "ref": "3",
+     "titre": "Share economic benefits",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#share-economic-benefits",
+     "statut": "ORG",
+     "comment": "Relève de zatsit."
+    },
+    {
+     "ref": "1",
+     "titre": "Share decision-making power with affected parties",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#share-decision-making-power-with-affected-parties",
+     "statut": "OK",
+     "comment": "Les articles sont relus en pull request dans le dépôt contenu, et la refonte a été soumise aux treize auteurs avant bascule."
+    },
+    {
+     "ref": "3",
+     "titre": "Use Diversity, Equity, Justice, Inclusion (DEJI) practices",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-diversity-equity-justice-inclusion-deji-practices",
+     "statut": "PART",
+     "comment": "L'accessibilité est traitée comme une contrainte dure, WCAG 2.1 AA vérifiée sur toutes les pages. Les autres dimensions relèvent de zatsit."
+    },
+    {
+     "ref": "3",
+     "titre": "Promote responsible data practices",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#promote-responsible-data-practices",
+     "statut": "OK",
+     "comment": "Aucune donnée collectée : ni cookie, ni traceur, ni analytique, ni compte. C'est la pratique la plus responsable possible, ne rien recueillir."
+    },
+    {
+     "ref": "5",
+     "titre": "Establish responsible practices around AI and emerging or disruptive technologies",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#establish-responsible-practices-around-ai-and-emerging-or-disruptive-technologies",
+     "statut": "PART",
+     "comment": "Le dépôt est développé avec assistance d'IA (ici Claude), des skills et rules publiés aident à cadrer les développement sur l'aspect éco-conception et a11y."
+    },
+    {
+     "ref": "2",
+     "titre": "Adopt responsible financial practices",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#adopt-responsible-financial-practices",
+     "statut": "ORG",
+     "comment": "Relève de zatsit."
+    },
+    {
+     "ref": "2",
+     "titre": "Adopt organizational philanthropy practices",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#adopt-organizational-philanthropy-practices",
+     "statut": "ORG",
+     "comment": "Relève de zatsit."
+    },
+    {
+     "ref": "1",
+     "titre": "Plan for a digital product or service's care and end-of-life",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#plan-for-a-digital-product-or-service-s-care-and-end-of-life",
+     "statut": "KO",
+     "comment": "Aucun plan de fin de vie n'existe, ni pour le site ni pour ses contenus : rien n'est jamais dépublié et `/archive/` liste tout, ce qui est l'inverse d'une stratégie."
+    },
+    {
+     "ref": "4",
+     "titre": "Repair, reuse, refurbish, recycle or reduce e-waste",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#repair-reuse-refurbish-recycle-or-reduce-e-waste",
+     "statut": "ORG",
+     "comment": "Relève de zatsit, le site n'ayant aucun matériel propre."
+    },
+    {
+     "ref": "4",
+     "titre": "Define performance, environmental, and human budgets",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#define-performance-environmental-and-human-budgets",
+     "statut": "PART",
+     "comment": "Budgets de performance et d'environnement chiffrés et opposables. Aucun budget humain n'est défini."
+    },
+    {
+     "ref": "2",
+     "titre": "Use and contribute to open source",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-and-contribute-to-open-source",
+     "statut": "OK",
+     "comment": "Les deux dépôts sont publics sous l'organisation zatsit-oss, et le site est bâti sur des briques ouvertes, Astro, Pagefind, CO2.js."
+    },
+    {
+     "ref": "2",
+     "titre": "Create a business continuity and disaster recovery plan",
+     "url": "https://www.w3.org/TR/web-sustainability-guidelines/#create-a-business-continuity-and-disaster-recovery-plan",
+     "statut": "PART",
+     "comment": "Le site est reconstructible entièrement depuis deux dépôts git, ce qui est la meilleure garantie de reprise. Aucun plan n'est écrit et aucune restauration n'a été testée."
+    }
+   ]
+  }
+ ]
+}

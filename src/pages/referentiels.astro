@@ -1,0 +1,264 @@
+---
+/**
+ * The two sustainability audits, at /referentiels/.
+ *
+ * The blog carries three carbon badges and a page arguing its own eco-design;
+ * this is what backs them. A grade is a number, an audit is a list of things
+ * one does and does not do, and the second is harder to wave away.
+ *
+ * Rendered from `src/data/*.json` at build, like every other page: no script,
+ * no filtering widget. A filter would need JavaScript to hide rows the reader
+ * already downloaded, which is the wrong trade on a page whose subject is
+ * sobriety. The summary at the top is what a reader in a hurry needs, and the
+ * lists below are for whoever wants the detail.
+ */
+import Layout from '../layouts/Layout.astro';
+import { REFERENTIELS, STATUTS, compter } from '../utils/referentiels';
+
+const audits = REFERENTIELS.map((ref) => ({ ...ref, comptes: compter(ref.groupes) }));
+
+const totalCriteres = audits.reduce((sum, a) => sum + a.comptes.total, 0);
+---
+
+<Layout
+  title="Nos audits d'éco-conception"
+  description={`Le blog de zatsit évalué contre ${totalCriteres} règles de deux référentiels d'éco-conception : le collectif Green IT et le W3C.`}
+>
+  <div class="container audits">
+    <header class="audits__header">
+      <h1>Nos audits d'éco-conception</h1>
+      <p class="audits__lead">
+        Un badge donne une note, un audit dit ce qu'on fait et ce qu'on ne fait pas. Ce blog est
+        évalué ligne à ligne contre deux référentiels publics, {totalCriteres} règles au total, et
+        les écarts sont nommés plutôt que passés sous silence.
+      </p>
+    </header>
+
+    {
+      audits.map((audit) => (
+        <section class="audit" aria-labelledby={audit.id}>
+          <h2 id={audit.id}>{audit.nom}</h2>
+
+          <p class="audit__meta">
+            <a href={audit.source} target="_blank" rel="noopener noreferrer">
+              {audit.version}
+            </a>
+            <span aria-hidden="true"> · </span>
+            évalué le {audit.evalue_le.split('-').reverse().join('/')}
+          </p>
+
+          {/* The score first, since it is what most readers came for. */}
+          <p class="audit__score">
+            <strong>{audit.comptes.parStatut.OK}</strong> {audit.unite} sur{' '}
+            {audit.comptes.applicables} qui nous engagent, soit {audit.comptes.score}&nbsp;%.
+          </p>
+
+          <ul class="tally">
+            {(Object.keys(STATUTS) as (keyof typeof STATUTS)[])
+              .filter((statut) => audit.comptes.parStatut[statut] > 0)
+              .map((statut) => (
+                <li class:list={['tally__item', `is-${statut.toLowerCase()}`]}>
+                  <span class="tally__count">{audit.comptes.parStatut[statut]}</span>
+                  <span class="tally__label">{STATUTS[statut].court}</span>
+                </li>
+              ))}
+          </ul>
+
+          <p class="audit__note">{audit.note}</p>
+
+          {audit.groupes.map((groupe) => (
+            <section class="groupe">
+              <h3>{groupe.nom}</h3>
+
+              {/* A description list rather than a table: each row is one item
+                  and its verdict, not a grid to read across, and it wraps on a
+                  phone without a horizontal scroll. */}
+              <dl class="criteres">
+                {groupe.criteres.map((critere) => (
+                  <div class:list={['critere', `is-${critere.statut.toLowerCase()}`]}>
+                    <dt class="critere__titre">
+                      {critere.url ? (
+                        <a href={critere.url} target="_blank" rel="noopener noreferrer">
+                          {critere.titre}
+                        </a>
+                      ) : (
+                        critere.titre
+                      )}
+                      <span class="critere__statut">{STATUTS[critere.statut].label}</span>
+                    </dt>
+                    <dd class="critere__comment">{critere.comment}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
+        </section>
+      ))
+    }
+
+    <p class="audits__source">
+      Le détail est aussi versionné dans le dépôt, en{' '}
+      <a
+        href="https://github.com/zatsit-oss/zats-blog/blob/main/REFERENTIEL-GREENIT.md"
+        target="_blank"
+        rel="noopener noreferrer">REFERENTIEL-GREENIT.md</a
+      >{' '}et{' '}
+      <a
+        href="https://github.com/zatsit-oss/zats-blog/blob/main/REFERENTIEL-W3C-WSG.md"
+        target="_blank"
+        rel="noopener noreferrer">REFERENTIEL-W3C-WSG.md</a
+      >, générés depuis les mêmes données que cette page.
+    </p>
+  </div>
+</Layout>
+
+<style>
+  .audits {
+    max-width: 52rem;
+  }
+
+  .audits__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  .audits__lead {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .audit + .audit {
+    margin-block-start: var(--rhythm-gap);
+  }
+
+  .audit__meta {
+    margin: var(--space-2) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .audit__score {
+    margin: var(--space-4) 0 0;
+    font-size: var(--text-lg);
+  }
+
+  .audit__score strong {
+    font-size: var(--text-3xl);
+    /* Aligns the big numeral with the sentence it opens. */
+    vertical-align: -0.05em;
+  }
+
+  .audit__note {
+    margin: var(--space-4) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  /* The counts, as a row of pills. Colour never carries the meaning alone: each
+     pill says its status in words. */
+  .tally {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+
+  .tally__item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    font-size: var(--text-sm);
+  }
+
+  .tally__count {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tally__label {
+    color: var(--color-text-muted);
+  }
+
+  .groupe {
+    margin-block-start: var(--rhythm-heading);
+  }
+
+  .groupe h3 {
+    font-size: var(--text-xl);
+  }
+
+  .criteres {
+    margin: var(--space-4) 0 0;
+  }
+
+  /* A hairline between entries rather than a card each: 190 cards would be a
+     wall, and the rule keeps the page readable at this length. */
+  .critere {
+    padding-block: var(--space-4);
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+
+  .critere__titre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+    justify-content: space-between;
+    font-weight: var(--font-semibold);
+  }
+
+  .critere__titre a {
+    color: var(--color-text);
+    text-decoration-color: var(--color-border);
+  }
+
+  .critere__titre a:hover {
+    color: var(--color-primary);
+    text-decoration-color: currentColor;
+  }
+
+  /* The status, in words, with a dot carrying the colour. The dot is decorative:
+     removing it loses nothing, which is the test. */
+  .critere__statut {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-regular);
+    white-space: nowrap;
+  }
+
+  .critere__statut::before {
+    content: '';
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: var(--radius-full);
+    background: var(--color-text-muted);
+  }
+
+  .is-ok .critere__statut::before {
+    background: var(--color-eco);
+  }
+
+  .is-part .critere__statut::before {
+    background: var(--color-secondary);
+  }
+
+  .is-ko .critere__statut::before {
+    background: var(--color-danger, var(--color-secondary));
+  }
+
+  .critere__comment {
+    margin: var(--space-2) 0 0;
+    color: var(--color-text-muted);
+  }
+</style>

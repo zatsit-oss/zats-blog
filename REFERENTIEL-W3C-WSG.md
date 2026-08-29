@@ -1,10 +1,10 @@
 # Le blog zatsit face aux Web Sustainability Guidelines du W3C
 
-Évaluation des [Web Sustainability Guidelines](https://www.w3.org/TR/web-sustainability-guidelines/) (WSG 1.0, Group Note Draft du 28 juillet 2026) appliquée à ce dépôt, le 29 août 2026.
+Évaluation des [Web Sustainability Guidelines](https://www.w3.org/TR/web-sustainability-guidelines/) appliquée à ce dépôt.
 
-Le référentiel compte **71 lignes directrices** regroupant **196 critères de succès**, en quatre domaines. Ce document évalue les 71 lignes directrices, chacune couvrant ses critères ; c'est l'unité lisible, et le nombre de critères de chaque ligne est rappelé dans le tableau.
+Le référentiel compte **71 lignes directrices** regroupant **196 critères de succès**, en quatre domaines. Ce document évalue les 71 lignes directrices, chacune couvrant ses critères ; c'est l'unité lisible, et le nombre de critères de chaque ligne figure dans la colonne « Critères ».
 
-Il complète [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), qui traite les 119 règles du collectif Green IT. Les deux se recoupent sur la technique ; les WSG vont plus loin sur la gouvernance et l'éthique, et c'est là que la distinction ci-dessous compte.
+Ce document a un pendant, [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), et une version en ligne sur [/referentiels/](https://blog.zatsit.fr/referentiels/). Les trois sont générés depuis `src/data/referentiel-wsg.json` : ne pas les modifier à la main, lancer `npm run docs:referentiels`.
 
 ## Résultat
 
@@ -17,21 +17,19 @@ Il complète [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), qui traite les 
 | 🏢 Relève de zatsit | 9 |
 | **Total** | **71** |
 
-**46 lignes respectées sur 61 qui engagent ce dépôt**, soit 75 %, plus 14 partielles et 1 non respectée.
+**46 lignes directrices respectées sur 61 qui engagent ce dépôt**, soit 75 %, plus 14 partielles et 1 non respectée.
 
-### Une distinction que le cnumr n'imposait pas
+### Une distinction que le référentiel Green IT n'imposait pas
 
-Neuf lignes directrices portent sur l'entreprise et non sur le site : stratégie de produit, modèles d'impact, pratiques financières, philanthropie, partage de la valeur, gestion des déchets électroniques. Elles sont marquées **Relève de zatsit** plutôt que respectées ou non : les juger depuis ce dépôt serait malhonnête. Le pied de page atteste au passage de la certification B Corp et de la notation EcoVadis, mais ce sont des faits d'entreprise.
-
-Sur les seules trois catégories techniques, 35 lignes sur 45 sont respectées, 9 partiellement.
+Neuf lignes directrices portent sur l'entreprise et non sur le site : stratégie de produit, modèles d'impact, pratiques financières, philanthropie, partage de la valeur, gestion des déchets électroniques. Elles sont marquées **Relève de zatsit** plutôt que respectées ou non, parce que les juger depuis un dépôt de code serait malhonnête, et parce qu'un « sans objet » laisserait croire que la question ne se pose pas.
 
 ### Ce qui manque
 
-1. **Aucun plan de fin de vie**, ni pour le site ni pour ses contenus. C'est la seule ligne en échec franc, et les deux référentiels la relèvent : rien n'est jamais dépublié et `/archive/` liste tout, ce qui est l'inverse d'une stratégie.
-2. **`robots.txt` absent**, alors que le sitemap est généré et segmenté. Deux lignes le signalent, et cinq lignes de fichier le règlent.
+1. **Aucun plan de fin de vie**, ni pour le site ni pour ses contenus. C'est la seule ligne en échec franc, et les deux référentiels la relèvent.
+2. **`robots.txt` absent**, alors que le sitemap est généré et segmenté.
 3. **Aucune donnée structurée `schema.org`** sur les articles, alors que le reste des métadonnées est complet.
 4. **Aucune feuille d'impression**, pour des articles techniques qui se prêtent au PDF.
-5. **Aucun budget humain** défini, là où les budgets de performance et d'environnement le sont et échouent le build.
+5. **Aucun budget humain** défini, là où ceux de performance et d'environnement le sont et échouent le build.
 
 ### Deux écarts assumés, argumentés dans le code
 
@@ -46,7 +44,7 @@ Sur les seules trois catégories techniques, 35 lignes sur 45 sont respectées, 
 *17 lignes directrices : 15 respectées, 2 partielles.*
 
 | Ligne directrice | Critères | Statut | Comment |
-|---|---:|---|---|
+|---|---|---|---|
 | [Identify, assess, disclose, review, and mitigate sustainability impacts](https://www.w3.org/TR/web-sustainability-guidelines/#identify-assess-disclose-review-and-mitigate-sustainability-impacts) | 2 | ✅ Respectée | L'impact est mesuré à chaque build et publié au lecteur : `/blog-conception/` porte trois badges, dont deux vérifiables par un tiers, et le poids servant au calcul est affiché avec sa date. |
 | [Understand user requirements or constraints](https://www.w3.org/TR/web-sustainability-guidelines/#understand-user-requirements-or-constraints) | 1 | ✅ Respectée | Les contraintes sont écrites et chiffrées dans `.claude/rules/quality.md` : budgets de poids, de requêtes, de DOM, plus WCAG 2.1 AA dans les deux thèmes. |
 | [Integrate sustainability into every stage of the ideation process](https://www.w3.org/TR/web-sustainability-guidelines/#integrate-sustainability-into-every-stage-of-the-ideation-process) | 4 | ✅ Respectée | La sobriété est un critère de sortie, pas une intention : trois portes de qualité échouent le build, et chaque kilo-octet de script est une exception argumentée dans le code. |
@@ -70,7 +68,7 @@ Sur les seules trois catégories techniques, 35 lignes sur 45 sont respectées, 
 *16 lignes directrices : 12 respectées, 3 partielles, 1 sans objet.*
 
 | Ligne directrice | Critères | Statut | Comment |
-|---|---:|---|---|
+|---|---|---|---|
 | [Set goals based on performance and energy impact](https://www.w3.org/TR/web-sustainability-guidelines/#set-goals-based-on-performance-and-energy-impact) | 2 | ✅ Respectée | Budgets chiffrés et opposables : moins de 500 ko initiaux, 1 Mo au total, 25 requêtes, 1500 éléments de DOM. Le build échoue au dépassement. |
 | [Minify and remove unused code](https://www.w3.org/TR/web-sustainability-guidelines/#minify-and-remove-unused-code) | 2 | ✅ Respectée | `compressHTML: true`, minification par Astro, et un pruneur maison retire 408 ko d'interfaces Pagefind inutilisées à chaque build. |
 | [Modularize bandwidth-heavy components](https://www.w3.org/TR/web-sustainability-guidelines/#modularize-bandwidth-heavy-components) | 1 | ✅ Respectée | L'index de recherche n'est chargé qu'à la première frappe, et la CSS est découpée par composant, donc la feuille d'un article ne part pas sur la page des auteurs. |
@@ -93,7 +91,7 @@ Sur les seules trois catégories techniques, 35 lignes sur 45 sont respectées, 
 *12 lignes directrices : 8 respectées, 4 partielles.*
 
 | Ligne directrice | Critères | Statut | Comment |
-|---|---:|---|---|
+|---|---|---|---|
 | [Use sustainable hosting](https://www.w3.org/TR/web-sustainability-guidelines/#use-sustainable-hosting) | 6 | 🟡 Partielle | Stockage d'objets managé, sans serveur allumé pour servir des fichiers. L'hébergeur n'est pas choisi sur un critère d'énergie renouvelable, et le badge CO2.js retient volontairement l'hypothèse pessimiste. |
 | [Optimize caching and support offline access](https://www.w3.org/TR/web-sustainability-guidelines/#optimize-caching-and-support-offline-access) | 2 | 🟡 Partielle | Cache HTTP réglé par famille : un an immuable pour les actifs hachés, revalidation pour l'index, dix minutes pour les pages. Aucun accès hors ligne, choix assumé : un service worker rejouerait ce que le cache HTTP fait déjà. |
 | [Reduce data transfer with compression](https://www.w3.org/TR/web-sustainability-guidelines/#reduce-data-transfer-with-compression) | 2 | ✅ Respectée | Compression par la couche d'hébergement, et le gate de poids mesure le texte gzippé plutôt que brut, ce qui est la mesure honnête. |
@@ -109,10 +107,10 @@ Sur les seules trois catégories techniques, 35 lignes sur 45 sont respectées, 
 
 ## Stratégie et gestion de produit
 
-*26 lignes directrices : 11 respectées, 5 partielles, 1 non respectée, 9 relève de zatsit.*
+*26 lignes directrices : 11 respectées, 5 partielles, 1 non respectée, 9 relèvent de zatsit.*
 
 | Ligne directrice | Critères | Statut | Comment |
-|---|---:|---|---|
+|---|---|---|---|
 | [Have an ethical and sustainable product strategy](https://www.w3.org/TR/web-sustainability-guidelines/#have-an-ethical-and-sustainable-product-strategy) | 4 | 🏢 Relève de zatsit | Relève de zatsit : société à mission et certifiée B Corp, ce que le pied de page documente. Ce dépôt en applique la conséquence technique. |
 | [Assign a sustainability advocate](https://www.w3.org/TR/web-sustainability-guidelines/#assign-a-sustainability-advocate) | 1 | 🏢 Relève de zatsit | Relève de zatsit, qui publie un portail Sustainability distinct. |
 | [Inform, raise awareness, and train for sustainability](https://www.w3.org/TR/web-sustainability-guidelines/#inform-raise-awareness-and-train-for-sustainability) | 5 | ✅ Respectée | C'est l'objet même du blog : les articles GreenIT, et une page qui explique et mesure sa propre éco-conception. |
@@ -144,6 +142,8 @@ Sur les seules trois catégories techniques, 35 lignes sur 45 sont respectées, 
 
 ## Méthode
 
-Les lignes directrices proviennent du `guidelines.json` publié par le groupe, dans sa version du 28 juillet 2026, ce qui évite toute reconstitution approximative. Chaque verdict a été posé en relisant le code concerné et, quand la ligne porte sur un comportement, en mesurant le build : `npm run check:eco`, `npm run check:axe` sur les 68 pages dans les deux thèmes et aux deux largeurs, et Chrome piloté en CDP pour ce qui ne se lit pas dans le HTML.
+Chaque verdict a été posé en relisant le code concerné et, quand la règle porte sur un comportement, en mesurant le build : `npm run check:eco` pour les poids et les requêtes, `npm run check:axe` pour l'accessibilité sur toutes les pages dans les deux thèmes et aux deux largeurs, et Chrome piloté en CDP pour ce qui ne se lit pas dans le HTML.
 
-**Cinq statuts**, un de plus que pour le référentiel Green IT. *Relève de zatsit* est le statut ajouté : il marque ce qu'un dépôt de code ne peut pas prouver, et il vaut mieux qu'un « non applicable » qui laisserait croire que la question ne se pose pas.
+Source : [https://www.w3.org/TR/web-sustainability-guidelines/](https://www.w3.org/TR/web-sustainability-guidelines/), WSG 1.0, Group Note Draft du 28 juillet 2026. Évalué le 29/08/2026.
+
+*Fichier généré par `npm run docs:referentiels`. Ne pas le modifier à la main.*

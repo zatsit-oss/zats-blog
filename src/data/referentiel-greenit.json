@@ -1,0 +1,765 @@
+{
+ "id": "greenit",
+ "nom": "Bonnes pratiques du collectif Green IT",
+ "source": "https://github.com/cnumr/best-practices",
+ "version": "119 règles, version française publiée",
+ "evalue_le": "2026-08-29",
+ "unite": "règles",
+ "note": "Le référentiel est souvent cité comme « les 115 règles » ; sa version publiée en compte 119 en français, et c'est ce nombre qui est repris ici.",
+ "groupes": [
+  {
+   "nom": "Spécification",
+   "criteres": [
+    {
+     "ref": "001",
+     "titre": "Éliminer les fonctionnalités non essentielles",
+     "statut": "OK",
+     "comment": "Aucune fonctionnalité décorative : pas de carrousel, pas de commentaires, pas de partage automatisé. La recherche et le sommaire sont les deux seules briques interactives, chacune argumentée."
+    },
+    {
+     "ref": "002",
+     "titre": "Quantifier précisément le besoin",
+     "statut": "OK",
+     "comment": "Le besoin est écrit dans `PLAN-MIGRATION.md` avec ses critères de sortie chiffrés, et la parité fonctionnelle avec Docusaurus est la borne : 45 routes, pas une de plus au départ."
+    },
+    {
+     "ref": "004",
+     "titre": "Préférer la saisie assistée à l'autocomplétion",
+     "statut": "NA",
+     "comment": "Aucun formulaire de saisie sur le site. Le seul champ est la recherche, qui interroge un index local."
+    },
+    {
+     "ref": "4014",
+     "titre": "S'assurer que les parcours utilisateurs permettent de réaliser leur action prévue",
+     "statut": "OK",
+     "comment": "Les parcours ont été vérifiés dans un navigateur réel plutôt que dans le HTML : recherche, tirage au hasard, navigation par catégorie, par tag et par auteur."
+    },
+    {
+     "ref": "4018",
+     "titre": "Éliminer les fonctionnalités non utilisées",
+     "statut": "OK",
+     "comment": "Le pruneur Pagefind retire 408 ko d'interfaces inutilisées à chaque build, et une illustration du hero non retenue a été laissée hors du dépôt plutôt que gardée au cas où."
+    }
+   ]
+  },
+  {
+   "nom": "Conception",
+   "criteres": [
+    {
+     "ref": "003",
+     "titre": "Optimiser le parcours utilisateur",
+     "statut": "OK",
+     "comment": "Trois niveaux au plus depuis l'accueil : liste, article. Les taxonomies sont sur une page unique, `/categories/`, plutôt que dans un menu déroulant."
+    },
+    {
+     "ref": "005",
+     "titre": "Favoriser un design simple, épuré, adapté au web",
+     "statut": "OK",
+     "comment": "Design sobre, deux thèmes, aucune image décorative en dehors de l'illustration du hero, qui est un SVG inline sans requête."
+    },
+    {
+     "ref": "006",
+     "titre": "Privilégier une approche \"mobile first\", à défaut un chargement adaptatif",
+     "statut": "OK",
+     "comment": "Grilles en `auto-fit` et unités relatives, une seule feuille pour toutes les largeurs. Vérifié sans débordement horizontal sur les 68 pages à 390 px."
+    },
+    {
+     "ref": "007",
+     "titre": "Respecter le principe de navigation rapide dans l’historique",
+     "statut": "OK",
+     "comment": "Navigation par liens classiques, aucun routeur client : le retour arrière du navigateur restitue la page depuis son cache."
+    },
+    {
+     "ref": "008",
+     "titre": "Proposer un traitement asynchrone lorsque c'est possible",
+     "statut": "NA",
+     "comment": "Aucun traitement long côté client ni serveur : le site est entièrement généré à la publication."
+    },
+    {
+     "ref": "011",
+     "titre": "Favoriser un développement sur-mesure à l'usage d'un CMS",
+     "statut": "OK",
+     "comment": "Aucun CMS : les articles sont des fichiers Markdown dans un dépôt git, lus en place par le loader."
+    },
+    {
+     "ref": "013",
+     "titre": "Favoriser les pages statiques",
+     "statut": "OK",
+     "comment": "Toutes les pages sont statiques, générées au build. Aucun serveur n'exécute quoi que ce soit pendant la lecture, ce que la page d'éco-conception affirme au lecteur."
+    },
+    {
+     "ref": "014",
+     "titre": "Créer une architecture applicative modulaire",
+     "statut": "OK",
+     "comment": "Composants Astro à responsabilité unique, un `PostCard` partagé par cinq surfaces, les jetons de style dans une couche à part."
+    },
+    {
+     "ref": "039",
+     "titre": "Éviter les animations JavaScript / CSS",
+     "statut": "PART",
+     "comment": "Une seule animation, l'arrivée du nuage du hero, en une passe et non en boucle, mesurée à 158 recalculs contre 720 pour une boucle. Toutes les transitions sont neutralisées sous `prefers-reduced-motion`."
+    },
+    {
+     "ref": "040",
+     "titre": "N'utilisez que les portions indispensables des bibliothèques JavaScript et frameworks CSS",
+     "statut": "OK",
+     "comment": "Aucun framework CSS, aucune bibliothèque JavaScript côté client. Le seul script partagé pèse 4 ko non compressé pour tout le site."
+    },
+    {
+     "ref": "064",
+     "titre": "Mettre en cache les données calculées souvent utilisées",
+     "statut": "OK",
+     "comment": "Le temps de lecture, les extraits et les décomptes sont calculés une fois au build, pas à chaque affichage."
+    },
+    {
+     "ref": "073",
+     "titre": "Ne se connecter à une base de données que si nécessaire",
+     "statut": "NA",
+     "comment": "Aucune base de données."
+    },
+    {
+     "ref": "076",
+     "titre": "Éviter le transfert d'une grande quantité de données pour réaliser un traitement",
+     "statut": "OK",
+     "comment": "Le contenu est lu en place dans le dépôt voisin par le loader, sans copie ni synchronisation, ce qui évite de déplacer les fichiers à chaque build."
+    },
+    {
+     "ref": "096",
+     "titre": "Afficher des pages d'erreurs statiques",
+     "statut": "PART",
+     "comment": "`404.html` est bien généré, statique, 37 ko. Mais la production actuelle sert la page d'accueil en 200 sur une URL inconnue, ce qui est pire qu'une 404 : c'est mesuré et inscrit au plan."
+    },
+    {
+     "ref": "110",
+     "titre": "N'utiliser que des fichiers double opt-in",
+     "statut": "NA",
+     "comment": "Aucune liste de diffusion."
+    },
+    {
+     "ref": "4011",
+     "titre": "Réduire le volume de données stockées au strict nécessaire",
+     "statut": "OK",
+     "comment": "Le dépôt ne stocke que le nécessaire : les images des auteurs sont redimensionnées à 512 px, et une photo de 1,2 Mo a été ramenée à 12 ko."
+    },
+    {
+     "ref": "4015",
+     "titre": "Avoir un titre de page et une metadescription pertinents avec le contenu de la page",
+     "statut": "OK",
+     "comment": "Titre et méta-description propres à chaque page, la description d'un article étant dérivée de son texte plutôt que dupliquée."
+    },
+    {
+     "ref": "4016",
+     "titre": "Utiliser la version la plus récente du langage",
+     "statut": "OK",
+     "comment": "Astro 7.2, Node 22.12 minimum, dépendances à jour. Le dépôt suit les mises à jour et refuse celles qui cassent, cas documenté du bump webpack."
+    },
+    {
+     "ref": "4019",
+     "titre": "Préférer une PWA à une application mobile native similaire au site web",
+     "statut": "NA",
+     "comment": "Aucune application mobile : le site est une page web."
+    },
+    {
+     "ref": "4021",
+     "titre": "Mettre en place une architecture élastique",
+     "statut": "NA",
+     "comment": "Site statique : pas d'architecture à dimensionner."
+    },
+    {
+     "ref": "4022",
+     "titre": "Limiter le nombre d'appels aux API HTTP",
+     "statut": "PART",
+     "comment": "Deux appels d'API par page, ceux des badges, dont l'un est mis en cache un jour côté navigateur. C'est le prix assumé d'une mesure vérifiable par le lecteur."
+    },
+    {
+     "ref": "4030",
+     "titre": "Limiter le recours aux carrousels",
+     "statut": "OK",
+     "comment": "Aucun carrousel, et c'est une règle explicite du projet."
+    },
+    {
+     "ref": "4035",
+     "titre": "Préférer la pagination au défilement infini",
+     "statut": "OK",
+     "comment": "Pagination classique, jamais de défilement infini : 10 articles sur la première page, 9 sur les suivantes."
+    }
+   ]
+  },
+  {
+   "nom": "Réalisation",
+   "criteres": [
+    {
+     "ref": "009",
+     "titre": "Limiter le nombre de requêtes HTTP",
+     "statut": "OK",
+     "comment": "9 à 11 requêtes initiales selon la page, pour un budget interne de 25. Docusaurus en faisait 5 à 16 pour un poids 3 à 40 fois supérieur."
+    },
+    {
+     "ref": "010",
+     "titre": "Stocker les données statiques localement",
+     "statut": "OK",
+     "comment": "L'index de recherche Pagefind est chargé à la demande et mis en cache par le navigateur ; la préférence de thème est en `localStorage` ; le badge carbone met son résultat en cache un jour."
+    },
+    {
+     "ref": "015",
+     "titre": "Choisir les technologies les plus adaptées",
+     "statut": "OK",
+     "comment": "Astro en génération statique, choisi contre Docusaurus précisément pour ne pas embarquer React côté client. 135 ko de JS gzip deviennent 1,1 ko."
+    },
+    {
+     "ref": "016",
+     "titre": "Utiliser certains forks applicatifs orientés \"performance\"",
+     "statut": "NA",
+     "comment": "Aucun fork applicatif : Astro et Sätteri sont utilisés dans leur version publiée."
+    },
+    {
+     "ref": "017",
+     "titre": "Choisir un format de données adapté",
+     "statut": "OK",
+     "comment": "WebP pour les images matricielles, SVG pour les tracés, Markdown pour le contenu, YAML pour les auteurs. Aucun format propriétaire."
+    },
+    {
+     "ref": "019",
+     "titre": "Remplacer les boutons officiels de partage des réseaux sociaux",
+     "statut": "OK",
+     "comment": "Les boutons officiels sont refusés : le partage est une ancre vers l'URL d'intention de LinkedIn, sans script tiers. Le bouton X a été retiré le 28 août faute d'usage."
+    },
+    {
+     "ref": "021",
+     "titre": "Découper les CSS",
+     "statut": "OK",
+     "comment": "Astro découpe la CSS par composant et n'envoie que celle des composants rendus ; la feuille d'un article ne part pas sur la page des auteurs."
+    },
+    {
+     "ref": "022",
+     "titre": "Limiter le nombre de CSS",
+     "statut": "OK",
+     "comment": "5 fichiers CSS au total dans le build, dont la plupart inlinés sous 4 ko. Une page en charge 1 à 2."
+    },
+    {
+     "ref": "023",
+     "titre": "Préférer les CSS aux images",
+     "statut": "OK",
+     "comment": "Aucune image d'interface : bordures, rayons et couches tonales sont en CSS. Les icônes sont des SVG inline."
+    },
+    {
+     "ref": "024",
+     "titre": "Écrire des sélecteurs CSS efficaces",
+     "statut": "OK",
+     "comment": "Sélecteurs de classe à un niveau, portés par Astro. Aucun sélecteur descendant profond ni `*` en dehors du reset."
+    },
+    {
+     "ref": "025",
+     "titre": "Grouper les déclarations CSS similaires",
+     "statut": "OK",
+     "comment": "Les valeurs communes passent par des variables CSS dans `src/styles/tokens/`, ce qui factorise les déclarations au lieu de les répéter."
+    },
+    {
+     "ref": "026",
+     "titre": "Utiliser les notations CSS abrégées",
+     "statut": "PART",
+     "comment": "Les propriétés logiques (`margin-block`, `padding-inline`) sont utilisées, mais lisibilité privilégiée sur l'abréviation systématique. L'écart est marginal après minification."
+    },
+    {
+     "ref": "027",
+     "titre": "Fournir une CSS print",
+     "statut": "KO",
+     "comment": "Aucune feuille d'impression. Un article de blog technique est un candidat légitime à l'impression ou au PDF, et rien n'est prévu."
+    },
+    {
+     "ref": "029",
+     "titre": "Favoriser les polices standards",
+     "statut": "PART",
+     "comment": "Poppins est auto-hébergée en woff2 latin, sous-ensemble et préchargée, avec 3 graisses seulement. Ce n'est pas une police standard, mais c'est la police de la marque et son coût est mesuré à 48,5 ko pour 6 fichiers."
+    },
+    {
+     "ref": "030",
+     "titre": "Préférer les glyphes aux images",
+     "statut": "OK",
+     "comment": "Toutes les icônes sont des SVG dessinés au trait, aucune image matricielle d'interface, aucune police d'icônes."
+    },
+    {
+     "ref": "031",
+     "titre": "Valider les pages auprès du W3C",
+     "statut": "PART",
+     "comment": "Aucune validation W3C automatisée dans la CI. En revanche `astro check` (TypeScript) et axe-core sur 68 pages couvrent la structure et l'accessibilité."
+    },
+    {
+     "ref": "032",
+     "titre": "Externaliser les CSS et JavaScript",
+     "statut": "PART",
+     "comment": "La CSS partagée est externalisée et mise en cache ; celle sous 4 ko est inlinée par choix d'Astro, ce qui économise une requête sur une première visite. Le seul script de page est inline pour la même raison."
+    },
+    {
+     "ref": "034",
+     "titre": "Ne pas redimensionner les images coté navigateur",
+     "statut": "OK",
+     "comment": "`astro:assets` produit chaque image aux dimensions utiles, avec `width` et `height` explicites. Un service maison plafonne à 1366 px ce que personne n'a dimensionné."
+    },
+    {
+     "ref": "037",
+     "titre": "Utiliser le chargement paresseux",
+     "statut": "OK",
+     "comment": "`loading=\"lazy\"` sur toutes les images sous la ligne de flottaison, et l'index de recherche n'est chargé qu'à la première frappe."
+    },
+    {
+     "ref": "038",
+     "titre": "Utiliser le rechargement partiel d'une zone de contenu",
+     "statut": "NA",
+     "comment": "Pas de rechargement partiel : les pages sont statiques et le navigateur les met en cache."
+    },
+    {
+     "ref": "041",
+     "titre": "Ne pas faire de modification du DOM lorsqu’on le traverse",
+     "statut": "OK",
+     "comment": "Les rares scripts (thème, copie de code, recherche) ne parcourent pas le DOM en le modifiant ; la copie utilise une délégation d'évènement."
+    },
+    {
+     "ref": "042",
+     "titre": "Rendre les éléments du DOM invisibles lors de leur modification",
+     "statut": "NA",
+     "comment": "Aucune modification massive du DOM : les pages sont rendues au build."
+    },
+    {
+     "ref": "043",
+     "titre": "Réduire au maximum le repaint (appearence) et le reflow (layout)",
+     "statut": "OK",
+     "comment": "Piège déjà payé et documenté : animer une transformation sur un élément SVG repasse par la mise en page à chaque image. Les animations retenues sont composées, en une passe."
+    },
+    {
+     "ref": "044",
+     "titre": "Utiliser la délégation d'évènements",
+     "statut": "OK",
+     "comment": "Le bouton de copie utilise un seul écouteur délégué pour toute la page, précisément parce que les articles les plus fournis ont des dizaines de blocs de code."
+    },
+    {
+     "ref": "045",
+     "titre": "Modifier plusieurs propriétés CSS en 1 seule fois",
+     "statut": "OK",
+     "comment": "Les changements d'apparence passent par une classe ou un attribut `data-theme`, jamais par des écritures de style successives."
+    },
+    {
+     "ref": "046",
+     "titre": "Valider votre code avec un Linter",
+     "statut": "OK",
+     "comment": "`astro check` sur 52 fichiers à zéro erreur, plus trois portes de qualité : contraste, poids et axe-core. Toutes échouent avec un code de sortie non nul."
+    },
+    {
+     "ref": "049",
+     "titre": "Mettre en cache les objets souvent accédés en JavaScript",
+     "statut": "OK",
+     "comment": "Les scripts mémorisent leurs références (`link`, `status`) plutôt que de réinterroger le DOM."
+    },
+    {
+     "ref": "054",
+     "titre": "Réduire les accès au DOM via JavaScript",
+     "statut": "OK",
+     "comment": "Même réponse : quatre scripts au total, chacun avec un accès au DOM minimal et mémorisé."
+    },
+    {
+     "ref": "072",
+     "titre": "Éviter d'effectuer des requêtes SQL à l’intérieur d’une boucle",
+     "statut": "NA",
+     "comment": "Aucune base de données."
+    },
+    {
+     "ref": "075",
+     "titre": "Optimiser les requêtes aux bases de données",
+     "statut": "NA",
+     "comment": "Aucune base de données."
+    },
+    {
+     "ref": "078",
+     "titre": "Compresser les fichiers CSS, JavaScript, HTML et SVG",
+     "statut": "OK",
+     "comment": "Compression assurée par la couche d'hébergement. Le gate de poids mesure d'ailleurs le texte gzippé, ce qui est la mesure honnête."
+    },
+    {
+     "ref": "080",
+     "titre": "Optimiser les images",
+     "statut": "OK",
+     "comment": "Toutes les images passent par `astro:assets` : WebP, dimensions plafonnées, `srcset` de six paliers calé sur les largeurs réellement mesurées, ce qui a divisé par deux le poids d'images d'un article sur téléphone."
+    },
+    {
+     "ref": "082",
+     "titre": "Optimiser la taille des cookies",
+     "statut": "OK",
+     "comment": "Aucun cookie n'est posé par le site."
+    },
+    {
+     "ref": "4004",
+     "titre": "Utiliser les compartiments CSS",
+     "statut": "PART",
+     "comment": "`content-visibility` n'est pas utilisé. Les pages sont assez courtes pour que le gain soit théorique, mais la piste n'a pas été mesurée."
+    },
+    {
+     "ref": "4005",
+     "titre": "Fournir une alternative textuelle aux contenus multimédias",
+     "statut": "OK",
+     "comment": "`alt` sur chaque image, vide pour les décoratives, et les icônes en `aria-hidden` puisque le texte voisin les nomme. Vérifié par axe sur les 68 pages."
+    },
+    {
+     "ref": "4007",
+     "titre": "Économiser de la bande passante grâce à un Service Worker",
+     "statut": "NA",
+     "comment": "Aucun service worker, et c'est cohérent : un site statique avec un bon cache HTTP n'a pas besoin d'un script pour rejouer ce que le navigateur fait déjà."
+    },
+    {
+     "ref": "4009",
+     "titre": "Assurer la compatibilité avec les plus anciens appareils et logiciels du parc",
+     "statut": "OK",
+     "comment": "HTML sémantique sans framework client : la page reste lisible sans JavaScript, y compris la navigation, les articles et le bouton de tirage au hasard."
+    },
+    {
+     "ref": "4013",
+     "titre": "Limiter le recours aux canvas",
+     "statut": "OK",
+     "comment": "Aucun élément `canvas`."
+    },
+    {
+     "ref": "4017",
+     "titre": "Ne charger des données/du code que lorsqu'elles sont/il est nécessaire",
+     "statut": "OK",
+     "comment": "L'index de recherche n'est chargé qu'à la première interaction, et les images sous la ligne de flottaison en différé."
+    },
+    {
+     "ref": "4020",
+     "titre": "Éviter les temps de blocages par des traitements JavaScript trop longs",
+     "statut": "OK",
+     "comment": "4 ko de JavaScript pour tout le site, aucun traitement long. Rien ne peut bloquer le fil principal de façon perceptible."
+    },
+    {
+     "ref": "4037",
+     "titre": "Bien choisir son thème et limiter le nombre d'extensions dans un CMS",
+     "statut": "NA",
+     "comment": "Aucun CMS, aucune extension."
+    },
+    {
+     "ref": "4038",
+     "titre": "Sécuriser l'accès à l'administration",
+     "statut": "NA",
+     "comment": "Aucune interface d'administration : la publication passe par une revue de pull request."
+    },
+    {
+     "ref": "4039",
+     "titre": "Ne pas afficher les documents à l'intérieur des pages",
+     "statut": "OK",
+     "comment": "Aucun document intégré dans une page : ni PDF, ni iframe de visionneuse."
+    }
+   ]
+  },
+  {
+   "nom": "Production",
+   "criteres": [
+    {
+     "ref": "018",
+     "titre": "Limiter le nombre de domaines servant les ressources",
+     "statut": "PART",
+     "comment": "Un seul domaine sert le site et ses ressources. Deux exceptions assumées et documentées : `api.websitecarbon.com` et `bff.ecoindex.fr`, tous deux pour un badge que le lecteur doit pouvoir vérifier."
+    },
+    {
+     "ref": "057",
+     "titre": "Utiliser tous les niveaux de cache du CMS",
+     "statut": "NA",
+     "comment": "Aucun CMS."
+    },
+    {
+     "ref": "070",
+     "titre": "Supprimer tous les warnings et toutes les notices",
+     "statut": "OK",
+     "comment": "Le build et `astro check` sont à zéro avertissement, et la console est vérifiée vide sur les 68 pages lors du balayage axe."
+    },
+    {
+     "ref": "077",
+     "titre": "Minifier les fichiers CSS, JavaScript, HTML et SVG",
+     "statut": "OK",
+     "comment": "`compressHTML: true`, et Astro minifie CSS et JavaScript en production."
+    },
+    {
+     "ref": "079",
+     "titre": "Combiner les fichiers CSS et JavaScript",
+     "statut": "OK",
+     "comment": "Un seul fichier JavaScript pour tout le site, et la CSS regroupée par composant partagé plutôt qu'éclatée par page."
+    },
+    {
+     "ref": "084",
+     "titre": "Favoriser HSTS Preload list aux redirections 301",
+     "statut": "PART",
+     "comment": "Deux redirections servies par `meta refresh` généré par Astro, faute d'API de redirection chez l'hébergeur cible. HSTS relève de la couche d'hébergement, non traitée ici."
+    },
+    {
+     "ref": "086",
+     "titre": "Choisir un hébergeur \"éco-responsable\"",
+     "statut": "PART",
+     "comment": "Hébergement Google Cloud Storage aujourd'hui, migration vers Clever Cloud prévue après la refonte. Le badge CO2.js suppose volontairement un hébergement non renouvelable, ce qui est la lecture pessimiste."
+    },
+    {
+     "ref": "087",
+     "titre": "Privilégier un fournisseur d'électricité écoresponsable",
+     "statut": "NA",
+     "comment": "Le choix du fournisseur d'électricité ne relève pas de ce dépôt."
+    },
+    {
+     "ref": "088",
+     "titre": "Adapter la qualité de service et le niveau de disponibilité",
+     "statut": "OK",
+     "comment": "Site statique servi par un stockage d'objets : le niveau de service est celui d'un fichier, sans processus applicatif à maintenir disponible."
+    },
+    {
+     "ref": "089",
+     "titre": "Utiliser des serveurs virtualisés",
+     "statut": "NA",
+     "comment": "Aucun serveur : le site est servi depuis un stockage d'objets."
+    },
+    {
+     "ref": "090",
+     "titre": "Optimiser l'efficacité énergétique des serveurs",
+     "statut": "NA",
+     "comment": "Ne relève pas de ce dépôt."
+    },
+    {
+     "ref": "091",
+     "titre": "Installer le minimum requis sur le serveur",
+     "statut": "OK",
+     "comment": "Rien n'est installé pour servir le site : ce sont des fichiers statiques derrière un nginx partagé par les six sites externes."
+    },
+    {
+     "ref": "092",
+     "titre": "Mettre les caches entièrement en RAM (opcode et kvs)",
+     "statut": "NA",
+     "comment": "Aucun cache applicatif : pas d'application."
+    },
+    {
+     "ref": "093",
+     "titre": "Stocker les données dans le cloud",
+     "statut": "OK",
+     "comment": "Les fichiers sont dans un stockage d'objets, sans serveur dédié allumé pour les servir."
+    },
+    {
+     "ref": "094",
+     "titre": "Héberger les ressources (CSS/JS) sur un domaine sans cookie",
+     "statut": "OK",
+     "comment": "Aucun cookie n'est posé, donc aucune ressource n'en transporte."
+    },
+    {
+     "ref": "097",
+     "titre": "Utiliser un serveur asynchrone",
+     "statut": "NA",
+     "comment": "Aucun serveur applicatif."
+    },
+    {
+     "ref": "098",
+     "titre": "Utiliser un CDN",
+     "statut": "PART",
+     "comment": "Aucun CDN aujourd'hui, ce qui est un choix : la règle vise la latence, et l'audience est nationale. La question est ouverte pour la bascule."
+    },
+    {
+     "ref": "099",
+     "titre": "Utiliser un cache HTTP",
+     "statut": "OK",
+     "comment": "Cache HTTP réglé par famille de ressources dans `firebase.json` : un an immuable pour les actifs hachés, revalidation pour l'index de recherche, dix minutes pour les pages."
+    },
+    {
+     "ref": "101",
+     "titre": "Ajouter des entêtes Expires ou Cache-Control",
+     "statut": "OK",
+     "comment": "Quatre règles `Cache-Control` explicites, avec le raisonnement de chacune en commentaire dans le fichier."
+    },
+    {
+     "ref": "102",
+     "titre": "Mettre en cache les réponses AJAX",
+     "statut": "NA",
+     "comment": "Aucune requête AJAX en dehors des deux badges, dont l'un met son résultat en cache un jour."
+    },
+    {
+     "ref": "103",
+     "titre": "Réduire au nécessaire les logs des serveurs",
+     "statut": "NA",
+     "comment": "Les journaux relèvent de la couche d'hébergement."
+    },
+    {
+     "ref": "104",
+     "titre": "Désactiver le DNS lookup d’Apache",
+     "statut": "NA",
+     "comment": "Aucun Apache."
+    },
+    {
+     "ref": "105",
+     "titre": "Apache Vhost : désactiver le AllowOverride",
+     "statut": "NA",
+     "comment": "Aucun Apache."
+    },
+    {
+     "ref": "4006",
+     "titre": "Privilégier HTTP/2 à HTTP/1",
+     "statut": "OK",
+     "comment": "HTTP/2 confirmé en production : la réponse de `blog.zatsit.fr` est en HTTP/2."
+    },
+    {
+     "ref": "4008",
+     "titre": "Mettre en place un sitemap efficient",
+     "statut": "PART",
+     "comment": "Le sitemap est généré et segmenté (`sitemap-index.xml` et `sitemap-0.xml`), mais **aucun `robots.txt` ne le référence**, ce qui est un manque réel et facile à combler."
+    },
+    {
+     "ref": "4012",
+     "titre": "Mettre en place une politique d'expiration et suppression des données",
+     "statut": "NA",
+     "comment": "Aucune donnée personnelle collectée, donc aucune politique d'expiration à écrire."
+    }
+   ]
+  },
+  {
+   "nom": "Utilisation",
+   "criteres": [
+    {
+     "ref": "035",
+     "titre": "Eviter d'utiliser des images matricielles pour l'interface",
+     "statut": "OK",
+     "comment": "Aucune image matricielle dans l'interface. Les 6 PNG et JPEG du build sont des logos tiers et des illustrations d'articles."
+    },
+    {
+     "ref": "036",
+     "titre": "Optimiser les images vectorielles",
+     "statut": "PART",
+     "comment": "Les SVG d'interface sont écrits à la main, donc minimaux. Ceux qui viennent des articles ne passent pas par un optimiseur type SVGO."
+    },
+    {
+     "ref": "058",
+     "titre": "Optimiser et générer les médias avant importation sur un CMS",
+     "statut": "NA",
+     "comment": "Aucun CMS. Les médias sont optimisés au build par `astro:assets`."
+    },
+    {
+     "ref": "060",
+     "titre": "Encoder les sons en dehors du CMS",
+     "statut": "NA",
+     "comment": "Aucun contenu sonore."
+    },
+    {
+     "ref": "107",
+     "titre": "Compresser les documents",
+     "statut": "OK",
+     "comment": "Aucun document téléchargeable n'est publié par le site."
+    },
+    {
+     "ref": "108",
+     "titre": "Optimiser les PDF",
+     "statut": "NA",
+     "comment": "Aucun PDF publié."
+    },
+    {
+     "ref": "109",
+     "titre": "Limiter les e-mails lourds et redondants",
+     "statut": "NA",
+     "comment": "Le site n'envoie aucun courriel."
+    },
+    {
+     "ref": "111",
+     "titre": "Limiter la taille des e-mails envoyés",
+     "statut": "NA",
+     "comment": "Le site n'envoie aucun courriel."
+    },
+    {
+     "ref": "112",
+     "titre": "Adapter les sons aux contextes d'écoute",
+     "statut": "NA",
+     "comment": "Aucun contenu sonore."
+    },
+    {
+     "ref": "113",
+     "titre": "Adapter les textes au web",
+     "statut": "OK",
+     "comment": "Justification en `ch` pour tenir la ligne entre 65 et 75 caractères, chapô, sommaire à deux niveaux, temps de lecture affiché. Le texte est le contenu du site."
+    },
+    {
+     "ref": "114",
+     "titre": "Adapter les vidéos aux contextes de visualisation",
+     "statut": "PART",
+     "comment": "Aucune vidéo hébergée. Un article intègre des vidéos de conférence, hors de notre maîtrise."
+    },
+    {
+     "ref": "4001",
+     "titre": "Limiter les outils d'analytics et les données collectées",
+     "statut": "OK",
+     "comment": "Aucun outil d'analytique, aucun traceur, aucun cookie. La charte l'interdit explicitement et le build le confirme."
+    },
+    {
+     "ref": "4002",
+     "titre": "Limiter l'utilisation des GIFs animés",
+     "statut": "OK",
+     "comment": "Aucun GIF animé dans le corpus : les illustrations sont en WebP ou en SVG."
+    },
+    {
+     "ref": "4003",
+     "titre": "Éviter la lecture et le chargement automatique des vidéos et des sons",
+     "statut": "OK",
+     "comment": "Aucune lecture automatique : le site ne porte ni son ni vidéo en propre."
+    },
+    {
+     "ref": "4036",
+     "titre": "Entretenir son site régulièrement",
+     "statut": "OK",
+     "comment": "Le dépôt est entretenu en continu, avec un journal des décisions et des pièges dans `CLAUDE.md` et `PLAN-MIGRATION.md`."
+    }
+   ]
+  },
+  {
+   "nom": "Support et maintenance",
+   "criteres": [
+    {
+     "ref": "095",
+     "titre": "Éviter les redirections",
+     "statut": "PART",
+     "comment": "Deux redirections seulement, toutes deux voulues, `/markdown-page/` et `/tags/`, et aucune chaîne de redirection. Elles sont des `meta refresh` plutôt que des 301, ce qui reste à porter par la couche d'hébergement."
+    },
+    {
+     "ref": "106",
+     "titre": "Désactiver les logs binaires",
+     "statut": "NA",
+     "comment": "Aucun Apache."
+    }
+   ]
+  },
+  {
+   "nom": "Fin de vie",
+   "criteres": [
+    {
+     "ref": "085",
+     "titre": "Mettre en place un plan de fin de vie du site",
+     "statut": "PART",
+     "comment": "Le plan de migration prévoit la fin de vie de la coque Docusaurus, mais aucun plan de fin de vie n'est écrit pour le blog lui-même."
+    }
+   ]
+  },
+  {
+   "nom": "Non classées par le référentiel",
+   "criteres": [
+    {
+     "ref": "4031",
+     "titre": "Avoir une stratégie de fin de vie des contenus",
+     "statut": "PART",
+     "comment": "Les articles ne sont jamais dépubliés et aucune règle d'archivage n'existe. La page `/archive/` liste tout, ce qui est le contraire d'une stratégie de fin de vie."
+    },
+    {
+     "ref": "4032",
+     "titre": "Mettre en place un \"Circuit breaker\"",
+     "statut": "NA",
+     "comment": "Aucun appel serveur à protéger. Les deux badges dégradent proprement si leur API ne répond pas."
+    },
+    {
+     "ref": "4033",
+     "titre": "Favoriser le \"Request collapsing\"",
+     "statut": "NA",
+     "comment": "Aucune requête concurrente à regrouper."
+    },
+    {
+     "ref": "4034",
+     "titre": "S’appuyer sur les services managés",
+     "statut": "OK",
+     "comment": "Hébergement en stockage d'objets managé, sans serveur à administrer."
+    }
+   ]
+  }
+ ]
+}

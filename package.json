@@ -16,6 +16,7 @@
     "check:a11y": "node .claude/skills/wcag-check/scripts/contrast.mjs",
     "check:eco": "node .claude/skills/eco-check/scripts/page-weight.mjs",
     "check:axe": "node scripts/axe-sweep.mjs",
+    "docs:referentiels": "node scripts/build-referentiels.mjs",
     "astro": "astro"
   },
   "dependencies": {
