@@ -24,7 +24,9 @@ Le manque est l'inverse, et il n'avait pas été nommé : **une modification de 
 
 Ensuite :
 
-1. **La bascule de production, qui est maintenant le merge lui-même.** Les deux pipelines de publication ont été migrées le 28 août : plus rien ne construit Docusaurus, et celle du dépôt contenu, la seule qui alimente le bucket, téléverse `zats-blog/dist`. Merger les deux branches ne casse donc plus la publication, **ça remplace le blog en ligne par la version Astro**. À faire ensemble, dans une séance dédiée.
+1. **Un audit RGAA**, pour faire côté accessibilité ce que `/audits/` fait côté éco-conception. Reporté à la demande d'Emmanuel le 29 août, il veut s'y pencher d'abord. La source est prête, 106 critères en JSON officiel de la DINUM, et le piège est identifié : ne pas publier un rapport axe comme s'il valait audit, il couvre de l'ordre du tiers des critères. Détail en **D7** de `PLAN-MIGRATION.md`.
+
+2. **La bascule de production, qui est maintenant le merge lui-même.** Les deux pipelines de publication ont été migrées le 28 août : plus rien ne construit Docusaurus, et celle du dépôt contenu, la seule qui alimente le bucket, téléverse `zats-blog/dist`. Merger les deux branches ne casse donc plus la publication, **ça remplace le blog en ligne par la version Astro**. À faire ensemble, dans une séance dédiée.
 
    Deux gestes côté hébergement, à ne pas oublier ce jour-là : régler le **`NotFoundPage` du bucket sur `404.html`** et non sur `index.html`, sinon une URL fausse sert la page d'accueil en 200, Astro n'ayant pas de routeur client pour rattraper ; et savoir que la pipeline **vide le bucket avant de téléverser**, donc une purge suivie d'un échec laisse le site blanc. L'action asserte désormais la présence de `dist/index.html` avant d'en arriver là, mais l'ordre reste à revoir un jour, en `rsync` par exemple.
 
