@@ -15,6 +15,7 @@
     "check": "astro check",
     "check:a11y": "node .claude/skills/wcag-check/scripts/contrast.mjs",
     "check:eco": "node .claude/skills/eco-check/scripts/page-weight.mjs",
+    "check:axe": "node scripts/axe-sweep.mjs",
     "astro": "astro"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "axe-core": "^4.13.0",
     "pagefind": "^1.5.2",
     "typescript": "^6.0.3"
   }

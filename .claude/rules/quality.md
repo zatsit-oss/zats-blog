@@ -35,7 +35,9 @@ Not a stretch goal. Every page and component must meet it, in **both** themes.
 - `lang="fr"` on `<html>`: the site is French-only.
 
 Verification is a gate, not an afterthought: run `wcag-check` before declaring
-UI work done and before committing.
+UI work done and before committing, and `npm run check:axe` with it. The token
+gate cannot see ARIA, roles, names, focus order or target size; axe can, over
+every page rather than over the handful a template suggests.
 
 ## Eco-design: budgets, measured
 

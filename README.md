@@ -35,6 +35,7 @@ Le chemin `../zats-blog-content` est en dur à deux endroits, `src/consts.ts` et
 | `npm run check` | vérification TypeScript |
 | `npm run check:a11y` | contrastes WCAG 2.1 AA, deux thèmes, plus les couleurs du code |
 | `npm run check:eco` | budgets de poids par page, sur `dist/` |
+| `npm run check:axe` | axe-core sur **toutes** les pages de `dist/`, deux thèmes, deux largeurs |
 
 **La recherche ne fonctionne pas avec `npm run dev`**, et c'est attendu : son index est produit par le build, dans `dist/pagefind/`. Pour la tester, `npm run build` puis `npm run preview`, et forcer le rechargement de la page, le script de recherche étant inliné dans chaque page (un onglet ouvert avant le dernier build sert l'ancien).
 

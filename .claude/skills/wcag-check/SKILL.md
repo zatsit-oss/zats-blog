@@ -47,9 +47,32 @@ it too.
    Then add the pairing to the `PAIRS` table in the script, so the next change
    inherits the check instead of rediscovering it.
 
-3. Walk the checklist below. Fix what fails, re-measure.
+3. Run the engine the token audit cannot replace:
 
-4. Report the ratios you relied on. Never claim a pass without the number.
+   ```bash
+   npm run check:axe                 # every page of dist/, both themes, 1440 and 390px
+   npm run check:axe -- --mobile     # 390px only
+   npm run check:axe -- /categories/ # one page
+   ```
+
+   It exits 1 on any violation. Contrast is the one thing it duplicates; the
+   rest, ARIA, roles, names, focus order, target size, is invisible to a token
+   audit. `target-size` is experimental in axe and is asked for by name here,
+   which is what caught table-of-contents links measuring 23px.
+
+   Sweep every page, not the templates you changed. On 28 August ten passes on
+   the home page, the categories and the authors came back clean while three
+   rules were failing inside articles: an admonition title below AA in both
+   themes, those 23px links, and tables scrolling without keyboard access. The
+   violations live where the content is.
+
+   Nodes it leaves *undetermined* are not failures: axe declines to compute
+   contrast through a translucent stack, and `--color-surface` is `rgba` in the
+   dark theme. Step 1 composites those layers and measures them.
+
+4. Walk the checklist below. Fix what fails, re-measure.
+
+5. Report the ratios you relied on. Never claim a pass without the number.
 
 ## Checklist
 

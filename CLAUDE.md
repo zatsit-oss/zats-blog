@@ -16,7 +16,14 @@ The **zatsit blog**: a static site built with [Astro 7](https://astro.build/), F
 npm run check        # TypeScript
 npm run check:a11y   # WCAG 2.1 AA contrast, both themes, plus the Shiki colours
 npm run check:eco    # page weight budgets, on dist/
+npm run check:axe    # axe-core over every page of dist/, both themes, 1440 and 390px
 ```
+
+The first three run in CI. `check:axe` does not: it needs Chrome, so it is a local
+gate, and the one to run before calling UI work done. It serves `dist/` itself on
+a port of its own, so it audits the build just produced rather than whatever a
+preview daemon is holding. `-- --mobile`, `-- --desktop` or `-- /une/page/` narrow
+it down.
 
 All three run in CI on every pull request and exit non-zero on failure. Read the full output of `astro check`: the error count sits above the warnings line, and truncating with `tail -3` hides it.
 
