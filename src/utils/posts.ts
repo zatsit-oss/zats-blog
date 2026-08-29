@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
-import { CATEGORY_LABELS, categoryLabel, SITE_DESCRIPTION } from '../consts';
+import { CATEGORY_LABELS, categoryLabel, POSTS_PER_PAGE, SITE_DESCRIPTION } from '../consts';
 
 type Post = CollectionEntry<'blog'>;
 
@@ -188,4 +188,37 @@ export function metaDescription(post: Post, maxLength = 160): string {
 export function readingTime(post: Post): number {
   const words = toPlainText(post.body ?? '').split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
+}
+
+export interface ListingPage {
+  posts: Post[];
+  /** 1 for the root, 2 and up for /page/<n>/. */
+  current: number;
+  total: number;
+}
+
+/**
+ * Splits the corpus into listing pages, and it lives here rather than in the
+ * two pages that render them: the home page and /page/[page].astro each
+ * computed their own slice and their own total, with two different formulas,
+ * which is how the first page came to show nine cards against the second's ten.
+ *
+ * The first page holds the featured article **plus** a full grid, so every
+ * grid on the site has the same three rows of three. Page one therefore shows
+ * one article more than the others, which is the point: the lead is an extra,
+ * not a slot taken from the grid.
+ */
+export function listingPages(posts: Post[]): ListingPage[] {
+  // The lead is what page one has and the others do not.
+  const firstPageSize = POSTS_PER_PAGE + 1;
+  const rest = Math.max(0, posts.length - firstPageSize);
+  const total = 1 + Math.ceil(rest / POSTS_PER_PAGE);
+
+  return Array.from({ length: total }, (_, index) => {
+    const current = index + 1;
+    const start = current === 1 ? 0 : firstPageSize + (current - 2) * POSTS_PER_PAGE;
+    const size = current === 1 ? firstPageSize : POSTS_PER_PAGE;
+
+    return { posts: posts.slice(start, start + size), current, total };
+  });
 }

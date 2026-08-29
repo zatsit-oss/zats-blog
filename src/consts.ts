@@ -8,7 +8,16 @@ export const SITE_DESCRIPTION =
 export const SITE_OG_IMAGE = '/img/zatsit-social-card.png';
 
 /** How many articles per page on the paginated listing. Matches Docusaurus. */
-export const POSTS_PER_PAGE = 10;
+/**
+ * Cards in the grid, on every listing page. Nine and not ten, since 28 August:
+ * the grid resolves to three columns at full measure, so nine is three full
+ * rows where ten left a fourth row holding a single card.
+ *
+ * The first page carries the featured article **on top of** these nine, so it
+ * shows ten articles and every grid on the site has the same shape. Before, the
+ * lead ate a grid slot and page 1 showed nine cards against page 2's ten.
+ */
+export const POSTS_PER_PAGE = 9;
 
 /**
  * The content lives in a separate repository, cloned next to this one.

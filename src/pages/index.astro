@@ -14,11 +14,12 @@ import BlogFacts from '../components/BlogFacts.astro';
 import BuiltWith from '../components/BuiltWith.astro';
 import PostList from '../components/PostList.astro';
 import RandomArticle from '../components/RandomArticle.astro';
-import { sortedPosts } from '../utils/posts';
-import { SITE_TITLE, SITE_DESCRIPTION, POSTS_PER_PAGE, HERO } from '../consts';
+import { listingPages, sortedPosts } from '../utils/posts';
+import { SITE_TITLE, SITE_DESCRIPTION, HERO } from '../consts';
 
 const posts = await sortedPosts();
-const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+// Page one, from the shared split: the featured article plus a full grid.
+const [firstPage] = listingPages(posts);
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -40,13 +41,13 @@ const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
   <BuiltWith />
 
   <PostList
-    posts={posts.slice(0, POSTS_PER_PAGE)}
+    posts={firstPage.posts}
     heading="Derniers articles"
     headingLevel="h2"
     lead
     current={1}
-    total={totalPages}
-    nextUrl={totalPages > 1 ? '/page/2/' : undefined}
+    total={firstPage.total}
+    nextUrl={firstPage.total > 1 ? '/page/2/' : undefined}
   >
     {/* Draws from the whole corpus, not from the ten shown below. */}
     <RandomArticle slot="action" posts={posts} />
