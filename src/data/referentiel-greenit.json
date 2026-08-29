@@ -22,7 +22,7 @@
      "ref": "002",
      "titre": "Quantifier précisément le besoin",
      "statut": "OK",
-     "comment": "Le besoin est écrit dans `PLAN-MIGRATION.md` avec ses critères de sortie chiffrés, et la parité fonctionnelle avec Docusaurus est la borne : 45 routes, pas une de plus au départ."
+     "comment": "Le besoin est écrit dans `PLAN-MIGRATION.md` du repository de code avec ses critères de sortie chiffrés, et la parité fonctionnelle avec Docusaurus (ancienne stack technique) est la borne : 45 routes, pas une de plus au départ."
     },
     {
      "ref": "004",

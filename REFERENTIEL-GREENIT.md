@@ -40,7 +40,7 @@ La majorité des règles sont respectées non par optimisation mais par choix d'
 | Règle | Intitulé | Statut | Comment |
 |---|---|---|---|
 | `001` | Éliminer les fonctionnalités non essentielles | ✅ Respectée | Aucune fonctionnalité décorative : pas de carrousel, pas de commentaires, pas de partage automatisé. La recherche et le sommaire sont les deux seules briques interactives, chacune argumentée. |
-| `002` | Quantifier précisément le besoin | ✅ Respectée | Le besoin est écrit dans `PLAN-MIGRATION.md` avec ses critères de sortie chiffrés, et la parité fonctionnelle avec Docusaurus est la borne : 45 routes, pas une de plus au départ. |
+| `002` | Quantifier précisément le besoin | ✅ Respectée | Le besoin est écrit dans `PLAN-MIGRATION.md` du repository de code avec ses critères de sortie chiffrés, et la parité fonctionnelle avec Docusaurus (ancienne stack technique) est la borne : 45 routes, pas une de plus au départ. |
 | `004` | Préférer la saisie assistée à l'autocomplétion | ⬜ Sans objet | Aucun formulaire de saisie sur le site. Le seul champ est la recherche, qui interroge un index local. |
 | `4014` | S'assurer que les parcours utilisateurs permettent de réaliser leur action prévue | ✅ Respectée | Les parcours ont été vérifiés dans un navigateur réel plutôt que dans le HTML : recherche, tirage au hasard, navigation par catégorie, par tag et par auteur. |
 | `4018` | Éliminer les fonctionnalités non utilisées | ✅ Respectée | Le pruneur Pagefind retire 408 ko d'interfaces inutilisées à chaque build, et une illustration du hero non retenue a été laissée hors du dépôt plutôt que gardée au cas où. |

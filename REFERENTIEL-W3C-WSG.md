@@ -14,14 +14,14 @@ Ce document a un pendant, [`REFERENTIEL-GREENIT.md`](REFERENTIEL-GREENIT.md), et
 | 🟡 Partielle | 14 |
 | ❌ Non respectée | 1 |
 | ⬜ Sans objet | 1 |
-| 🏢 Relève de zatsit | 9 |
+| 🔍 En cours d’analyse | 9 |
 | **Total** | **71** |
 
 **46 lignes directrices respectées sur 61 qui engagent ce dépôt**, soit 75 %, plus 14 partielles et 1 non respectée.
 
 ### Une distinction que le référentiel Green IT n'imposait pas
 
-Neuf lignes directrices portent sur l'entreprise et non sur le site : stratégie de produit, modèles d'impact, pratiques financières, philanthropie, partage de la valeur, gestion des déchets électroniques. Elles sont marquées **Relève de zatsit** plutôt que respectées ou non, parce que les juger depuis un dépôt de code serait malhonnête, et parce qu'un « sans objet » laisserait croire que la question ne se pose pas.
+Neuf lignes directrices portent sur l'entreprise et non sur le site : stratégie de produit, modèles d'impact, pratiques financières, philanthropie, partage de la valeur, gestion des déchets électroniques. Elles sont marquées **En cours d'analyse** plutôt que respectées ou non : la question se pose, mais elle se tranche au niveau de l'entreprise et non depuis un dépôt de code. Un « sans objet » laisserait croire qu'elle ne se pose pas.
 
 ### Ce qui manque
 
@@ -107,33 +107,33 @@ Neuf lignes directrices portent sur l'entreprise et non sur le site : stratégie
 
 ## Stratégie et gestion de produit
 
-*26 lignes directrices : 11 respectées, 5 partielles, 1 non respectée, 9 relèvent de zatsit.*
+*26 lignes directrices : 11 respectées, 5 partielles, 1 non respectée, 9 en cours d’analyse.*
 
 | Ligne directrice | Critères | Statut | Comment |
 |---|---|---|---|
-| [Have an ethical and sustainable product strategy](https://www.w3.org/TR/web-sustainability-guidelines/#have-an-ethical-and-sustainable-product-strategy) | 4 | 🏢 Relève de zatsit | Relève de zatsit : société à mission et certifiée B Corp, ce que le pied de page documente. Ce dépôt en applique la conséquence technique. |
-| [Assign a sustainability advocate](https://www.w3.org/TR/web-sustainability-guidelines/#assign-a-sustainability-advocate) | 1 | 🏢 Relève de zatsit | Relève de zatsit, qui publie un portail Sustainability distinct. |
+| [Have an ethical and sustainable product strategy](https://www.w3.org/TR/web-sustainability-guidelines/#have-an-ethical-and-sustainable-product-strategy) | 4 | 🔍 En cours d’analyse | En cours : société à mission et certifiée B Corp, ce que le pied de page documente. Ce dépôt en applique la conséquence technique. |
+| [Assign a sustainability advocate](https://www.w3.org/TR/web-sustainability-guidelines/#assign-a-sustainability-advocate) | 1 | 🔍 En cours d’analyse | En cours. zatsit publie un portail Sustainability distinct. |
 | [Inform, raise awareness, and train for sustainability](https://www.w3.org/TR/web-sustainability-guidelines/#inform-raise-awareness-and-train-for-sustainability) | 5 | ✅ Respectée | C'est l'objet même du blog : les articles GreenIT, et une page qui explique et mesure sa propre éco-conception. |
 | [Communicate the environmental impact of user choices](https://www.w3.org/TR/web-sustainability-guidelines/#communicate-the-environmental-impact-of-user-choices) | 1 | ✅ Respectée | Trois badges publiés au lecteur, dont un calculé chez nous et deux vérifiables par un tiers, avec le poids et la date du relevé affichés. |
 | [Calculate the environmental impact](https://www.w3.org/TR/web-sustainability-guidelines/#calculate-the-environmental-impact) | 3 | ✅ Respectée | CO2.js exécuté au build sur notre poids réellement mesuré, plus EcoIndex et Website Carbon en corroboration externe. |
 | [Define clear organizational sustainability goals and metrics](https://www.w3.org/TR/web-sustainability-guidelines/#define-clear-organizational-sustainability-goals-and-metrics) | 1 | 🟡 Partielle | Les objectifs du site sont chiffrés et opposables. Les objectifs de l'organisation sont hors de ce dépôt. |
 | [Validate web sustainability efforts through external verification](https://www.w3.org/TR/web-sustainability-guidelines/#validate-web-sustainability-efforts-through-external-verification) | 2 | ✅ Respectée | EcoIndex et Website Carbon sont deux vérifications tierces, publiées et cliquables par le lecteur. |
-| [Support mandatory disclosures and reporting](https://www.w3.org/TR/web-sustainability-guidelines/#support-mandatory-disclosures-and-reporting) | 4 | 🏢 Relève de zatsit | Relève de zatsit : notation EcoVadis et certification B Corp, affichées dans le pied de page. |
-| [Create one or more impact business models](https://www.w3.org/TR/web-sustainability-guidelines/#create-one-or-more-impact-business-models) | 1 | 🏢 Relève de zatsit | Relève de zatsit. |
+| [Support mandatory disclosures and reporting](https://www.w3.org/TR/web-sustainability-guidelines/#support-mandatory-disclosures-and-reporting) | 4 | 🔍 En cours d’analyse | Notation EcoVadis Silver et certification B Corp, affichées dans le pied de page. |
+| [Create one or more impact business models](https://www.w3.org/TR/web-sustainability-guidelines/#create-one-or-more-impact-business-models) | 1 | 🔍 En cours d’analyse | En cours. |
 | [Follow a product management and maintenance strategy](https://www.w3.org/TR/web-sustainability-guidelines/#follow-a-product-management-and-maintenance-strategy) | 5 | ✅ Respectée | Plan de migration écrit, décisions numérotées et datées, journal des pièges déjà payés. Le dépôt se relit plus qu'il ne se redécouvre. |
 | [Implement continuous improvement procedures](https://www.w3.org/TR/web-sustainability-guidelines/#implement-continuous-improvement-procedures) | 4 | ✅ Respectée | Trois portes automatisées, une quatrième locale, et un journal des régressions évitées. Les budgets sont revérifiés à chaque changement. |
 | [Document updates and evolutions](https://www.w3.org/TR/web-sustainability-guidelines/#document-updates-and-evolutions) | 1 | ✅ Respectée | Historique git en messages explicites, `PLAN-MIGRATION.md` pour les décisions, `REPRISE.md` pour l'état courant. |
 | [Evaluate if a digital product or service is necessary](https://www.w3.org/TR/web-sustainability-guidelines/#evaluate-if-a-digital-product-or-service-is-necessary) | 3 | ✅ Respectée | La question a été posée à chaque fonctionnalité, et plusieurs ont été écartées : le nuage gradué, le filigrane des cartes, le bouton de partage X, le garde-fou sur les tags. |
-| [Provide a supplier standards of practice document](https://www.w3.org/TR/web-sustainability-guidelines/#provide-a-supplier-standards-of-practice-document) | 3 | 🏢 Relève de zatsit | Relève de zatsit. |
-| [Share economic benefits](https://www.w3.org/TR/web-sustainability-guidelines/#share-economic-benefits) | 3 | 🏢 Relève de zatsit | Relève de zatsit. |
+| [Provide a supplier standards of practice document](https://www.w3.org/TR/web-sustainability-guidelines/#provide-a-supplier-standards-of-practice-document) | 3 | 🔍 En cours d’analyse | En cours. |
+| [Share economic benefits](https://www.w3.org/TR/web-sustainability-guidelines/#share-economic-benefits) | 3 | 🔍 En cours d’analyse | En cours. |
 | [Share decision-making power with affected parties](https://www.w3.org/TR/web-sustainability-guidelines/#share-decision-making-power-with-affected-parties) | 1 | ✅ Respectée | Les articles sont relus en pull request dans le dépôt contenu, et la refonte a été soumise aux treize auteurs avant bascule. |
-| [Use Diversity, Equity, Justice, Inclusion (DEJI) practices](https://www.w3.org/TR/web-sustainability-guidelines/#use-diversity-equity-justice-inclusion-deji-practices) | 3 | 🟡 Partielle | L'accessibilité est traitée comme une contrainte dure, WCAG 2.1 AA vérifiée sur toutes les pages. Les autres dimensions relèvent de zatsit. |
+| [Use Diversity, Equity, Justice, Inclusion (DEJI) practices](https://www.w3.org/TR/web-sustainability-guidelines/#use-diversity-equity-justice-inclusion-deji-practices) | 3 | 🟡 Partielle | L'accessibilité est traitée comme une contrainte dure, WCAG 2.1 AA vérifiée sur toutes les pages. Les autres dimensions se traitent au niveau de l'entreprise. |
 | [Promote responsible data practices](https://www.w3.org/TR/web-sustainability-guidelines/#promote-responsible-data-practices) | 3 | ✅ Respectée | Aucune donnée collectée : ni cookie, ni traceur, ni analytique, ni compte. C'est la pratique la plus responsable possible, ne rien recueillir. |
 | [Establish responsible practices around AI and emerging or disruptive technologies](https://www.w3.org/TR/web-sustainability-guidelines/#establish-responsible-practices-around-ai-and-emerging-or-disruptive-technologies) | 5 | 🟡 Partielle | Le dépôt est développé avec assistance d'IA (ici Claude), des skills et rules publiés aident à cadrer les développement sur l'aspect éco-conception et a11y. |
-| [Adopt responsible financial practices](https://www.w3.org/TR/web-sustainability-guidelines/#adopt-responsible-financial-practices) | 2 | 🏢 Relève de zatsit | Relève de zatsit. |
-| [Adopt organizational philanthropy practices](https://www.w3.org/TR/web-sustainability-guidelines/#adopt-organizational-philanthropy-practices) | 2 | 🏢 Relève de zatsit | Relève de zatsit. |
+| [Adopt responsible financial practices](https://www.w3.org/TR/web-sustainability-guidelines/#adopt-responsible-financial-practices) | 2 | 🔍 En cours d’analyse | En cours. |
+| [Adopt organizational philanthropy practices](https://www.w3.org/TR/web-sustainability-guidelines/#adopt-organizational-philanthropy-practices) | 2 | 🔍 En cours d’analyse | En cours. |
 | [Plan for a digital product or service's care and end-of-life](https://www.w3.org/TR/web-sustainability-guidelines/#plan-for-a-digital-product-or-service-s-care-and-end-of-life) | 1 | ❌ Non respectée | Aucun plan de fin de vie n'existe, ni pour le site ni pour ses contenus : rien n'est jamais dépublié et `/archive/` liste tout, ce qui est l'inverse d'une stratégie. |
-| [Repair, reuse, refurbish, recycle or reduce e-waste](https://www.w3.org/TR/web-sustainability-guidelines/#repair-reuse-refurbish-recycle-or-reduce-e-waste) | 4 | 🏢 Relève de zatsit | Relève de zatsit, le site n'ayant aucun matériel propre. |
+| [Repair, reuse, refurbish, recycle or reduce e-waste](https://www.w3.org/TR/web-sustainability-guidelines/#repair-reuse-refurbish-recycle-or-reduce-e-waste) | 4 | 🔍 En cours d’analyse | En cours. Le site n'a aucun matériel propre, la question se pose au niveau de l'entreprise. |
 | [Define performance, environmental, and human budgets](https://www.w3.org/TR/web-sustainability-guidelines/#define-performance-environmental-and-human-budgets) | 4 | 🟡 Partielle | Budgets de performance et d'environnement chiffrés et opposables. Aucun budget humain n'est défini. |
 | [Use and contribute to open source](https://www.w3.org/TR/web-sustainability-guidelines/#use-and-contribute-to-open-source) | 2 | ✅ Respectée | Les deux dépôts sont publics sous l'organisation zatsit-oss, et le site est bâti sur des briques ouvertes, Astro, Pagefind, CO2.js. |
 | [Create a business continuity and disaster recovery plan](https://www.w3.org/TR/web-sustainability-guidelines/#create-a-business-continuity-and-disaster-recovery-plan) | 2 | 🟡 Partielle | Le site est reconstructible entièrement depuis deux dépôts git, ce qui est la meilleure garantie de reprise. Aucun plan n'est écrit et aucune restauration n'a été testée. |

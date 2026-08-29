@@ -347,14 +347,14 @@
      "titre": "Have an ethical and sustainable product strategy",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#have-an-ethical-and-sustainable-product-strategy",
      "statut": "ORG",
-     "comment": "Relève de zatsit : société à mission et certifiée B Corp, ce que le pied de page documente. Ce dépôt en applique la conséquence technique."
+     "comment": "En cours : société à mission et certifiée B Corp, ce que le pied de page documente. Ce dépôt en applique la conséquence technique."
     },
     {
      "ref": "1",
      "titre": "Assign a sustainability advocate",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#assign-a-sustainability-advocate",
      "statut": "ORG",
-     "comment": "Relève de zatsit, qui publie un portail Sustainability distinct."
+     "comment": "En cours. zatsit publie un portail Sustainability distinct."
     },
     {
      "ref": "5",
@@ -396,14 +396,14 @@
      "titre": "Support mandatory disclosures and reporting",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#support-mandatory-disclosures-and-reporting",
      "statut": "ORG",
-     "comment": "Relève de zatsit : notation EcoVadis et certification B Corp, affichées dans le pied de page."
+     "comment": "Notation EcoVadis Silver et certification B Corp, affichées dans le pied de page."
     },
     {
      "ref": "1",
      "titre": "Create one or more impact business models",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#create-one-or-more-impact-business-models",
      "statut": "ORG",
-     "comment": "Relève de zatsit."
+     "comment": "En cours."
     },
     {
      "ref": "5",
@@ -438,14 +438,14 @@
      "titre": "Provide a supplier standards of practice document",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#provide-a-supplier-standards-of-practice-document",
      "statut": "ORG",
-     "comment": "Relève de zatsit."
+     "comment": "En cours."
     },
     {
      "ref": "3",
      "titre": "Share economic benefits",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#share-economic-benefits",
      "statut": "ORG",
-     "comment": "Relève de zatsit."
+     "comment": "En cours."
     },
     {
      "ref": "1",
@@ -459,7 +459,7 @@
      "titre": "Use Diversity, Equity, Justice, Inclusion (DEJI) practices",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#use-diversity-equity-justice-inclusion-deji-practices",
      "statut": "PART",
-     "comment": "L'accessibilité est traitée comme une contrainte dure, WCAG 2.1 AA vérifiée sur toutes les pages. Les autres dimensions relèvent de zatsit."
+     "comment": "L'accessibilité est traitée comme une contrainte dure, WCAG 2.1 AA vérifiée sur toutes les pages. Les autres dimensions se traitent au niveau de l'entreprise."
     },
     {
      "ref": "3",
@@ -480,14 +480,14 @@
      "titre": "Adopt responsible financial practices",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#adopt-responsible-financial-practices",
      "statut": "ORG",
-     "comment": "Relève de zatsit."
+     "comment": "En cours."
     },
     {
      "ref": "2",
      "titre": "Adopt organizational philanthropy practices",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#adopt-organizational-philanthropy-practices",
      "statut": "ORG",
-     "comment": "Relève de zatsit."
+     "comment": "En cours."
     },
     {
      "ref": "1",
@@ -501,7 +501,7 @@
      "titre": "Repair, reuse, refurbish, recycle or reduce e-waste",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#repair-reuse-refurbish-recycle-or-reduce-e-waste",
      "statut": "ORG",
-     "comment": "Relève de zatsit, le site n'ayant aucun matériel propre."
+     "comment": "En cours. Le site n'a aucun matériel propre, la question se pose au niveau de l'entreprise."
     },
     {
      "ref": "4",

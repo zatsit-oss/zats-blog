@@ -56,7 +56,9 @@ export const STATUTS: Record<Statut, { label: string; singulier: string; pluriel
   PART: { label: 'Partielle', singulier: 'partielle', pluriel: 'partielles' },
   KO: { label: 'Non respectée', singulier: 'non respectée', pluriel: 'non respectées' },
   NA: { label: 'Sans objet', singulier: 'sans objet', pluriel: 'sans objet' },
-  ORG: { label: 'Relève de zatsit', singulier: 'relève de zatsit', pluriel: 'relèvent de zatsit' },
+  // Not "non applicable": the question does arise, the answer is simply not
+  // settled yet. Kept out of the score for the same reason.
+  ORG: { label: 'Critère en cours d’analyse', singulier: 'en cours', pluriel: 'en cours' },
 };
 
 /**

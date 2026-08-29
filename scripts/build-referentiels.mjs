@@ -25,7 +25,7 @@ const LABEL = {
   PART: '🟡 Partielle',
   KO: '❌ Non respectée',
   NA: '⬜ Sans objet',
-  ORG: '🏢 Relève de zatsit',
+  ORG: '🔍 En cours d’analyse',
 };
 
 const PLURIEL = {
@@ -33,7 +33,7 @@ const PLURIEL = {
   PART: 'partielles',
   KO: 'non respectées',
   NA: 'sans objet',
-  ORG: 'relèvent de zatsit',
+  ORG: 'en cours d’analyse',
 };
 
 const SINGULIER = {
@@ -41,7 +41,7 @@ const SINGULIER = {
   PART: 'partielle',
   KO: 'non respectée',
   NA: 'sans objet',
-  ORG: 'relève de zatsit',
+  ORG: 'en cours d’analyse',
 };
 
 /** Editorial text, per reference. */
@@ -75,7 +75,7 @@ const PREAMBULE = {
     ],
     apres: [
       "### Une distinction que le référentiel Green IT n'imposait pas\n",
-      "Neuf lignes directrices portent sur l'entreprise et non sur le site : stratégie de produit, modèles d'impact, pratiques financières, philanthropie, partage de la valeur, gestion des déchets électroniques. Elles sont marquées **Relève de zatsit** plutôt que respectées ou non, parce que les juger depuis un dépôt de code serait malhonnête, et parce qu'un « sans objet » laisserait croire que la question ne se pose pas.\n",
+      "Neuf lignes directrices portent sur l'entreprise et non sur le site : stratégie de produit, modèles d'impact, pratiques financières, philanthropie, partage de la valeur, gestion des déchets électroniques. Elles sont marquées **En cours d'analyse** plutôt que respectées ou non : la question se pose, mais elle se tranche au niveau de l'entreprise et non depuis un dépôt de code. Un « sans objet » laisserait croire qu'elle ne se pose pas.\n",
       "### Ce qui manque\n",
       "1. **Aucun plan de fin de vie**, ni pour le site ni pour ses contenus. C'est la seule ligne en échec franc, et les deux référentiels la relèvent.",
       "2. **`robots.txt` absent**, alors que le sitemap est généré et segmenté.",
