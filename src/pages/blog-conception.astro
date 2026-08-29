@@ -9,6 +9,7 @@
  */
 import Layout from '../layouts/Layout.astro';
 import WebsiteCarbonBadge from '../components/WebsiteCarbonBadge.astro';
+import EcoIndexBadge from '../components/EcoIndexBadge.astro';
 import CO2JSBadge from '../components/CO2JSBadge.astro';
 import { MEASURED_PAGE_DATE } from '../consts';
 ---
@@ -43,6 +44,19 @@ import { MEASURED_PAGE_DATE } from '../consts';
 
     <div class="eco__badge">
       <WebsiteCarbonBadge />
+    </div>
+
+    <h2>Ce que dit EcoIndex</h2>
+
+    <p>
+      <a href="https://www.ecoindex.fr/" target="_blank" rel="noopener noreferrer">EcoIndex</a>, du
+      collectif Green IT, note une page de A à G à partir de trois mesures : le poids transféré, le
+      nombre de requêtes et la complexité du document. C'est la plus exigeante des trois, parce
+      qu'elle regarde la structure de la page et pas seulement ce qu'elle pèse.
+    </p>
+
+    <div class="eco__badge">
+      <EcoIndexBadge />
     </div>
 
     <h2>Et ce que dit CO2.js</h2>
