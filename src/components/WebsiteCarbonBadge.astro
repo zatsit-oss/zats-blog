@@ -20,6 +20,19 @@
 </script>
 
 <style is:global>
+  /* The package centres its badge (`text-align: center` on #wcb). Every other
+     block on the page starts at the text's left edge, this one included, so it
+     read as floating in the middle of the column beside the CO2.js badge right
+     under it.
+
+     `html` in front is what makes it win: the package injects its stylesheet
+     from its script, so it lands after ours, and at equal specificity the last
+     one takes it. The theme rules below already outrank it through their
+     attribute selector. */
+  html #wcb.carbonbadge {
+    text-align: start;
+  }
+
   /* Mirrors the package's own .wcb-d rules, keyed on our theme attribute.
      Higher specificity than the stylesheet the script injects, so these win
      whatever the load order. */

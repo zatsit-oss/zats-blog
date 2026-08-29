@@ -34,7 +34,10 @@ const kilobytes = Math.round(bytes / 1024);
 
 <figure class="co2">
   <div class="co2__badge">
-    <span class="co2__label">g de CO<sub>2</sub> par vue</span>
+    {/* One child, not three text nodes: `.co2__label` is a flex container, and
+        flex drops the whitespace between items, so `g de CO<sub>2</sub> par vue`
+        rendered as "CO2par vue". */}
+    <span class="co2__label"><span>g de CO<sub>2</sub> par vue</span></span>
     <span class="co2__value">{grams}</span>
   </div>
   <figcaption class="co2__caption">
