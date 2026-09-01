@@ -6,6 +6,16 @@ on:
   # commit. `gh workflow run firebase-hosting-pull-request.yml --ref <branche>`
   # now does it.
   workflow_dispatch:
+    inputs:
+      channel:
+        description: >
+          Canal Firebase à redéployer. L'action déduit ce nom du contexte de la
+          pull request, qui n'existe pas en déclenchement manuel : sans lui le
+          déploiement échoue sur « channelID is currently required ». La valeur
+          par défaut est le canal de la PR #82, celui que les consultants
+          relisent.
+        required: false
+        default: pr82-migration-astro
 
   pull_request:
     # blog/ and docs/ are gone: content is read from the content repository in
@@ -47,3 +57,6 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ env.FIREBASE_SERVICE_ACCOUNT }}'
           projectId: zatsit-blog
+          # Empty on a pull request, where the action derives the channel from
+          # the PR itself, as it did before this input existed.
+          channelId: ${{ github.event.inputs.channel }}
