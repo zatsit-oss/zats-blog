@@ -25,6 +25,11 @@ runs:
         REQUESTED_REF: ${{ inputs.content-ref }}
         HEAD_REF: ${{ github.head_ref }}
         BASE_REF: ${{ github.base_ref }}
+        # The branch the workflow runs on. head_ref and base_ref only exist for
+        # a pull_request, so a manual run had neither and fell straight through
+        # to content main, whose articles still carry the Docusaurus share-link
+        # images: the build died on ImageNotFound. Measured on 1 September.
+        CURRENT_REF: ${{ github.ref_name }}
       run: |
         set -euo pipefail
 
@@ -38,7 +43,8 @@ runs:
         REPO="https://x-access-token:${GH_TOKEN}@github.com/zatsit-oss/zats-blog-content.git"
 
         # Prefer a content branch named like the pull request branch, then one
-        # named like its base branch, and fall back to main once neither exists.
+        # named like its base branch, then one named like the branch this run is
+        # on, and fall back to main once none of the three exists.
         #
         # The base branch matters: a pull request onto migration-astro carries a
         # name of its own, so head_ref alone falls back to content main, whose
@@ -47,7 +53,7 @@ runs:
         # change under review.
         REF="${REQUESTED_REF}"
         if [ -z "$REF" ]; then
-          for CANDIDATE in "$HEAD_REF" "$BASE_REF"; do
+          for CANDIDATE in "$HEAD_REF" "$BASE_REF" "$CURRENT_REF"; do
             if [ -n "$CANDIDATE" ] && git ls-remote --exit-code --heads "$REPO" "$CANDIDATE" >/dev/null 2>&1; then
               REF="$CANDIDATE"
               break
