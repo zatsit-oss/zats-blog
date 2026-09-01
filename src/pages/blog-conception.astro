@@ -8,11 +8,11 @@
  * from the sentence and the improvement has since happened.
  */
 import Layout from '../layouts/Layout.astro';
-import MeasureBand from '../components/MeasureBand.astro';
+import WebsiteCarbonBadge from '../components/WebsiteCarbonBadge.astro';
+import EcoIndexBadge from '../components/EcoIndexBadge.astro';
 import AuditCards from '../components/AuditCards.astro';
-import { MEASURED_PAGE_BYTES, MEASURED_PAGE_DATE } from '../consts';
-
-const kilobytes = Math.round(MEASURED_PAGE_BYTES / 1024);
+import CO2JSBadge from '../components/CO2JSBadge.astro';
+import { MEASURED_PAGE_DATE } from '../consts';
 ---
 
 <Layout
@@ -34,38 +34,54 @@ const kilobytes = Math.round(MEASURED_PAGE_BYTES / 1024);
       fichiers à servir.
     </p>
 
-    <MeasureBand />
-
-    <h2>Comment ces chiffres sont obtenus</h2>
+    <h2>Ce que dit Website Carbon</h2>
 
     <p>
-      Website Carbon interroge son API depuis votre navigateur, sur l'adresse de la page ouverte :
-      la mesure est donc la vôtre, et elle est mise en cache une journée. EcoIndex sert la dernière
-      analyse faite sur cette adresse, et regarde la structure du document autant que son poids,
-      ce qui en fait le plus exigeant des trois.
+      Nous utilisons <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener noreferrer"
+        >WebsiteCarbon</a
+      > pour évaluer l'empreinte de nos pages. La mesure est faite sur la page que vous consultez,
+      en direct.
     </p>
 
+    <div class="eco__badge">
+      <WebsiteCarbonBadge />
+    </div>
+
+    <h2>Ce que dit EcoIndex</h2>
+
     <p>
-      Une mesure isolée peut se tromper, mieux vaut croiser les outils. Le troisième chiffre est
-      calculé chez nous, avec CO2.js de la Green Web Foundation, à la construction du site et non
-      dans votre navigateur : afficher une empreinte carbone en vous faisant télécharger une
-      bibliothèque pour la calculer serait contradictoire. Il part du poids réel de la page, celui
-      annoncé plus bas avec sa date, et retient l'hypothèse pessimiste d'un hébergement non
-      renouvelable.
+      <a href="https://www.ecoindex.fr/" target="_blank" rel="noopener noreferrer">EcoIndex</a>, du
+      collectif Green IT, note une page de A à G à partir de trois mesures : le poids transféré, le
+      nombre de requêtes et la complexité du document. C'est la plus exigeante des trois, parce
+      qu'elle regarde la structure de la page et pas seulement ce qu'elle pèse.
     </p>
+
+    <div class="eco__badge">
+      <EcoIndexBadge />
+    </div>
+
+    <h2>Et ce que dit CO2.js</h2>
+
+    <p>
+      Une mesure isolée peut se tromper, mieux vaut croiser les outils. <a
+        href="https://developers.thegreenwebfoundation.org/co2js/"
+        target="_blank"
+        rel="noopener noreferrer">CO2.js</a
+      >, de la Green Web Foundation, donne une seconde estimation à partir du poids réel de la
+      page. Le calcul est fait à la construction du site, pas dans votre navigateur : afficher une
+      empreinte carbone en vous faisant télécharger une bibliothèque pour la calculer serait
+      contradictoire.
+    </p>
+
+    <div class="eco__badge">
+      <CO2JSBadge />
+    </div>
 
     <h2>Ce que nous mesurons nous-mêmes</h2>
 
-    {/* The figure spelled out, because it was the most telling number on the
-        site and it sat buried in the middle of a sentence. */}
-    <p class="eco__chiffre">
-      <strong>{kilobytes}&nbsp;ko</strong>
-      <span>à la première visite, pour un budget que nous nous sommes fixé à 500.</span>
-    </p>
-
     <p>
       Trois vérifications tournent à chaque modification du site et échouent si un seuil est
-      dépassé : la première mesure le poids de chaque page contre ce budget, la deuxième les
+      dépassé : la première mesure le poids de chaque page contre un budget, la deuxième les
       contrastes de couleur contre le niveau AA des WCAG dans les thèmes clair et sombre, la
       troisième passe axe-core sur toutes les pages, aux deux largeurs. Les chiffres de cette page
       datent du {MEASURED_PAGE_DATE}.
@@ -113,28 +129,16 @@ const kilobytes = Math.round(MEASURED_PAGE_BYTES / 1024);
      section it opens. Measured before the change: the gap under a title was
      zero, and two consecutive paragraphs were glued as well, the global reset
      zeroing every margin and nothing on this page putting them back. */
-  /* The one figure worth reading at a glance. Same shape as the audit scores,
-     so the two blocks of the page rhyme rather than each inventing a form. */
-  .eco__chiffre {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2) var(--space-4);
-    margin-block: var(--space-5);
-  }
-
-  .eco__chiffre strong {
-    font-size: var(--text-4xl);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-
   .eco h2 {
     margin-block: var(--space-10) var(--space-5);
   }
 
   .eco p + p {
     margin-block-start: var(--space-4);
+  }
+
+  .eco__badge {
+    margin-block: var(--space-6);
   }
 
   /* Wider than the reading column: two cards squeezed into 45rem of prose
