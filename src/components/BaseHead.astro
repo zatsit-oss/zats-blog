@@ -3,6 +3,7 @@
 import '../styles/global.css';
 import { Font } from 'astro:assets';
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_OG_IMAGE } from '../consts';
+import { blogPostingSchema, pageGraph, webSiteSchema } from '../utils/schema';
 
 interface Props {
   title: string;
@@ -31,8 +32,23 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL(image, Astro.site);
-// The home page is the only one that must not read "Blog | zatsit".
-const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
+// A title that already names the site is left alone, which is how the home page
+// reads "Le blog tech de zatsit" and not that followed by "| zatsit".
+const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}`;
+
+// Structured data, emitted at build. An article describes itself as a
+// BlogPosting; every other page is the site. Astro.site is set in the config,
+// so the ids and urls are absolute, which JSON-LD requires.
+const site = Astro.site!;
+const schema = pageGraph(
+  site,
+  type === 'article'
+    ? blogPostingSchema(
+        { title, description, url: canonicalURL, image: socialImageURL, publishedAt, authors, tags },
+        site,
+      )
+    : webSiteSchema(site),
+);
 ---
 
 <meta charset="utf-8" />
@@ -54,6 +70,8 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 <link rel="canonical" href={canonicalURL} />
 
 <title>{fullTitle}</title>
+
+<script type="application/ld+json" is:inline set:html={schema} />
 <meta name="description" content={description} />
 
 <meta property="og:type" content={type} />

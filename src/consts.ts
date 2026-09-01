@@ -1,6 +1,17 @@
 // Global site constants, imported wherever they are needed.
 
 export const SITE_TITLE = 'zatsit';
+
+/**
+ * Title of the home page, which cannot be `SITE_TITLE` alone: "zatsit" is six
+ * characters and says nothing about what the site is. Every other page reads
+ * "<sujet> | zatsit", so the home page needs its own subject.
+ *
+ * 22 characters, inside the 10 to 70 a search engine displays without cutting.
+ * It already contains the site name, which is what stops BaseHead from
+ * appending it a second time.
+ */
+export const HOME_TITLE = 'Le blog tech de zatsit';
 export const SITE_DESCRIPTION =
   'Quel que soit votre domaine tech, nous avons forcément un article pour vous';
 

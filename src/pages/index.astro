@@ -15,14 +15,14 @@ import BuiltWith from '../components/BuiltWith.astro';
 import PostList from '../components/PostList.astro';
 import RandomArticle from '../components/RandomArticle.astro';
 import { listingPages, sortedPosts } from '../utils/posts';
-import { SITE_TITLE, SITE_DESCRIPTION, HERO } from '../consts';
+import { HOME_TITLE, SITE_DESCRIPTION, HERO } from '../consts';
 
 const posts = await sortedPosts();
 // Page one, from the shared split: the featured article plus a full grid.
 const [firstPage] = listingPages(posts);
 ---
 
-<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<Layout title={HOME_TITLE} description={SITE_DESCRIPTION}>
   <Hero
     eyebrow={HERO.eyebrow}
     title={HERO.title}
