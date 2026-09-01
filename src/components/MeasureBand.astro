@@ -1,0 +1,147 @@
+---
+/**
+ * The three measurements side by side, at the top of /blog-conception/.
+ *
+ * They used to close three consecutive sections, at 58, 40 and 92 pixels tall,
+ * read as footnotes to their paragraphs. They are the subject of the page, and
+ * the two audit cards that arrived on 29 August, 585 pixels of them, made the
+ * imbalance plain.
+ *
+ * ## Why a frame around each badge
+ *
+ * The three have nothing in common graphically: Website Carbon is two pills
+ * from a third-party stylesheet, EcoIndex a fixed SVG served by their API, ours
+ * a pair of blocks in our own tokens. Putting them next to each other bare
+ * would show three strangers. The identical card, with the tool's name and what
+ * it measures above, is what makes them read as one instrument panel.
+ *
+ * `auto-fit` and not three fixed columns: three cards at 1100px become one per
+ * row on a phone with no breakpoint of ours to maintain.
+ */
+import WebsiteCarbonBadge from './WebsiteCarbonBadge.astro';
+import EcoIndexBadge from './EcoIndexBadge.astro';
+import CO2JSBadge from './CO2JSBadge.astro';
+---
+
+<section class="band" aria-labelledby="mesures">
+  <h2 id="mesures">Trois mesures, trois outils</h2>
+
+  <p class="band__intro">
+    Aucun des trois ne nous appartient entièrement, et c'est le but : deux sont calculés par des
+    tiers que vous pouvez interroger vous-même, le dernier chez nous à partir du poids réel de la
+    page.
+  </p>
+
+  <ul class="band__list">
+    <li class="mesure">
+      <h3 class="mesure__nom">
+        <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener noreferrer">
+          Website Carbon
+        </a>
+      </h3>
+      <p class="mesure__quoi">
+        Mesure la page que vous consultez, en direct, depuis votre navigateur.
+      </p>
+      <div class="mesure__badge"><WebsiteCarbonBadge /></div>
+    </li>
+
+    <li class="mesure">
+      <h3 class="mesure__nom">
+        <a href="https://www.ecoindex.fr/" target="_blank" rel="noopener noreferrer">EcoIndex</a>
+      </h3>
+      <p class="mesure__quoi">
+        Note de A à G le poids, le nombre de requêtes et la complexité du document.
+      </p>
+      <div class="mesure__badge"><EcoIndexBadge /></div>
+    </li>
+
+    <li class="mesure">
+      <h3 class="mesure__nom">
+        <a
+          href="https://developers.thegreenwebfoundation.org/co2js/"
+          target="_blank"
+          rel="noopener noreferrer">CO2.js</a
+        >
+      </h3>
+      <p class="mesure__quoi">
+        Convertit en grammes de CO<sub>2</sub> le poids que nous mesurons nous-mêmes.
+      </p>
+      <div class="mesure__badge"><CO2JSBadge caption={false} /></div>
+    </li>
+  </ul>
+</section>
+
+<style>
+  .band {
+    position: relative;
+    margin-block: var(--space-8);
+    padding-block-start: var(--space-6);
+  }
+
+  /* The 48px accent stub the tag index uses, so a band of its own signs itself
+     the same way across the site. */
+  .band::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: var(--space-12);
+    block-size: 2px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+  }
+
+  .band__intro {
+    margin: var(--space-3) 0 var(--space-6);
+  }
+
+  .band__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mesure {
+    display: flex;
+    flex-direction: column;
+    /* The badge sits at the foot of the card whatever the text above it runs
+       to, so the three line up on one row rather than floating. */
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-card-bg);
+  }
+
+  .mesure__nom {
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+
+  .mesure__nom a {
+    color: var(--color-text);
+    text-decoration-color: var(--color-border);
+  }
+
+  .mesure__nom a:hover,
+  .mesure__nom a:focus-visible {
+    color: var(--color-primary);
+    text-decoration-color: currentColor;
+  }
+
+  .mesure__quoi {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .mesure__badge {
+    /* Pushed to the bottom, and given room above it so a badge never touches
+       the sentence explaining it. */
+    margin-block-start: auto;
+    padding-block-start: var(--space-4);
+  }
+</style>

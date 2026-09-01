@@ -24,9 +24,15 @@ interface Props {
    * footprint.
    */
   greenHost?: boolean;
+  /**
+   * Off where the page already states the weight and the date, as the measures
+   * band does: repeated under the badge it unbalanced the card against its two
+   * neighbours, which carry one line each.
+   */
+  caption?: boolean;
 }
 
-const { bytes = MEASURED_PAGE_BYTES, greenHost = false } = Astro.props;
+const { bytes = MEASURED_PAGE_BYTES, greenHost = false, caption = true } = Astro.props;
 
 const grams = new co2().perByte(bytes, greenHost).toFixed(3);
 const kilobytes = Math.round(bytes / 1024);
@@ -40,10 +46,14 @@ const kilobytes = Math.round(bytes / 1024);
     <span class="co2__label"><span>g de CO<sub>2</sub> par vue</span></span>
     <span class="co2__value">{grams}</span>
   </div>
-  <figcaption class="co2__caption">
-    Calculé avec CO2.js sur une page de {kilobytes} ko, mesurée le {MEASURED_PAGE_DATE}, en
-    supposant un hébergement non renouvelable.
-  </figcaption>
+  {
+    caption && (
+      <figcaption class="co2__caption">
+        Calculé avec CO2.js sur une page de {kilobytes} ko, mesurée le {MEASURED_PAGE_DATE}, en
+        supposant un hébergement non renouvelable.
+      </figcaption>
+    )
+  }
 </figure>
 
 <style>
