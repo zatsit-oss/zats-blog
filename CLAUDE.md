@@ -4,7 +4,7 @@ Guidance for Claude Code working in this repository.
 
 ## What this is
 
-The **zatsit blog**: a static site built with [Astro 7](https://astro.build/), French-only, deployed on Firebase Hosting. Migrated from Docusaurus v3 in August 2026.
+The **zatsit blog**: a static site built with [Astro 7](https://astro.build/), French-only. It replaces a Docusaurus v3 site; the shell is complete and awaiting its merge to `main`, which is the switch. Until then `blog.zatsit.fr` still serves Docusaurus.
 
 **Content lives in another repository.** Articles, authors and their images are in [zats-blog-content](https://github.com/zatsit-oss/zats-blog-content), cloned as a **sibling directory**, and read in place by a `glob()` loader. Nothing is copied. This repo holds the shell only.
 
@@ -19,13 +19,14 @@ npm run check:eco    # page weight budgets, on dist/
 npm run check:axe    # axe-core over every page of dist/, both themes, 1440 and 390px
 ```
 
-The first three run in CI. `check:axe` does not: it needs Chrome, so it is a local
-gate, and the one to run before calling UI work done. It serves `dist/` itself on
-a port of its own, so it audits the build just produced rather than whatever a
-preview daemon is holding. `-- --mobile`, `-- --desktop` or `-- /une/page/` narrow
-it down.
+The first three run in CI on every pull request and exit non-zero on failure. Read
+the full output of `astro check`: the error count sits above the warnings line, and
+truncating with `tail -3` hides it.
 
-All three run in CI on every pull request and exit non-zero on failure. Read the full output of `astro check`: the error count sits above the warnings line, and truncating with `tail -3` hides it.
+`check:axe` does not run in CI: it needs Chrome, so it is a local gate, and the one
+to run before calling UI work done. It serves `dist/` itself on a port of its own,
+so it audits the build just produced rather than whatever a preview daemon is
+holding. `-- --mobile`, `-- --desktop` or `-- /une/page/` narrow it down.
 
 The matching skills carry the checklists: `wcag-check` and `eco-check` are the verification gates, `accessibility-a11y` is the implementation guidance to read while writing a component.
 
@@ -96,7 +97,7 @@ Two things this catches that nothing else does: whether an element is actually v
 
 **Force a frame before measuring a colour in headless.** Headless Chrome produces no frames unless asked, so a CSS transition never advances: after clicking the theme toggle, `getComputedStyle` returned the palette the page was leaving for at least three seconds, and the 200 ms transition on `a { color }` was enough for axe-core to report 42 contrast violations that do not exist. `Page.captureScreenshot` forces a frame and the values snap to the truth. Any colour assertion after a state change needs that, or it measures the previous state.
 
-**Audit the articles, not only the page templates.** Ten passes on the home page, the categories, the authors and `/blog-conception/` came back clean while three rules were failing on article pages: an admonition title below AA in both themes, table-of-contents links one pixel short of the 24px target, and three tables scrollable without keyboard access. A template is written once and audited once; an article brings admonitions, deep headings, wide tables and images, and it is where the violations are. Sweep all 68 pages, both themes: it takes four minutes.
+**Audit the articles, not only the page templates.** Ten passes on the home page, the categories, the authors and `/blog-conception/` came back clean while three rules were failing on article pages: an admonition title below AA in both themes, table-of-contents links one pixel short of the 24px target, and three tables scrollable without keyboard access. A template is written once and audited once; an article brings admonitions, deep headings, wide tables and images, and it is where the violations are. Sweep all 72 pages, both themes: it takes four minutes.
 
 **axe-core can be run without adding a dependency.** Download `axe.min.js` to the scratchpad, inject it with `Runtime.evaluate`, then `axe.run(document)`. That is the same engine as the axe DevTools extension, so a clean result here is a clean result in the reader's browser, and it catches what `check:a11y` cannot: ARIA misuse, roles, names, structure. `check:a11y` only measures contrast on the tokens.
 
@@ -117,7 +118,10 @@ Two things this catches that nothing else does: whether an element is actually v
 | Page shell, header, footer | `src/layouts/Layout.astro` |
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
 | Admonitions | `src/plugins/mdast-admonitions.mjs` |
-| Maths, une formule dans tout le corpus | `src/plugins/mdast-math.mjs` |
+| Maths, one formula in the whole corpus | `src/plugins/mdast-math.mjs` |
+| Keyboard access to a wide table | `src/plugins/hast-table-scroll.mjs` |
+| JSON-LD, `llms.txt` | `src/utils/schema.ts`, `src/pages/llms.txt.ts` |
+| Green IT and WSG audits | `src/pages/audits/`, `src/data/referentiel-*.json`, `src/utils/referentiels.ts` |
 | Image sizing policy | `src/plugins/capped-image-service.mjs` |
 | Home page bands, hero figure | `src/components/BlogFacts.astro`, `BuiltWith.astro`, `HeroTagCloud.astro` |
 | Design tokens | `src/styles/tokens/`, entry point `src/styles/tokens.css` |
@@ -131,12 +135,12 @@ Articles are served at the **root**, as `/<slug>/`, and the slug comes from the 
 
 - **Two taxonomies, and they are not the same word.** A **category** is the folder an article sits in, one per article, drawn from the closed list in the content repository's `config.json` and enforced by its own CI; it is derived in the loader and served at `/categories/<slug>/`, under labels held in `CATEGORY_LABELS`. A **tag** is free, several per article, open-ended, and served at `/tags/<tag>/`. Never call a tag a category: the site did, in four different words on four different surfaces, and it is what this rule exists to stop.
 - **A name links inside the site, never out.** Clicking an author, in a byline or on `/authors/`, leads to `/authors/<prénom-nom>/`: their card and their articles. It used to open their GitHub profile, which answers a question nobody asked. The outbound profiles live on that card. Slugs come from `authorSlug`, shared by every surface, and two names folding to one slug fails the build rather than having one person overwrite another.
-- **A tag is a "tag", to the reader as in the frontmatter.** It is one word for one thing, in the YAML, in the URL, in the heading of `/tags/<tag>/` and in the index on `/categories/`. "Thème" was the reader-facing word from 25 to 28 August and was dropped: it asked the reader to translate a term the site never stopped spelling `tags`. Both taxonomies are surfaced on `/categories/` alone, the header carrying a single entry, and `/tags/` redirects to `/categories/#tags`, the anchor rather than the top of the page, since someone typing that URL is after the tags.
-- **Tags are deliberately unvalidated, and that is not an oversight to fix.** A new tag in the frontmatter creates its page and joins the index at the next build; nothing checks the spelling, where a category absent from the content repo's `config.json` fails the build. The asymmetry is intended: a category *must* exist for an article to be filed in it, which is structural, while a misspelt tag is a mistake in prose and the content repository's pull-request reviews catch prose. Proposed on 28 August, declined the same day, "on ne peut pas tout prévoir". Do not add a closed list, a warning on single-article tags, or a hook.
-- **No tag is presented as bigger than another.** The index prints the seventeen words alphabetically, at one size, with no article count, on the page and in the accessible text alike. A graded cloud shipped on 28 August and was dropped the same day: a count ranks seventeen equal words and sends every reader to the same three, where six of the seventeen hold a single article nobody has seen. Categories do carry their count, and that asymmetry is the point, a category is a shelf. What gives the block life instead is a tonal panel, the words two steps above body size, and a 48px accent stub on the panel's top edge, never a size ramp.
+- **A tag is a "tag", to the reader as in the frontmatter.** One word for one thing, in the YAML, in the URL, in the heading of `/tags/<tag>/` and in the index on `/categories/`. "Thème" was tried as the reader-facing word and dropped: it asked the reader to translate a term the site never stopped spelling `tags`. Both taxonomies are surfaced on `/categories/` alone, the header carrying a single entry, and `/tags/` redirects to `/categories/#tags`, the anchor rather than the top of the page, since someone typing that URL is after the tags.
+- **Tags are deliberately unvalidated, and that is not an oversight to fix.** A new tag in the frontmatter creates its page and joins the index at the next build; nothing checks the spelling, where a category absent from the content repo's `config.json` fails the build. The asymmetry is intended: a category *must* exist for an article to be filed in it, which is structural, while a misspelt tag is a mistake in prose, and the content repository's pull-request reviews catch prose. Do not add a closed list, a warning on single-article tags, or a hook.
+- **No tag is presented as bigger than another.** The index prints the seventeen words alphabetically, at one size, with no article count, on the page and in the accessible text alike. A graded cloud was tried and dropped: a count ranks seventeen equal words and sends every reader to the same three, where six of the seventeen hold a single article nobody has seen. Categories do carry their count, and that asymmetry is the point, a category is a shelf. What gives the block life instead is a tonal panel, the words two steps above body size, and a 48px accent stub on the panel's top edge, never a size ramp.
 - **No separator in a wrapped run of words.** Middots between the tags lasted one build: there is no selector for "last on this line", so seven lines out of eight on a phone ended on a dangling dot and read as an unfinished sentence. `column-gap` separates them now. The same holds for any wrapped list this codebase grows.
 - Never a raw hex in product code: always a semantic token from `src/styles/tokens/colors.css`, so both themes resolve.
-- **The Website Carbon badge calls the API at runtime, and that is decided.** Its script is self-hosted, 1.9 kB, and it queries `api.websitecarbon.com` from the reader's browser on every page. Freezing that figure at build was proposed twice on 28 August and refused twice: the API measures a URL by loading it, so at build it would grade the previous deployment or 404 on a new page, and Website Carbon caches upstream while the badge caches a day in `localStorage`. Do not propose self-hosting the number again. The self-computed figure already exists beside it, `CO2JSBadge` running `@tgwf/co2` at build over our own measured weight.
+- **The Website Carbon badge calls the API at runtime, and that is decided.** Its script is self-hosted, 1.9 kB, and it queries `api.websitecarbon.com` from the reader's browser on every page. Freezing that figure at build was proposed twice and refused twice: the API measures a URL by loading it, so at build it would grade the previous deployment or 404 on a new page, and Website Carbon caches upstream while the badge caches a day in `localStorage`. Do not propose self-hosting the number again. The self-computed figure already exists beside it, `CO2JSBadge` running `@tgwf/co2` at build over our own measured weight.
 - Third-party brand marks are never redrawn, and never recoloured into our palette. Use the asset the owner publishes, geometry untouched, and only in the one-colour form they provide: Astro and Clever Cloud both ship a mono variant, and the Website Carbon globe travels as a CSS mask so its shape is theirs and the colour is the page's. A vendor with no vector asset gets its name set in type.
 - Vertical space is not set per page. `main` opens and closes the page and its children are separated by the section gap, from the rhythm tokens at the end of `src/styles/tokens/spacing.css`. A block that needs to sit closer than the gap overrides it and says why.
 - No MDX. Articles stay portable plain Markdown.
@@ -151,7 +155,12 @@ Shiki emits both themes on every token with `defaultColor: false`, and CSS keyed
 
 ## Deployment
 
-- **Pull request** → [firebase-hosting-pull-request.yml](.github/workflows/firebase-hosting-pull-request.yml), which clones the content repo as a sibling, builds, runs the gates and deploys a preview channel.
-- **Merge to `main`** → [publish-on-merge.yml](.github/workflows/publish-on-merge.yml). **Still on the Docusaurus action**, deliberately, until the migration is validated. Migrating it is the last step.
+Both workflows now build Astro through `.github/actions/astro`, which checks out the
+content repository as a sibling.
 
-A publication in the content repo needs a rebuild of this shell to appear online.
+- **Pull request** → [firebase-hosting-pull-request.yml](.github/workflows/firebase-hosting-pull-request.yml): builds, runs the gates, deploys a preview channel. `workflow_dispatch` with a `channel` input is the fallback, and it is currently the only path that works: the `pull_request` trigger stopped firing on the migration PR.
+- **Merge to `main`** → [publish-on-merge.yml](.github/workflows/publish-on-merge.yml): the Firebase `live` channel, which is `zatsit-blog.web.app`.
+
+**`blog.zatsit.fr` is not served by either.** It is a GCS bucket, `zatsit-blog-prod`, filled by the *content* repository's own `publish-on-merge.yml`: that pipeline checks this shell out at `shell-ref`, builds, and uploads `dist/`. So a publication in the content repo rebuilds this shell, and a change made only here does not reach production until something triggers that pipeline.
+
+`shell-ref` defaults to `main`. That default is what freezes publication while the shell's `main` is still Docusaurus: the content repo's build then fails on `Missing script: "check"` before the upload step, which leaves the bucket untouched rather than breaking the site.

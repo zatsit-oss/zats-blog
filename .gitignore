@@ -49,3 +49,7 @@ static/assets/*
 
 # Captures de travail, non versionnées
 img.png
+
+# Notes de reprise, locales : l'état courant du chantier est dans
+# PLAN-MIGRATION.md, versionné, pas dans un fichier de brouillon.
+REPRISE.md

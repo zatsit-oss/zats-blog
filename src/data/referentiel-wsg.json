@@ -424,7 +424,7 @@
      "titre": "Document updates and evolutions",
      "url": "https://www.w3.org/TR/web-sustainability-guidelines/#document-updates-and-evolutions",
      "statut": "OK",
-     "comment": "Historique git en messages explicites, `PLAN-MIGRATION.md` pour les décisions, `REPRISE.md` pour l'état courant."
+     "comment": "Historique git en messages explicites, `PLAN-MIGRATION.md` pour les décisions et ce qui reste, `CLAUDE.md` pour les conventions."
     },
     {
      "ref": "3",

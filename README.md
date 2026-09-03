@@ -1,6 +1,6 @@
 # Blog zatsit
 
-La coque du blog zatsit, construite avec [Astro](https://astro.build/) et déployée sur Firebase Hosting. Site francophone, statique, sans JavaScript côté client en dehors de la bascule de thème, du bouton copier et de la recherche.
+La coque du blog zatsit, construite avec [Astro](https://astro.build/). Site francophone, statique, sans framework côté client : le JavaScript embarqué se limite à quelques scripts inline (bascule de thème, bouton copier, recherche, tirage d'un article au hasard, sommaire, badge carbone), soit 2,5 ko pour tout le site.
 
 **Le contenu vit ailleurs.** Les articles, les auteurs et leurs images sont dans [zats-blog-content](https://github.com/zatsit-oss/zats-blog-content). Ce dépôt ne contient que la coque : mise en page, thème, composants, build.
 
@@ -36,12 +36,13 @@ Le chemin `../zats-blog-content` est en dur à deux endroits, `src/consts.ts` et
 | `npm run check:a11y` | contrastes WCAG 2.1 AA, deux thèmes, plus les couleurs du code |
 | `npm run check:eco` | budgets de poids par page, sur `dist/` |
 | `npm run check:axe` | axe-core sur **toutes** les pages de `dist/`, deux thèmes, deux largeurs |
+| `npm run docs:referentiels` | régénère les deux fichiers `REFERENTIEL-*.md` depuis `src/data/` |
 
-**La recherche ne fonctionne pas avec `npm run dev`**, et c'est attendu : son index est produit par le build, dans `dist/pagefind/`. Pour la tester, `npm run build` puis `npm run preview`, et forcer le rechargement de la page, le script de recherche étant inliné dans chaque page (un onglet ouvert avant le dernier build sert l'ancien).
+Les quatre commandes `check` sortent en erreur si un seuil est franchi. Les trois premières tournent en CI sur chaque pull request ; `check:axe` demande Chrome et reste donc une vérification locale, à lancer avant de considérer un travail d'interface terminé. Les règles sont dans [.claude/rules/quality.md](.claude/rules/quality.md).
 
-Attention, en dev **rien ne le signale à l'écran** : le champ répond normalement et ne renvoie simplement aucun résultat. Le message d'échec existe mais part dans une région `sr-only`, donc seul un lecteur d'écran l'entend ; la console, elle, porte l'erreur `[search] Pagefind n'a pas pu être chargé.` C'est le piège qui a déjà fait conclure deux fois à une régression.
+**La recherche ne fonctionne pas avec `npm run dev`**, et c'est attendu : son index est produit par le build, dans `dist/pagefind/`. Il faut `npm run build` puis `npm run preview`, en forçant le rechargement de la page, le script de recherche étant inliné dans chacune.
 
-Les deux dernières commandes sortent en erreur si un seuil est franchi, et la CI les exécute sur chaque pull request. Les règles sont dans [.claude/rules/quality.md](.claude/rules/quality.md).
+Rien ne le signale à l'écran : le champ répond normalement et ne renvoie aucun résultat. L'erreur est dans la console, `[search] Pagefind n'a pas pu être chargé.`
 
 ## Publier un article
 
@@ -49,9 +50,11 @@ Rien à faire ici : tout se passe dans le dépôt de contenu, voir son `POSTING.
 
 ## Déploiement
 
-Une pull request déclenche un build et une preview Firebase sur un canal dédié, l'URL est commentée sur la PR.
+Une pull request déclenche un build et une preview Firebase sur un canal dédié, dont l'URL est commentée sur la PR.
 
-Un déploiement manuel reste possible :
+**La production n'est pas servie par Firebase.** `blog.zatsit.fr` est un bucket GCS, `zatsit-blog-prod`, alimenté par le pipeline du **dépôt de contenu** : celui-ci récupère cette coque, la construit et téléverse `dist/`. Conséquence pratique : une modification faite ici seule n'atteint pas la production tant que ce pipeline n'est pas déclenché, et une publication d'article reconstruit la coque au passage.
+
+Un déploiement Firebase manuel reste possible pour vérifier un build :
 
 ```bash
 firebase login
