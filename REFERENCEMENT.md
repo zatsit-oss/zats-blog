@@ -74,12 +74,16 @@ Ce qu'un modèle génératif attend pour **reformuler sans se tromper**. C'est l
 
 Par ordre d'utilité réelle, non par ordre de score.
 
-1. **Les en-têtes de sécurité.** La production n'envoie ni `Content-Security-Policy`, ni `X-Content-Type-Options`, ni `X-Frame-Options`, ni `Referrer-Policy`, ni `Permissions-Policy`. Vérifié le 3 septembre. C'est le seul point du dernier audit qui soit à la fois solide, mesurable et sans contrepartie.
+1. ~~Les en-têtes de sécurité~~ **posés le 3 septembre pour la preview**, dans `firebase.json` : `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` et `Permissions-Policy`. **Restent à porter en production**, qui est servie par nginx et non par Firebase : les directives sont prêtes et éprouvées, il faut les insérer dans le secret `zatsit-external-prod-nginx-conf`.
+
+   La CSP a été testée avant d'être posée, et ce test a évité une régression : sans `'wasm-unsafe-eval'`, la recherche mourait sur un `CompileError` de WebAssembly que seule la console du navigateur montre. Pagefind compile son index en WebAssembly.
 2. **La méta-description du site, 75 caractères**, contre 120 à 160 attendus.
 3. **Le titre de l'accueil, 22 caractères**, contre une cible de 50 à 60. Attention, les deux outils se contredisent sur ce point : l'un veut 10 à 70, l'autre 30 à 60.
 4. **`BreadcrumbList`**, et une identité stable pour les auteurs dans le schema, ce que le `BlogPosting` ne fait pas encore.
 5. **Un alias `/sitemap.xml`.** Le sitemap existe sous son nom segmenté et il est déclaré partout, mais plusieurs outils cherchent ce chemin littéral.
-6. **Le cache HTTP, et ce n'est pas dans les audits.** Mesuré le 3 septembre : aucune règle de `firebase.json` n'est appliquée, les actifs hachés reçoivent 24 h au lieu d'un an et les pages HTML 24 h au lieu de dix minutes. La cause est l'ordre des règles, l'attrape-tout `**` écrasant les précédentes. Un audit a même compté ce `max-age=86400` comme un point positif.
+6. ~~Le cache HTTP~~ **corrigé le 3 septembre**, et ce n'était dans aucun audit : aucune règle de `firebase.json` ne s'appliquait, les actifs hachés recevaient 24 h au lieu d'un an et les pages 24 h au lieu de dix minutes. Pour les en-têtes, Firebase applique toutes les règles correspondantes et **la dernière écrase** : l'attrape-tout `**`, placé en fin de liste, annulait les trois autres. Il est désormais en tête. Un audit avait même compté ce `max-age=86400` comme une réussite.
+
+   En production, c'est plus simple et plus grave : **aucun `Cache-Control` n'est envoyé du tout**, chaque navigateur décide seul. À traiter avec les en-têtes de sécurité, dans la même configuration nginx.
 
 ## Ce que nous refusons, et pourquoi
 
