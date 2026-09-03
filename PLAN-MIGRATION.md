@@ -366,6 +366,10 @@ Conséquence directe, et Emmanuel a écarté l'application frontale le 28 août 
 
 **Et le comportement actuel n'est pas un modèle à reproduire.** Sur `blog.zatsit.fr`, une URL inconnue renvoie **200 avec la page d'accueil**, à l'octet près (136 144 o pour `/unkown` comme pour `/`) : le repli est réglé sur `index.html` et c'est le routeur client de Docusaurus qui affiche ensuite son écran d'erreur. Astro n'a pas de routeur client, donc le même réglage servirait l'accueil du blog sur n'importe quelle URL fausse, en 200, sans jamais le dire au lecteur. C'est pire que le XML, qui au moins ne ment pas. À noter aussi que la prod actuelle redirige `/tags` vers `/tags/` en 301, ce que Cellar ne fait pas.
 
+**Cinquième constat, du 3 septembre : Cellar ne peut pas envoyer d'en-tête de sécurité.** Mesuré sur `greenscore.zatsit.fr`, qui ne renvoie ni `Content-Security-Policy`, ni `X-Frame-Options`, ni `Referrer-Policy`, ni `Permissions-Policy`. Ce n'est pas un oubli de configuration : un stockage compatible S3 ne transmet que ses en-têtes système, et une métadonnée personnalisée ressort préfixée `x-amz-meta-`, donc inutilisable. En revanche **`Cache-Control` fonctionne**, posé objet par objet à l'envoi, et greenscore le prouve.
+
+Cela porte à quatre ce que le Cellar seul ne sait pas faire : la page d'erreur, la redirection du slash manquant, les 301, et désormais les en-têtes de sécurité. Les cinq en-têtes posés le 3 septembre dans `firebase.json` ne couvriront donc que la preview, et la production les perdrait à la bascule. À mettre dans la balance, sans rouvrir la décision de ne pas déployer d'application frontale.
+
 L'arbitrage se réduit donc à trois options, à trancher avant la bascule :
 
 1. **Assumer le XML sur les URLs inconnues.** Coût nul. Les 45 routes du contrat sont servies, donc les inconnues sont des fautes de frappe, des liens morts anciens et des robots. Un lecteur y verra du XML, et un moteur gardera l'URL au lieu de la laisser tomber, un 403 n'étant pas un 404.

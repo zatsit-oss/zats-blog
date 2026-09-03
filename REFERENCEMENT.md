@@ -74,7 +74,7 @@ Ce qu'un modèle génératif attend pour **reformuler sans se tromper**. C'est l
 
 Par ordre d'utilité réelle, non par ordre de score.
 
-1. ~~Les en-têtes de sécurité~~ **posés le 3 septembre pour la preview**, dans `firebase.json` : `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` et `Permissions-Policy`. **Restent à porter en production**, qui est servie par nginx et non par Firebase : les directives sont prêtes et éprouvées, il faut les insérer dans le secret `zatsit-external-prod-nginx-conf`.
+1. ~~Les en-têtes de sécurité~~ **posés le 3 septembre pour la preview**, dans `firebase.json` : `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` et `Permissions-Policy`. **En production, c'est en suspens** : elle est servie par nginx et non par Firebase, et la migration prévue vers un Cellar Clever Cloud change la donne, puisqu'un stockage d'objets ne sait pas envoyer ces en-têtes du tout. Mesuré le 3 septembre : `Cache-Control` y fonctionne, posé à l'envoi, mais aucune CSP n'est possible sans une couche devant le stockage. Le sujet est instruit en **D3 bis** de `PLAN-MIGRATION.md`.
 
    La CSP a été testée avant d'être posée, et ce test a évité une régression : sans `'wasm-unsafe-eval'`, la recherche mourait sur un `CompileError` de WebAssembly que seule la console du navigateur montre. Pagefind compile son index en WebAssembly.
 2. **La méta-description du site, 75 caractères**, contre 120 à 160 attendus.
