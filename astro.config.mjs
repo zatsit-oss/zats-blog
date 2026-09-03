@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { defineConfig, fontProviders } from 'astro/config';
 import { mdastAdmonitions } from './src/plugins/mdast-admonitions.mjs';
+import { mdastMath } from './src/plugins/mdast-math.mjs';
 import { hastTableScroll } from './src/plugins/hast-table-scroll.mjs';
 
 // https://astro.build/config
@@ -79,8 +80,25 @@ export default defineConfig({
     // them meaning. No remark, no unified processor: both would be a second
     // Markdown pipeline for one feature the default one already has.
     processor: satteri({
-      features: { directive: true },
-      mdastPlugins: [mdastAdmonitions],
+      features: {
+        directive: true,
+
+        // One article carries one formula, the WUE of a datacenter. Without
+        // this the `$$` block was printed as LaTeX source to the reader: the
+        // Docusaurus site rendered it with KaTeX and the migration had lost it.
+        //
+        // `$$…$$` only, single `$` left as literal text. The corpus has no
+        // inline maths at all, while a lone `$` in prose is plausible (a price,
+        // a shell prompt, a variable named outside a code fence) and would
+        // silently open a formula that runs to the next one. Enabling what
+        // nothing uses, to break what might appear, is the wrong trade.
+        math: { singleDollarTextMath: false },
+      },
+      // `mdastMath` renders the formula Sätteri only parses. It has to sit here
+      // and not in `hastPlugins`: the built-in highlighter runs ahead of every
+      // user hast plugin and claims the math block as a plaintext code listing.
+      // The plugin's header has the detail.
+      mdastPlugins: [mdastAdmonitions, mdastMath],
       // Presentational, hence hast: it makes a table wider than the column
       // reachable with a keyboard. See the plugin for the defect it fixes.
       hastPlugins: [hastTableScroll],

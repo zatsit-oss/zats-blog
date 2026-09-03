@@ -389,14 +389,29 @@ const minutes = readingTime(post);
      scroll container with nothing focusable inside cannot be reached without a
      pointer, and three tables had their right-hand columns out of reach. */
   .post__body :global(pre),
-  .post__body :global(.table-scroll) {
+  .post__body :global(.table-scroll),
+  .post__body :global(.math-scroll) {
     margin-block: var(--space-6);
     overflow-x: auto;
     max-width: 100%;
   }
 
-  /* Visible when the wrapper takes focus, since it is now a tab stop. */
-  .post__body :global(.table-scroll:focus-visible) {
+  /* A displayed formula is a break in the prose and reads as one: more air than
+     a paragraph gets, and centred in its column. The colour is inherited, so
+     both themes resolve without naming one.
+
+     No font-size: MathML sizes a fraction's parts relative to this one, and the
+     browser's own maths font is the convention for an equation. Nothing else is
+     declared, because nothing else needs to be: this whole feature ships no
+     stylesheet and no font. */
+  .post__body :global(.math-scroll) {
+    margin-block: var(--space-8);
+    text-align: center;
+  }
+
+  /* Visible when either wrapper takes focus, since both are tab stops. */
+  .post__body :global(.table-scroll:focus-visible),
+  .post__body :global(.math-scroll:focus-visible) {
     outline: var(--border-width-strong) solid var(--color-primary);
     outline-offset: var(--space-1);
   }

@@ -32,6 +32,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "axe-core": "^4.13.0",
+    "katex": "^0.18.5",
     "pagefind": "^1.5.2",
     "typescript": "^6.0.3"
   }
