@@ -10,10 +10,19 @@
  * archived reference build to compare the migration against what it replaces.
  *
  * Walks the built dist/ and estimates, for every page, the bytes a first-time
- * visitor actually downloads. Text assets are measured gzipped (every host we
- * use compresses them); binaries are measured raw. Images marked
- * loading="lazy" and non-preloaded fonts are excluded from the initial figure
- * and reported separately.
+ * visitor actually downloads. Text assets are measured gzipped; binaries are
+ * measured raw. Images marked loading="lazy" and non-preloaded fonts are
+ * excluded from the initial figure and reported separately.
+ *
+ * **Gzipping the text is an assumption about the host, and it went unverified
+ * for the whole migration.** Production is nginx on Cloud Run, and `gzip on`
+ * was commented out in its config, so every figure this script reported was
+ * about a third of what a reader actually downloaded: 21 kB measured here
+ * against 72 kB over the wire for the home page. The gate was green throughout.
+ * Fixed on 3 September 2026, but the lesson outlives the fix, so keep it in
+ * view: this script measures the build, and a claim about what a reader
+ * receives has to be checked against the response, with
+ * `curl -sI -H 'Accept-Encoding: gzip'`.
  *
  * This is a static estimate, not a Lighthouse run: it sees what the HTML
  * references, not what the browser ends up executing. It catches budget drift

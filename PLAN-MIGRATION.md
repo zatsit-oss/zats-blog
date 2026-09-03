@@ -13,7 +13,7 @@ Branche : **`migration-astro`** dans les deux dépôts.
 
 ## Où en est la migration
 
-**Fonctionnellement terminée.** Astro 7.2, 21 articles chargés depuis le dépôt voisin, les 45 routes de référence produites, les quatre portes de qualité au vert.
+**Terminée et en production depuis le 3 septembre 2026.** Astro 7.2, 21 articles chargés depuis le dépôt voisin, les 45 routes de référence servies en ligne, les quatre portes de qualité au vert.
 
 Ce que la migration a changé, mesuré et non supposé :
 
@@ -28,28 +28,33 @@ La ligne de base est conservée dans [`baseline-docusaurus.md`](.claude/skills/e
 
 Une phase de mise en forme s'est ajoutée au plan d'origine, née de la relecture de la preview : le site était fonctionnellement complet et visuellement inabouti. Elle est faite.
 
+## La bascule est faite
+
+**Le 3 septembre 2026.** La coque est mergée, le contenu aussi, et `blog.zatsit.fr` sert la version Astro. Vérifié en ligne et non dans le build : les 45 routes de [`migration-routes-docusaurus.txt`](migration-routes-docusaurus.txt) répondent, la formule est rendue en MathML, l'index de recherche est servi.
+
+Trois défauts de production sont apparus le jour même, tous dans la couche nginx et aucun dans ce dépôt. Deux sont corrigés, le troisième est en attente de relecture :
+
+| Défaut | État |
+|---|---|
+| Une URL inconnue servait l'accueil en **200** | **corrigé**, vraie 404 |
+| Aucune compression : 72 ko au lieu de 21 sur l'accueil | **corrigé**, `−71 %` |
+| Aucun `Cache-Control` ni en-tête de sécurité | en attente, PR [#31](https://github.com/zatsit-oss/zatsit-terraform/pull/31) et [#32](https://github.com/zatsit-oss/zatsit-terraform/pull/32) du dépôt `zatsit-terraform` |
+
+Les deux premiers ont été appliqués directement au secret pour arrêter l'hémorragie, ce qui est une dérive que la PR #31 résorbe. **Un `terraform apply` avant son merge peut les annuler**, `NGINX_CONF_VERSION` étant dérivé de la version du secret par Terraform.
+
+La leçon qui compte est dans `CLAUDE.md` : `check:eco` mesurait le texte gzippé en supposant que l'hébergeur compresse, la porte est restée verte toute la migration, et les poids publiés décrivaient un site que personne ne recevait.
+
 ## Ce qui reste
-
-### La bascule
-
-Il ne reste que le merge, et **c'est lui la bascule de production** : plus rien ne construit Docusaurus, donc merger remplace le blog en ligne par la version Astro.
-
-L'ordre importe, et il s'est inversé : le contenu a été fusionné le 3 septembre alors que la coque ne l'est pas. La publication est donc **gelée**. Le pipeline du dépôt contenu récupère la coque sur `main`, encore Docusaurus, et échoue sur `Missing script: "check"` avant l'étape de téléversement : le bucket n'est pas touché, `blog.zatsit.fr` sert toujours l'ancien site, mais aucune publication n'aboutira.
-
-**Le geste qui débloque : merger la coque.** `origin/main` y est déjà absorbé, les conflits résolus, les portes vertes.
-
-À vérifier juste après : que le pipeline du dépôt contenu repasse au vert, et que les 45 routes de [`migration-routes-docusaurus.txt`](migration-routes-docusaurus.txt) répondent **en ligne**, et pas seulement dans le build.
-
-### Différé, volontairement
 
 | Sujet | État |
 |---|---|
+| `Cache-Control` et en-têtes de sécurité en production | dans les deux PR ci-dessus, à merger avant tout `apply` |
 | Migration vers un Cellar Clever Cloud | reportée après la refonte technique, voir D3 bis |
-| En-têtes de sécurité et `Cache-Control` en production | posés pour la preview dans `firebase.json`, à porter ; les limites de Cellar pèsent sur le choix |
 | Audit RGAA | acquis sur le principe, à cadrer, voir D7 |
-| Doublons SVG dans `dist/` | après la bascule |
-| `ECOINDEX_URL` et `MEASURED_PAGE_BYTES` | à rafraîchir quand la production sert Astro |
-| `migration-routes-docusaurus.txt` | à supprimer une fois les 45 routes vérifiées en ligne |
+| `ECOINDEX_URL` et `MEASURED_PAGE_BYTES` | à rafraîchir : la production sert enfin de l'Astro compressé |
+| Doublons SVG dans `dist/` | non traité |
+| `migration-routes-docusaurus.txt` | supprimable, les 45 routes ayant été vérifiées en ligne |
+| CSP de `sustainability.zatsit.fr` | aucune : ce site charge son badge carbone depuis `unpkg.com` là où le blog l'auto-héberge, donc lui donner celle du blog le casserait |
 
 Deux points de référencement restent connus et non traités : la méta-description du site fait 75 caractères contre 120 à 160 attendus, et il manque un `BreadcrumbList`. Le reste est dans [REFERENCEMENT.md](REFERENCEMENT.md).
 

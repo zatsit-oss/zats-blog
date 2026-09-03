@@ -74,7 +74,9 @@ Ce qu'un modèle génératif attend pour **reformuler sans se tromper**. C'est l
 
 Par ordre d'utilité réelle, non par ordre de score.
 
-1. ~~Les en-têtes de sécurité~~ **posés le 3 septembre pour la preview**, dans `firebase.json` : `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` et `Permissions-Policy`. **En production, c'est en suspens** : elle est servie par nginx et non par Firebase, et la migration prévue vers un Cellar Clever Cloud change la donne, puisqu'un stockage d'objets ne sait pas envoyer ces en-têtes du tout. Mesuré le 3 septembre : `Cache-Control` y fonctionne, posé à l'envoi, mais aucune CSP n'est possible sans une couche devant le stockage. Le sujet est instruit en **D3 bis** de `PLAN-MIGRATION.md`.
+0. ~~Le *soft 404*~~ **corrigé le 3 septembre**, et c'était le défaut le plus coûteux de la liste, apparu le jour même de la bascule sans figurer dans aucun audit. Toute URL inconnue renvoyait **la page d'accueil avec un statut 200**, à l'octet près : `nginx` repliait sur `index.html`, motif d'une single-page application. Sous Docusaurus le routeur client affichait ensuite son écran d'erreur, ce qui masquait le mauvais statut ; Astro n'a pas de routeur client, donc un moteur était libre d'indexer une infinité de doublons de l'accueil et gardait chaque URL fausse au lieu de la laisser tomber. La vraie `404.html` était pourtant déployée depuis le début, elle n'était jamais choisie.
+
+1. **Les en-têtes de sécurité, en attente de relecture** dans la PR [#32](https://github.com/zatsit-oss/zatsit-terraform/pull/32) du dépôt `zatsit-terraform`, et non ici : la production est servie par nginx sur Cloud Run, dont la configuration est générée par Terraform. Le `firebase.json` de ce dépôt les applique depuis le 3 septembre, mais **il ne sert que les canaux de preview**, ce qui est précisément le genre de confusion à ne pas entretenir. La CSP y est déclarée par site : `sustainability.zatsit.fr`, servi par le même nginx, charge son badge carbone depuis `unpkg.com` là où le blog l'auto-héberge, donc lui donner celle du blog casserait son badge.
 
    La CSP a été testée avant d'être posée, et ce test a évité une régression : sans `'wasm-unsafe-eval'`, la recherche mourait sur un `CompileError` de WebAssembly que seule la console du navigateur montre. Pagefind compile son index en WebAssembly.
 2. **La méta-description du site, 75 caractères**, contre 120 à 160 attendus.
@@ -83,7 +85,11 @@ Par ordre d'utilité réelle, non par ordre de score.
 5. **Un alias `/sitemap.xml`.** Le sitemap existe sous son nom segmenté et il est déclaré partout, mais plusieurs outils cherchent ce chemin littéral.
 6. ~~Le cache HTTP~~ **corrigé le 3 septembre**, et ce n'était dans aucun audit : aucune règle de `firebase.json` ne s'appliquait, les actifs hachés recevaient 24 h au lieu d'un an et les pages 24 h au lieu de dix minutes. Pour les en-têtes, Firebase applique toutes les règles correspondantes et **la dernière écrase** : l'attrape-tout `**`, placé en fin de liste, annulait les trois autres. Il est désormais en tête. Un audit avait même compté ce `max-age=86400` comme une réussite.
 
-   En production, c'est plus simple et plus grave : **aucun `Cache-Control` n'est envoyé du tout**, chaque navigateur décide seul. À traiter avec les en-têtes de sécurité, dans la même configuration nginx.
+   En production, c'était plus simple et plus grave : **aucun `Cache-Control` n'était envoyé du tout**, chaque navigateur décidait seul. Corrigé dans la PR [#31](https://github.com/zatsit-oss/zatsit-terraform/pull/31), qui porte les quatre durées dans la configuration nginx.
+
+   Et c'est là qu'on a trouvé bien pire, que ce document lui-même affirmait sans le vérifier : **la production ne compressait rien.** `gzip on` était commenté, donc l'accueil partait à 72 407 octets au lieu de 21 163, un facteur 3,4. Or les poids annoncés dans ce document sont mesurés **gzippés**, sur l'hypothèse que l'hébergeur compresse. Ils décrivaient donc un site que personne ne recevait, sur le seul site où une revendication d'éco-conception est censée être vérifiable par le lecteur. Compression activée le 3 septembre, chiffres redevenus vrais.
+
+   La cause était une ligne : `gzip_proxied` vaut `off` par défaut, donc nginx renonce à compresser dès qu'une requête porte un en-tête `Via`, et le load balancer estampille tout avec `Via: 1.1 google`.
 
 ## Ce que nous refusons, et pourquoi
 
