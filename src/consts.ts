@@ -47,14 +47,28 @@ export const SUSTAINABILITY_URL = 'https://sustainability.zatsit.fr/';
 export const BCORP_URL = 'https://www.bcorporation.net/';
 export const CONTACT_EMAIL = 'contact@zatsit.fr';
 /**
- * TODO, after the production switch: this result was measured on the Docusaurus
- * blog, so it grades a site this one replaces. Re-run the analysis on the live
- * Astro build and swap the id, or the footer link and the "mesuré avec" band on
- * the home page will point at someone else's numbers, which is exactly the kind
- * of stale claim /blog-conception/ exists to avoid.
+ * Link to the site's EcoIndex result, resolved by EcoIndex rather than pinned
+ * to one.
+ *
+ * **No result id, deliberately.** A `resultat/?id=…` link names one measurement
+ * and freezes it: the previous one graded the Docusaurus site at 3,665 kB long
+ * after that stopped being true, and its TODO sat unhonoured through the whole
+ * migration. `bff.ecoindex.fr/redirect/` answers a 303 to the latest result for
+ * a URL, so the link follows every re-analysis on its own, with nothing to
+ * maintain here and no API call at build time.
+ *
+ * The trailing slash is stripped for the same reason as in
+ * `EcoIndexBadge.astro`: EcoIndex keys results on the exact URL string and
+ * stores them without one. Keeping it resolves to a different row, which is
+ * what made the badge read E while a fresh analysis scored B.
+ *
+ * Takes the site rather than spelling the domain out, so there stays one
+ * spelling of it, in `astro.config.mjs`.
  */
-export const ECOINDEX_URL =
-  'https://www.ecoindex.fr/resultat/?id=6ac3f361-a35c-4933-8c09-890046d300f0';
+export function ecoindexResultUrl(site: URL | undefined): string {
+  const target = new URL('/', site).href.replace(/\/$/, '');
+  return `https://bff.ecoindex.fr/redirect/?url=${encodeURIComponent(target)}`;
+}
 
 /**
  * Weight of the home page on a first visit, feeding the CO2.js estimate on
@@ -69,8 +83,8 @@ export const ECOINDEX_URL =
  * quietly wrong, which is how the Docusaurus badge ended up asserting 400 kB
  * long after that stopped being true.
  */
-export const MEASURED_PAGE_BYTES = 96.0 * 1024;
-export const MEASURED_PAGE_DATE = '28 août 2026';
+export const MEASURED_PAGE_BYTES = 96.4 * 1024;
+export const MEASURED_PAGE_DATE = '3 septembre 2026';
 
 /** Postal address, as the corporate footer prints it. */
 export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];
