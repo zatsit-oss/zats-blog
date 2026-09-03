@@ -45,7 +45,7 @@
  */
 import AstroIcon from '../assets/icons/astro.svg';
 import CleverCloudLogo from '../assets/icons/clever-cloud.svg';
-import { ECOINDEX_URL } from '../consts';
+import { ecoindexResultUrl } from '../consts';
 
 /**
  * `kind` says what the artwork is, because it decides two things at once: how
@@ -57,7 +57,7 @@ const TOOLS = [
   { name: 'Astro', href: 'https://astro.build', icon: AstroIcon, kind: 'glyph' },
   { name: 'Clever Cloud', href: 'https://www.clever.cloud', icon: CleverCloudLogo, kind: 'logotype' },
   { name: 'Website Carbon', href: 'https://www.websitecarbon.com', icon: undefined, kind: 'mask' },
-  { name: 'EcoIndex', href: ECOINDEX_URL, icon: undefined, kind: 'word' },
+  { name: 'EcoIndex', href: ecoindexResultUrl(Astro.site), icon: undefined, kind: 'word' },
 ] as const;
 ---
 

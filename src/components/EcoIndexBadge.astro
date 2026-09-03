@@ -26,8 +26,23 @@
  * version of a figure we do not hold.
  *
  * The grade shown is the last analysis EcoIndex ran on that URL, not a fresh
- * measurement. It reads E today because that is the Docusaurus production this
- * site replaces; it moves when someone re-runs the analysis after the switch.
+ * measurement, so it only moves when someone re-runs the analysis.
+ *
+ * ## The trailing slash is not a detail here
+ *
+ * EcoIndex keys its results on the exact URL string, and it stores them
+ * **without** a trailing slash while its own result page displays one. Asking
+ * the badge for `https://blog.zatsit.fr/` therefore returned **E**, the March
+ * 2025 measurement of the Docusaurus site at 3,665 kB, while the same badge
+ * asked for `https://blog.zatsit.fr` returned **B**, the 3 September 2026
+ * measurement of this one at 95 kB. The two forms are one page to us and two
+ * rows to them, and the same held for `/blog-conception/`: no grade at all with
+ * the slash, **A** without it.
+ *
+ * So the slash is stripped before the URL is handed over. This is a
+ * normalisation for one third party and nothing else, which is why it lives
+ * here and not in `site` or in a constant: do not "tidy" it away, the badge
+ * silently grades the wrong site when it goes.
  */
 interface Props {
   /** The page to grade. Defaults to the site's home page. */
@@ -37,7 +52,12 @@ interface Props {
 // From `site` in astro.config.mjs rather than a constant of our own: one
 // spelling of the domain, as ShareLinks already does.
 const { url = new URL('/', Astro.site).href } = Astro.props;
-const target = encodeURIComponent(url);
+
+// Trailing slash removed, and the header above says why: EcoIndex stores its
+// results under the slashless form, so keeping it grades whatever was last
+// measured at the other spelling. The root becomes `https://blog.zatsit.fr`,
+// which is the row their database actually holds.
+const target = encodeURIComponent(url.replace(/\/$/, ''));
 
 const badge = (theme: 'light' | 'dark') =>
   `https://bff.ecoindex.fr/badge/?theme=${theme}&url=${target}`;
