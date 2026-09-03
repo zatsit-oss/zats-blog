@@ -52,7 +52,9 @@ Rien à faire ici : tout se passe dans le dépôt de contenu, voir son `POSTING.
 
 Une pull request déclenche un build et une preview Firebase sur un canal dédié, dont l'URL est commentée sur la PR.
 
-**La production n'est pas servie par Firebase.** `blog.zatsit.fr` est un bucket GCS, `zatsit-blog-prod`, alimenté par le pipeline du **dépôt de contenu** : celui-ci récupère cette coque, la construit et téléverse `dist/`. Conséquence pratique : une modification faite ici seule n'atteint pas la production tant que ce pipeline n'est pas déclenché, et une publication d'article reconstruit la coque au passage.
+**La production n'est pas servie par Firebase.** Les octets de `blog.zatsit.fr` viennent du bucket GCS `zatsit-blog-prod`, alimenté par le pipeline du **dépôt de contenu** : celui-ci récupère cette coque, la construit et téléverse `dist/`. Conséquence pratique : une modification faite ici seule n'atteint pas la production tant que ce pipeline n'est pas déclenché, et une publication d'article reconstruit la coque au passage.
+
+Et ce n'est pas le bucket qui répond : **nginx sur Cloud Run** est devant. Tout ce qui concerne la réponse s'y décide et nulle part dans ce dépôt, la compression, les durées de cache, les en-têtes de sécurité et ce qu'une URL inconnue renvoie. Sa configuration est générée par Terraform, dans le dépôt [`zatsit-terraform`](https://github.com/zatsit-oss/zatsit-terraform) : une modification de l'hébergement passe par une PR là-bas, pas par un `firebase.json`. Celui de ce dépôt ne sert que les canaux de preview.
 
 Un déploiement Firebase manuel reste possible pour vérifier un build :
 
