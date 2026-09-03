@@ -1,0 +1,86 @@
+---
+/**
+ * CO2 estimate for one page view, computed with CO2.js.
+ *
+ * Two differences from the Docusaurus version. It runs at build time, so the
+ * page ships the number and not the library: the React one pulled @tgwf/co2
+ * into the browser to divide a constant. And the weight it is based on is
+ * stated on screen with the date it was measured, because the old one silently
+ * carried 409 600 bytes, a figure from a page that had not weighed that in a
+ * long time. A stale number that announces itself is worth more than a fresh
+ * one nobody can check.
+ */
+import { co2 } from '@tgwf/co2';
+import { MEASURED_PAGE_BYTES, MEASURED_PAGE_DATE } from '../consts';
+
+interface Props {
+  /** Defaults to the measured home page. Pass another figure to compare. */
+  bytes?: number;
+  /**
+   * Whether the host runs on renewable energy. Left false: the site is served
+   * from Google Cloud, and while Google reports renewable matching, we have
+   * not checked this domain against the Green Web Foundation dataset. False is
+   * the pessimistic read, which is the right default for a claim about our own
+   * footprint.
+   */
+  greenHost?: boolean;
+}
+
+const { bytes = MEASURED_PAGE_BYTES, greenHost = false } = Astro.props;
+
+const grams = new co2().perByte(bytes, greenHost).toFixed(3);
+const kilobytes = Math.round(bytes / 1024);
+---
+
+<figure class="co2">
+  <div class="co2__badge">
+    {/* One child, not three text nodes: `.co2__label` is a flex container, and
+        flex drops the whitespace between items, so `g de CO<sub>2</sub> par vue`
+        rendered as "CO2par vue". */}
+    <span class="co2__label"><span>g de CO<sub>2</sub> par vue</span></span>
+    <span class="co2__value">{grams}</span>
+  </div>
+  <figcaption class="co2__caption">
+    Calculé avec CO2.js sur une page de {kilobytes} ko, mesurée le {MEASURED_PAGE_DATE}, en
+    supposant un hébergement non renouvelable.
+  </figcaption>
+</figure>
+
+<style>
+  .co2 {
+    margin: 0;
+  }
+
+  .co2__badge {
+    display: inline-flex;
+    align-items: stretch;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    font-size: var(--text-sm);
+  }
+
+  .co2__label {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--color-border);
+    border-inline-end: 0;
+    color: var(--color-text);
+  }
+
+  .co2__value {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    font-weight: var(--font-bold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .co2__caption {
+    margin-block-start: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+</style>

@@ -1,0 +1,163 @@
+---
+/**
+ * One line icon per category, drawn here rather than fetched from anywhere.
+ *
+ * Why drawn and not imported: an icon library would be a dependency earning
+ * its place for ten glyphs, and the charter forbids an icon font outright. The
+ * third-party rule does not apply either, since none of these is a brand mark:
+ * `cloud` is a cloud, not a vendor. Inline rather than ten `.svg` assets, so a
+ * card costs no request and the icon inherits `currentColor` from the card it
+ * sits in.
+ *
+ * All ten categories of the content repository's config.json are here, not
+ * only the six that carry an article, so the first post filed under `mobile`
+ * does not land on a hole. `ARROW` is the fallback, and it is deliberately
+ * neutral: a category nobody drew an icon for should look unremarkable, not
+ * broken.
+ *
+ * Decorative, and marked as such: the card already names the category in text,
+ * so an accessible name here would have a screen reader read it twice. That is
+ * also why no contrast minimum applies, which is what lets them sit in the
+ * accent colour.
+ *
+ * 24px viewBox, stroke 1.75, round joins. Sized by the shared `.icon` rule.
+ */
+interface Props {
+  slug: string;
+  class?: string;
+}
+
+const { slug, class: className } = Astro.props;
+---
+
+<svg
+  class:list={['caticon', className]}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {/* Green IT: a leaf with its midrib. */}
+  {
+    slug === 'green' && (
+      <>
+        <path d="M20 4c0 8-5 13-13 13H4c0-8 5-13 13-13Z" />
+        <path d="M4 20c1.5-5 4.5-8.5 9-11" />
+      </>
+    )
+  }
+
+  {/* Architecture: three blocks and the beam they hang from. */}
+  {
+    slug === 'architecture' && (
+      <>
+        <path d="M4 4h16" />
+        <path d="M8 4v4" />
+        <path d="M16 4v4" />
+        <rect x="3" y="8" width="7" height="6" rx="1" />
+        <rect x="14" y="8" width="7" height="6" rx="1" />
+        <rect x="8.5" y="16" width="7" height="5" rx="1" />
+      </>
+    )
+  }
+
+  {/* Cloud. */}
+  {
+    slug === 'cloud' && (
+      <path d="M7 18h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 11.1A3.45 3.45 0 0 0 7 18Z" />
+    )
+  }
+
+  {/* Data: the stacked cylinders of a database. */}
+  {
+    slug === 'data' && (
+      <>
+        <ellipse cx="12" cy="6" rx="7" ry="2.8" />
+        <path d="M5 6v6c0 1.55 3.13 2.8 7 2.8s7-1.25 7-2.8V6" />
+        <path d="M5 12v6c0 1.55 3.13 2.8 7 2.8s7-1.25 7-2.8v-6" />
+      </>
+    )
+  }
+
+  {/* IA: a chip, with the legs that make it read as silicon. */}
+  {
+    slug === 'ai' && (
+      <>
+        <path d="M13 3l1.8 4.7L19.5 9.5 14.8 11.3 13 16l-1.8-4.7L6.5 9.5l4.7-1.8z" />
+        <path d="M6 15.5l.9 2.3 2.3.9-2.3.9L6 21.9l-.9-2.3-2.3-.9 2.3-.9z" />
+      </>
+    )
+  }
+
+  {/* Développement: the angle brackets. */}
+  {
+    slug === 'dev' && (
+      <>
+        <path d="M9 7l-5 5 5 5" />
+        <path d="M15 7l5 5-5 5" />
+      </>
+    )
+  }
+
+  {/* Web: a globe with its meridian. */}
+  {
+    slug === 'web' && (
+      <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M3.5 12h17" />
+        <path d="M12 3.5c2.4 2.6 3.6 5.4 3.6 8.5S14.4 18.4 12 20.5c-2.4-2.1-3.6-5.4-3.6-8.5S9.6 6.1 12 3.5Z" />
+      </>
+    )
+  }
+
+  {/* Mobile: a handset. */}
+  {
+    slug === 'mobile' && (
+      <>
+        <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+        <path d="M10.5 18.5h3" />
+      </>
+    )
+  }
+
+  {/* Ops: the loop, drawn open so it does not read as a refresh button. */}
+  {
+    slug === 'ops' && (
+      <>
+        <path d="M4.5 12a7.5 7.5 0 0 1 12.8-5.3" />
+        <path d="M19.5 12a7.5 7.5 0 0 1-12.8 5.3" />
+        <path d="M17.3 3.2v3.5h-3.5" />
+        <path d="M6.7 20.8v-3.5h3.5" />
+      </>
+    )
+  }
+
+  {/* Général, and anything nobody drew: a stack of sheets. Three horizontal
+      lines were the first draft and they read as a loading skeleton, or as a
+      burger menu, which is what happens to any glyph made of parallel bars. */}
+  {
+    !['green', 'architecture', 'cloud', 'data', 'ai', 'dev', 'web', 'mobile', 'ops'].includes(
+      slug,
+    ) && (
+      <>
+        <rect x="3" y="6" width="13" height="15" rx="2" />
+        <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h9A1.5 1.5 0 0 1 20 4.5v12" />
+        <path d="M6.5 11h7M6.5 15h7" />
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .caticon {
+    /* Sized by the shared .icon rule when the caller passes it; this is the
+       floor for a bare use. */
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex-shrink: 0;
+  }
+</style>

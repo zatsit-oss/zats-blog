@@ -1,0 +1,70 @@
+---
+/**
+ * Articles of one category, at /categories/<slug>/.
+ *
+ * Not paginated, for the same reason /tags/<tag>/ is not: the fullest category
+ * holds six articles against ten per page on the listing. If one ever crosses
+ * the threshold, pagination lands here, mirroring src/pages/page/[page].astro.
+ *
+ * A path is generated only for a category that has an article, so the four
+ * allowed-but-empty ones build nothing rather than an empty page.
+ */
+import type { GetStaticPaths } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PostList from '../../components/PostList.astro';
+import { allCategories, categoryHeading, postsByCategory, sortedPosts } from '../../utils/posts';
+
+interface Props {
+  slug: string;
+  label: string;
+  posts: CollectionEntry<'blog'>[];
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const all = await sortedPosts();
+  const categories = await allCategories(all);
+
+  return Promise.all(
+    categories.map(async ({ slug, label }) => ({
+      params: { category: slug },
+      props: { slug, label, posts: await postsByCategory(slug, all) },
+    })),
+  );
+};
+
+const { slug, label, posts } = Astro.props;
+const heading = categoryHeading(slug, posts.length);
+---
+
+<Layout
+  title={label}
+  description={`Tous les articles du blog de zatsit dans la catégorie « ${label} ».`}
+>
+  <PostList posts={posts} heading={heading} current={1} total={1} />
+
+  <p class="back">
+    <a href="/categories/">← Toutes les catégories</a>
+  </p>
+</Layout>
+
+<style>
+  .back {
+    max-width: 48rem;
+    margin-inline: auto;
+    padding-inline: var(--margin-mobile);
+    /* Belongs to the listing above it rather than standing as a section of
+       its own: the section gap would strand it halfway to the footer. */
+    margin-block-start: var(--rhythm-heading);
+  }
+
+  .back a {
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+  }
+
+  .back a:hover {
+    text-decoration: underline;
+  }
+</style>

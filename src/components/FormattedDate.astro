@@ -1,0 +1,24 @@
+---
+/**
+ * A date, rendered in French. The site is French-only, so the scaffold's
+ * `en-us` locale was simply wrong: it printed "Jun 21, 2024" on a francophone
+ * blog. The `datetime` attribute stays machine-readable for feeds and
+ * structured data.
+ */
+interface Props {
+  date: Date;
+  /** `long` for an article header, `short` for a dense listing. */
+  format?: 'long' | 'short';
+}
+
+const { date, format = 'long' } = Astro.props;
+
+const options: Intl.DateTimeFormatOptions =
+  format === 'long'
+    ? { year: 'numeric', month: 'long', day: 'numeric' }
+    : { year: 'numeric', month: 'short', day: 'numeric' };
+---
+
+<time datetime={date.toISOString().slice(0, 10)}>
+  {date.toLocaleDateString('fr-FR', { ...options, timeZone: 'UTC' })}
+</time>

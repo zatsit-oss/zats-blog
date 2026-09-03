@@ -1,0 +1,192 @@
+---
+/**
+ * Hero illustration: the blog's own tags as a word cloud.
+ *
+ * From the Claude Design project "Illustrations hero banner Zatsit", board 3a.
+ * The design's own reasoning: the seventeen tags that actually exist on the
+ * blog, ranked by weight rather than laid out at random, so the figure says
+ * what the blog talks about instead of decorating the space. Poppins only, no
+ * rotated words.
+ *
+ * Three things changed on the way in, all measured rather than preferred.
+ *
+ * The design set `green` and `environnement` in `--color-eco`. That token is a
+ * signifier for fills and shapes and measures 2.01:1 on this band in the light
+ * theme, so those two words failed WCAG at any size. They now use
+ * `--color-eco-text`, added for this: the same hue and saturation taken down to
+ * 30% lightness, 4.93:1 on the light surface, unchanged in the dark theme where
+ * the bright green already measured 7.19:1.
+ *
+ * The quiet group carried `fill-opacity: 0.65`, which put it at 3.14:1 in light
+ * and 3.33:1 in dark against a 4.5:1 requirement. The opacity is gone; size and
+ * weight carry the hierarchy, which is enough for a word cloud.
+ *
+ * And the weights are 400, 600 and 700 rather than the design's 500, because
+ * those are the three the site actually downloads. Asking for 500 would have
+ * had the browser synthesise it from another file.
+ *
+ * `role="img"` with a label listing the tags: seventeen words read out one by
+ * one would be noise, and none of them is a link.
+ */
+---
+
+<svg
+  class="tagcloud"
+  viewBox="0 0 600 460"
+  role="img"
+  aria-label="Nuage de mots des tags du blog : architecture, cloud, IA, data, green, environnement, dev, web, open-source, java, tech, javascript, hacktoberfest, conference, refacto, frontend, général."
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <radialGradient id="tagcloud-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="currentColor" stop-opacity="0.16"></stop>
+      <stop offset="1" stop-color="currentColor" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+
+  <g class="tagcloud__glow">
+    <ellipse cx="300" cy="230" rx="280" ry="190" fill="url(#tagcloud-glow)"></ellipse>
+  </g>
+
+  <g class="tagcloud__words" text-anchor="middle">
+    {/* The four domains the blog leads with. */}
+    <g class="tagcloud__major">
+      <text x="320" y="142" font-size="40" style="--dx: 4px; --dy: -17px; --delay: 0ms">architecture</text>
+      <text x="250" y="212" font-size="36" style="--dx: -16px; --dy: -6px; --delay: 70ms">cloud</text>
+      <text x="400" y="204" font-size="30" style="--dx: 16px; --dy: -4px; --delay: 140ms">ai</text>
+      <text x="300" y="347" font-size="32" style="--dx: 0px; --dy: 17px; --delay: 210ms">data</text>
+    </g>
+
+    {/* Sustainability keeps its own colour: it is the one subject where this
+        blog claims something checkable. */}
+    <g class="tagcloud__eco">
+      <text x="440" y="280" font-size="34" style="--dx: 16px; --dy: 6px; --delay: 170ms">green</text>
+      <text x="400" y="80" font-size="20" style="--dx: 9px; --dy: -14px; --delay: 330ms">environnement</text>
+    </g>
+
+    <g class="tagcloud__minor">
+      <text x="120" y="140" font-size="24" style="--dx: -15px; --dy: -8px; --delay: 280ms">dev</text>
+      <text x="510" y="140" font-size="24" style="--dx: 16px; --dy: -7px; --delay: 350ms">web</text>
+      <text x="270" y="278" font-size="28" style="--dx: -9px; --dy: 14px; --delay: 300ms">open-source</text>
+      <text x="110" y="208" font-size="22" style="--dx: -17px; --dy: -2px; --delay: 420ms">java</text>
+      <text x="460" y="342" font-size="24" style="--dx: 14px; --dy: 10px; --delay: 390ms">tech</text>
+      <text x="400" y="402" font-size="22" style="--dx: 9px; --dy: 15px; --delay: 460ms">javascript</text>
+    </g>
+
+    <g class="tagcloud__quiet">
+      <text x="160" y="80" font-size="16" style="--dx: -12px; --dy: -12px; --delay: 520ms">hacktoberfest</text>
+      <text x="510" y="208" font-size="16" style="--dx: 17px; --dy: -2px; --delay: 560ms">conference</text>
+      <text x="110" y="275" font-size="18" style="--dx: -17px; --dy: 4px; --delay: 600ms">refacto</text>
+      <text x="130" y="342" font-size="20" style="--dx: -14px; --dy: 9px; --delay: 640ms">frontend</text>
+      <text x="240" y="402" font-size="18" style="--dx: -6px; --dy: 16px; --delay: 680ms">general</text>
+    </g>
+  </g>
+
+  <g class="tagcloud__dots">
+    <circle cx="80" cy="110" r="3" fill-opacity="0.4"></circle>
+    <circle cx="530" cy="90" r="3" fill-opacity="0.4"></circle>
+    <circle cx="70" cy="380" r="3" fill-opacity="0.4"></circle>
+    <circle cx="540" cy="390" r="3" fill-opacity="0.4"></circle>
+    <circle cx="300" cy="55" r="3" fill-opacity="0.3"></circle>
+  </g>
+</svg>
+
+<style>
+  .tagcloud {
+    inline-size: min(30rem, 46%);
+    block-size: auto;
+    flex-shrink: 0;
+    /* The glow is drawn past the viewBox and would be clipped otherwise. */
+    overflow: visible;
+  }
+
+  .tagcloud__words text {
+    font-family: var(--font-sans);
+  }
+
+  /* The cloud condenses: each word arrives from outside its own place, pushed
+     along the vector from the centre through it, so they converge instead of
+     sliding in as a block. Played once, never looped, and that is what keeps it
+     out of WCAG 2.2.2: the criterion covers motion that starts on its own and
+     lasts more than five seconds, and the last word has landed by 1.4 s. A loop
+     would need a pause control, which is absurd for an ornament, and it would
+     cost a style recalculation and a layout on every frame for as long as the
+     tab stays open. Measured: 720 of each per six seconds.
+
+     The vector and the delay come from each word's own coordinates, set inline,
+     so this stays one rule rather than seventeen.
+
+     Motion is opt-out globally: global.css collapses every animation duration
+     under `prefers-reduced-motion: reduce`, which lands each word straight on
+     its final state. `both` matters for that, and for the delay: without it a
+     word would flash at full position before its turn. */
+  .tagcloud__words text {
+    animation: tagcloud-settle 620ms var(--ease-out) var(--delay, 0ms) both;
+  }
+
+  @keyframes tagcloud-settle {
+    from {
+      opacity: 0;
+      transform: translate(var(--dx, 0), var(--dy, 0));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Cancelled outright rather than left to the global rule, and that is not
+     belt and braces. global.css collapses every animation *duration* under
+     `prefers-reduced-motion`, but says nothing about the delay, so each word
+     still waited its turn, up to 680 ms, at opacity 0. Measured: 13 of the 17
+     words were invisible 200 ms in, for the very readers who asked for calm.
+     `animation: none` drops the from-state with the animation, so they render
+     where the markup puts them. */
+  @media (prefers-reduced-motion: reduce) {
+    .tagcloud__words text {
+      animation: none;
+    }
+  }
+
+  /* currentColor on the group, so each block declares its colour once and both
+     the fill and the gradient stops follow the theme. */
+  .tagcloud__glow,
+  .tagcloud__dots {
+    color: var(--color-primary);
+    fill: currentColor;
+  }
+
+  .tagcloud__major {
+    fill: var(--color-primary);
+    font-weight: var(--font-bold);
+  }
+
+  .tagcloud__eco {
+    fill: var(--color-eco-text);
+    font-weight: var(--font-bold);
+  }
+
+  .tagcloud__eco text:last-child {
+    font-weight: var(--font-semibold);
+  }
+
+  .tagcloud__minor {
+    fill: var(--color-text);
+    fill-opacity: 0.75;
+    font-weight: var(--font-semibold);
+  }
+
+  .tagcloud__quiet {
+    fill: var(--color-text-muted);
+    font-weight: var(--font-regular);
+  }
+
+  /* Below the breakpoint where the hero stacks, the figure would push the
+     actions off the first screen. It says nothing the page does not say
+     elsewhere: /tags/ lists the same seventeen, as links. */
+  @media (max-width: 899px) {
+    .tagcloud {
+      display: none;
+    }
+  }
+</style>

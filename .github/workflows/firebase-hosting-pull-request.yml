@@ -1,12 +1,30 @@
 name: Deploy to Firebase Hosting on PR
 on:
+  # Manual trigger, and not a convenience: on 29 August a force-push that
+  # rewrote the branch's history left the preview three commits behind without
+  # firing a single run, and there was no way to redeploy without inventing a
+  # commit. `gh workflow run firebase-hosting-pull-request.yml --ref <branche>`
+  # now does it.
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: >
+          Canal Firebase à redéployer. L'action déduit ce nom du contexte de la
+          pull request, qui n'existe pas en déclenchement manuel : sans lui le
+          déploiement échoue sur « channelID is currently required ». La valeur
+          par défaut est le canal de la PR #82, celui que les consultants
+          relisent.
+        required: false
+        default: pr82-migration-astro
+
   pull_request:
+    # blog/ and docs/ are gone: content is read from the content repository in
+    # place, and this repo no longer holds a copy of it.
     paths-ignore:
-      - "blog/**"
-      - "docs/**"
       - "README.md"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
+      - "PLAN-MIGRATION.md"
 
 concurrency:
   group: ${{ github.ref || github.run_id }}
@@ -24,8 +42,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Fetch and Build blog
-        uses: ./.github/actions/docusaurus
+      - name: Fetch content and build
+        uses: ./.github/actions/astro
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -38,3 +56,6 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ env.FIREBASE_SERVICE_ACCOUNT }}'
           projectId: zatsit-blog
+          # Empty on a pull request, where the action derives the channel from
+          # the PR itself, as it did before this input existed.
+          channelId: ${{ github.event.inputs.channel }}

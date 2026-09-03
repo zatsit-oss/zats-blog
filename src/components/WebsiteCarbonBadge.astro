@@ -1,0 +1,48 @@
+---
+/**
+ * Website Carbon badge, as on the corporate site.
+ *
+ * One difference, deliberate: corporate pulls the script from unpkg.com, this
+ * imports the npm package so Vite bundles and self-hosts it. Same 1.9 kB, same
+ * rendering, no third-party origin in the critical path and nothing for a CDN
+ * outage to break. The badge still calls api.websitecarbon.com at runtime,
+ * which is the point of a live measurement; it caches the result for a day.
+ *
+ * The dark variant is handled in CSS rather than by toggling the .wcb-d class
+ * the package documents, so switching theme costs no JavaScript at all.
+ */
+---
+
+<div id="wcb" class="carbonbadge"></div>
+
+<script>
+  import 'website-carbon-badges/b.min.js';
+</script>
+
+<style is:global>
+  /* The package centres its badge (`text-align: center` on #wcb). Every other
+     block on the page starts at the text's left edge, this one included, so it
+     read as floating in the middle of the column beside the CO2.js badge right
+     under it.
+
+     `html` in front is what makes it win: the package injects its stylesheet
+     from its script, so it lands after ours, and at equal specificity the last
+     one takes it. The theme rules below already outrank it through their
+     attribute selector. */
+  html #wcb.carbonbadge {
+    text-align: start;
+  }
+
+  /* Mirrors the package's own .wcb-d rules, keyed on our theme attribute.
+     Higher specificity than the stylesheet the script injects, so these win
+     whatever the load order. */
+  [data-theme='dark'] #wcb.carbonbadge #wcb_a {
+    color: var(--b1);
+    background: var(--b2);
+    border-color: var(--b2);
+  }
+
+  [data-theme='dark'] #wcb.carbonbadge #wcb_2 {
+    color: var(--zat-white);
+  }
+</style>

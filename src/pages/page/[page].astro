@@ -1,0 +1,49 @@
+---
+/**
+ * Listing pages 2 and beyond, at /page/2/, /page/3/ and so on.
+ *
+ * Page 1 is the root and is not generated here: Docusaurus served it at / and
+ * never at /page/1/, so generating that route would invent a URL the migration
+ * is supposed to leave untouched.
+ */
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../layouts/Layout.astro';
+import PostList from '../../components/PostList.astro';
+import { listingPages, sortedPosts } from '../../utils/posts';
+import type { CollectionEntry } from 'astro:content';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+  current: number;
+  total: number;
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const pages = listingPages(await sortedPosts());
+
+  // Page one is dropped, not skipped in the maths: it is the root, and
+  // generating /page/1/ would invent a URL the migration must not add.
+  return pages.slice(1).map(({ posts, current, total }) => ({
+    params: { page: String(current) },
+    props: { posts, current, total },
+  }));
+};
+
+const { posts, current, total } = Astro.props;
+
+// Page 2 links back to the root, not to /page/1/.
+const prevUrl = current === 2 ? '/' : `/page/${current - 1}/`;
+const nextUrl = current < total ? `/page/${current + 1}/` : undefined;
+---
+
+<Layout title={`Articles, page ${current}`} description={SITE_DESCRIPTION}>
+  <PostList
+    posts={posts}
+    heading={`Le blog de ${SITE_TITLE}`}
+    current={current}
+    total={total}
+    prevUrl={prevUrl}
+    nextUrl={nextUrl}
+  />
+</Layout>
