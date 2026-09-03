@@ -36,13 +36,10 @@ import { MEASURED_PAGE_DATE } from '../consts';
     <h2>Ce que dit Website Carbon</h2>
 
     <p>
-      Nous utilisons <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener noreferrer"
+      <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener noreferrer"
         >WebsiteCarbon</a
-      > pour évaluer l'empreinte de notre page d'accueil, où le badge est affiché. Leur API mesure
-      une URL en la chargeant, et elle ne répond que pour celles qu'elle a déjà mesurées : sur
-      toutes les autres pages, le badge affichait « No Result » plutôt qu'un chiffre. Un compteur
-      vide sur une page qui parle de sobriété en dit moins que son absence, donc il ne figure plus
-      qu'à l'accueil.
+      > estime les grammes de CO<sub>2</sub> émis par visite, et situe la page face aux autres
+      qu'il a mesurées. Son badge est en pied de <a href="/">la page d'accueil</a>.
     </p>
 
     <h2>Ce que dit EcoIndex</h2>
@@ -65,8 +62,9 @@ import { MEASURED_PAGE_DATE } from '../consts';
         href="https://developers.thegreenwebfoundation.org/co2js/"
         target="_blank"
         rel="noopener noreferrer">CO2.js</a
-      >, de la Green Web Foundation, donne une seconde estimation à partir du poids réel de la
-      page. Le calcul est fait à la construction du site, pas dans votre navigateur : afficher une
+      >, de la Green Web Foundation, donne une seconde estimation à partir du poids réel de cette
+      même page d'accueil. Le calcul est fait à la construction du site, pas dans votre navigateur :
+      afficher une
       empreinte carbone en vous faisant télécharger une bibliothèque pour la calculer serait
       contradictoire.
     </p>
@@ -81,7 +79,7 @@ import { MEASURED_PAGE_DATE } from '../consts';
       Trois vérifications tournent à chaque modification du site et échouent si un seuil est
       dépassé : la première mesure le poids de chaque page contre un budget, la deuxième les
       contrastes de couleur contre le niveau AA des WCAG dans les thèmes clair et sombre, la
-      troisième passe axe-core sur toutes les pages, aux deux largeurs. Les chiffres de cette page
+      troisième passe axe-core sur toutes les pages, aux deux largeurs. Les chiffres affichés ici
       datent du {MEASURED_PAGE_DATE}.
     </p>
 
