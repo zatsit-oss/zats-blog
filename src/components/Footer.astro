@@ -24,7 +24,7 @@ import {
   WEBSITE_URL,
   SUSTAINABILITY_URL,
   CONTACT_EMAIL,
-  ECOINDEX_URL,
+  ecoindexResultUrl,
   BCORP_URL,
   ADDRESS,
   SITE_TITLE,
@@ -169,7 +169,7 @@ const year = new Date().getFullYear();
       </p>
       <nav class="footer__legal" aria-label="Liens légaux">
         <a class="footer__link" href="/mentions-legales/">Mentions légales</a>
-        <a class="footer__link" href={ECOINDEX_URL} target="_blank" rel="noopener noreferrer">
+        <a class="footer__link" href={ecoindexResultUrl(Astro.site)} target="_blank" rel="noopener noreferrer">
           Score EcoIndex<span class="sr-only">, dans un nouvel onglet</span>
         </a>
       </nav>
