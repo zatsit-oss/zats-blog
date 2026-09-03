@@ -1,0 +1,359 @@
+---
+/**
+ * Site footer, aligned on the corporate one: same three columns, same mission
+ * statement, same address, same EcoVadis medal and B Corp badge, same carbon
+ * badge.
+ *
+ * The social row swaps corporate's "Blog" link for "Site web": pointing a
+ * reader of the blog at the blog would be a link to nowhere.
+ *
+ * Rewritten against our tokens rather than copied, since corporate is a
+ * Tailwind project. The badge is self-hosted here, see WebsiteCarbonBadge.
+ */
+import { Image } from 'astro:assets';
+import { Mail, MapPin, Globe } from '@lucide/astro';
+import GithubIcon from '../assets/icons/github.svg';
+import LinkedinIcon from '../assets/icons/linkedin.svg';
+import SustainabilityIcon from '../assets/icons/sustainability.svg';
+import LogoIcon from '../assets/icons/logo.svg';
+import ecovadisMedal from '../assets/ecovadis-medal.webp';
+import WebsiteCarbonBadge from './WebsiteCarbonBadge.astro';
+import {
+  GITHUB_URL,
+  LINKEDIN_URL,
+  WEBSITE_URL,
+  SUSTAINABILITY_URL,
+  CONTACT_EMAIL,
+  ECOINDEX_URL,
+  BCORP_URL,
+  ADDRESS,
+  SITE_TITLE,
+} from '../consts';
+
+// Build time, not visitor time: a static page cannot know today's date, and
+// pretending otherwise would need client JavaScript for a copyright line.
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__columns">
+    <section class="footer__column">
+      <div class="footer__brand">
+        <LogoIcon class="footer__logo" aria-hidden="true" />
+        <span class="footer__brand-name">{SITE_TITLE}</span>
+      </div>
+
+      <p class="footer__mission">
+        Engager notre <strong>expertise numérique</strong> au service de l'<strong>impact</strong>
+        des entreprises, en créant un écosystème <strong>durable</strong>, <strong
+          >partenarial</strong
+        > et <strong>positif</strong>.
+      </p>
+
+      <div class="footer__badge">
+        <WebsiteCarbonBadge />
+      </div>
+    </section>
+
+    <section class="footer__column">
+      <h2 class="footer__title">Nous trouver</h2>
+
+      <p class="footer__address">
+        <MapPin class="icon footer__address-icon" aria-hidden="true" />
+        <span>
+          {ADDRESS.map((line, index) => (
+            <>
+              {index > 0 && <br />}
+              {line}
+            </>
+          ))}
+        </span>
+      </p>
+
+      <ul class="footer__socials">
+        <li>
+          <a
+            class="footer__social"
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn, dans un nouvel onglet"
+          >
+            <LinkedinIcon class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="footer__social"
+            href={WEBSITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Le site zatsit.fr, dans un nouvel onglet"
+          >
+            <Globe class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="footer__social"
+            href={SUSTAINABILITY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Le portail Sustainability, dans un nouvel onglet"
+          >
+            <SustainabilityIcon class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="footer__social"
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub, dans un nouvel onglet"
+          >
+            <GithubIcon class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="footer__social"
+            href={`mailto:${CONTACT_EMAIL}`}
+            aria-label={`Écrire à ${CONTACT_EMAIL}`}
+          >
+            <Mail class="icon" aria-hidden="true" />
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="footer__column footer__column--medal">
+      <h2 class="sr-only">Nos évaluations RSE</h2>
+      <Image
+        src={ecovadisMedal}
+        alt="Médaille EcoVadis Silver, zatsit dans le top 15%"
+        width={100}
+        height={100}
+        loading="lazy"
+      />
+      <a
+        href={BCORP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Certification B Corp, dans un nouvel onglet"
+      >
+        <!-- An <img> rather than an inlined SVG: the badge carries 21 paths per
+             theme, and the page-weight budget has better uses for them. The dark
+             variant is swapped in below, like the header logo. -->
+        <img
+          class="footer__bcorp"
+          src="/img/bcorp-black.svg"
+          width="66"
+          height="100"
+          alt=""
+          loading="lazy"
+        />
+      </a>
+    </section>
+  </div>
+
+  <div class="footer__bar">
+    <div class="container footer__bar-inner">
+      <p class="footer__copyright">
+        Copyright © {year} <strong>{SITE_TITLE}</strong>, blog statique éco-conçu avec <a
+          class="footer__link"
+          href="https://astro.build"
+          target="_blank"
+          rel="noopener noreferrer">Astro</a
+        >.
+      </p>
+      <nav class="footer__legal" aria-label="Liens légaux">
+        <a class="footer__link" href="/mentions-legales/">Mentions légales</a>
+        <a class="footer__link" href={ECOINDEX_URL} target="_blank" rel="noopener noreferrer">
+          Score EcoIndex<span class="sr-only">, dans un nouvel onglet</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-block-start: auto;
+    border-block-start: var(--border-width) solid var(--color-border);
+    background: var(--color-surface);
+    font-size: var(--text-sm);
+  }
+
+  .footer__columns {
+    display: grid;
+    /* Two columns from the start, so the medal sits beside the address on a
+       phone instead of dropping below everything. The brand spans both. */
+    grid-template-columns: 1fr auto;
+    gap: var(--space-10) var(--space-6);
+    padding-block: var(--space-10);
+  }
+
+  .footer__column:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .footer__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-block-end: var(--space-3);
+  }
+
+  .footer__logo {
+    inline-size: 2rem;
+    block-size: 2rem;
+    color: var(--color-primary);
+  }
+
+  .footer__brand-name {
+    color: var(--color-primary);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-semibold);
+    line-height: 1;
+  }
+
+  .footer__mission {
+    margin: 0;
+    max-width: 34rem;
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .footer__mission strong {
+    color: var(--color-text);
+  }
+
+  .footer__badge {
+    margin-block-start: var(--space-4);
+    text-align: start;
+  }
+
+  .footer__title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-base);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .footer__address {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .footer__address-icon {
+    margin-block-start: 0.15em;
+  }
+
+  .footer__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+
+  /* 40px targets: below the 44px aim, but these are secondary links repeated
+     in the copyright bar and the header, never the only path to anything.
+     Filled primary discs, as on corporate; the glyph takes the page colour so
+     it inverts with the theme instead of being white on gold. */
+  .footer__social {
+    display: grid;
+    place-items: center;
+    inline-size: var(--space-10);
+    block-size: var(--space-10);
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: var(--color-bg);
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .footer__social:hover {
+    opacity: 0.8;
+  }
+
+  .footer__column--medal {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  /* Brand asset, swapped with the theme rather than recoloured, and global
+     because a scoped rule cannot reach an <img> src swap. */
+  :global([data-theme='dark']) .footer__bcorp {
+    content: url('/img/bcorp-light.svg');
+  }
+
+  .footer__bar {
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+
+  .footer__bar-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    text-align: center;
+  }
+
+  .footer__copyright {
+    margin: 0;
+  }
+
+  .footer__legal {
+    display: flex;
+    gap: var(--space-6);
+  }
+
+  .footer__link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  /* A link sitting inside a sentence is underlined; the ones standing alone in
+     the columns and in the legal bar are not. Same class, different situation:
+     "Astro" in the copyright line carries the muted colour of the sentence
+     around it, so colour distinguishes nothing and there was no other cue
+     either. axe reported it as link-in-text-block, WCAG 1.4.1, on every page
+     of the site. A standalone link has its position as the cue, which is the
+     exception the rule actually grants. */
+  .footer__copyright .footer__link {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .footer__link:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .footer__columns {
+      grid-template-columns: 1fr auto auto;
+      gap: var(--space-16);
+      padding-block: var(--space-12);
+    }
+
+    /* Three real columns from here, so the brand stops spanning. */
+    .footer__column:first-child {
+      grid-column: auto;
+    }
+
+    .footer__bar-inner {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: start;
+    }
+  }
+</style>

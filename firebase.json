@@ -1,17 +1,78 @@
 {
   "hosting": {
-    "public": "build",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "headers": [{
-      "source": "**",
-      "headers": [{
-        "key": "Cache-Control",
-        "value": "max-age=86400"
-      }]
-    }]
+    "//": "ORDRE IMPORTANT. Firebase applique toutes les règles dont le motif correspond, et pour une même clé d'en-tête la DERNIÈRE écrase les précédentes. L'attrape-tout se met donc en premier, jamais en dernier : placé à la fin, il annulait les trois règles de cache spécifiques, et tout le site était servi en max-age=86400, mesuré le 3 septembre 2026. Une nouvelle règle s'ajoute après celle-ci, pas avant.",
+    "headers": [
+      {
+        "//": "Le socle : les en-têtes de sécurité sur tout, et un cache court par défaut. Court et non long, parce que le défaut doit être le cas prudent : une page HTML servie sur une URL propre, /mon-article/, ne correspond à aucun motif en *.html, donc c'est cette règle qui la couvre.",
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=600"
+          },
+          {
+            "//": "Empêche un navigateur de deviner un type MIME et d'exécuter en script un fichier qui n'en est pas un.",
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "//": "Le site n'a aucune raison d'être encadré, donc personne ne peut superposer une page à lui pour capter un clic.",
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          },
+          {
+            "//": "L'origine seule part vers un site tiers, jamais le chemin : un lien depuis un article ne dit pas lequel.",
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "//": "Refus explicite des capteurs que le site ne demande jamais. Écrit plutôt que sous-entendu, pour qu'un ajout futur soit un choix visible.",
+            "key": "Permissions-Policy",
+            "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), midi=()"
+          },
+          {
+            "//": "La liste blanche de ce que la page charge vraiment. `unsafe-inline` est nécessaire et non paresseux : Astro inline la CSS des composants sous 4 ko, et les quatre scripts du site (thème, copie de code, recherche, tirage au hasard) sont inline par nécessité, un hash devrait donc être recalculé à chaque build. `bff.ecoindex.fr` sert le badge EcoIndex, `api.websitecarbon.com` répond au badge carbone : ce sont les deux seuls tiers du site, et cette ligne le prouve. `wasm-unsafe-eval` est indispensable : Pagefind compile son index en WebAssembly, et sans cette directive la recherche meurt sur un CompileError que seule la console montre. Mesuré le 3 septembre avant déploiement.",
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://bff.ecoindex.fr; font-src 'self'; connect-src 'self' https://api.websitecarbon.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; object-src 'none'"
+          }
+        ]
+      },
+      {
+        "//": "Noms de fichiers hachés : le contenu ne change jamais sous la même adresse, donc un an et immuable. Sans cette règle, un visiteur qui revient retélécharge chaque jour des polices et des images identiques.",
+        "source": "/_astro/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "//": "L'index de recherche est régénéré à chaque build et ses noms ne sont pas hachés : il doit revalider.",
+        "source": "/pagefind/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "//": "Images et logos de public/, non hachés mais stables : une journée.",
+        "source": "/img/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=86400"
+          }
+        ]
+      }
+    ]
   }
 }

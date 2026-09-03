@@ -1,0 +1,238 @@
+---
+/**
+ * One page per person, at /authors/<prénom-nom>/: who they are, then what they
+ * have written.
+ *
+ * It replaces a link that led off the site. Until now, clicking a name in a
+ * byline or on /authors/ opened that person's GitHub profile, which answers a
+ * question nobody was asking: a reader who clicks the author of an article
+ * wants their other articles, not their commit history. The outbound links are
+ * still here, on the card, which is where they belong.
+ *
+ * The listing is `PostList`, unchanged, the same component the home page, the
+ * categories and the tags use. That is the whole point of it existing: five
+ * surfaces, one card, no drift.
+ */
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PostList from '../../components/PostList.astro';
+import GithubIcon from '../../assets/icons/github.svg';
+import LinkedinIcon from '../../assets/icons/linkedin.svg';
+import XIcon from '../../assets/icons/twitter.svg';
+import { authorProfiles, authoredHeading, type AuthorProfile } from '../../utils/authors';
+import { sortedPosts } from '../../utils/posts';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await sortedPosts();
+  const profiles = await authorProfiles(posts);
+
+  // Everyone gets a page, including someone who has not published yet: the
+  // index links to all thirteen, and a link to a page that does not exist is
+  // worse than a page that says "pas encore d'article".
+  return profiles.map((profile) => ({
+    params: { author: profile.slug },
+    props: { profile },
+  }));
+};
+
+const { profile } = Astro.props as { profile: AuthorProfile };
+
+/**
+ * The marks we hold as assets, keyed by the network name authors.yml uses.
+ * `x` carries the bird, the only asset published for it; a network with no
+ * asset gets its name set in type, per the convention on third-party marks.
+ */
+const ICONS: Record<string, typeof GithubIcon | undefined> = {
+  github: GithubIcon,
+  linkedin: LinkedinIcon,
+  x: XIcon,
+};
+
+const count = profile.posts.length;
+const description =
+  count === 0
+    ? `${profile.name} sur le blog de zatsit.`
+    : `Les ${count} articles de ${profile.name} sur le blog de zatsit${profile.title ? `, ${profile.title}` : ''}.`;
+---
+
+<Layout title={profile.name} description={description}>
+  <div class="container profile">
+    <header class="profile__card">
+      {
+        profile.avatar && (
+          <Image
+            class="profile__avatar"
+            src={profile.avatar}
+            alt=""
+            width={112}
+            height={112}
+            densities={[1, 2]}
+          />
+        )
+      }
+
+      <div class="profile__identity">
+        <h1>{profile.name}</h1>
+        {profile.title && <p class="profile__title">{profile.title}</p>}
+
+        {
+          profile.socials.length > 0 && (
+            <ul class="profile__socials">
+              {profile.socials.map(({ network, label, href }) => {
+                const Icon = ICONS[network];
+                return (
+                  <li>
+                    <a
+                      class:list={['profile__social', !Icon && 'profile__social--word']}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${profile.name} sur ${label}, dans un nouvel onglet`}
+                    >
+                      {Icon ? <Icon class="icon" aria-hidden="true" /> : label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      count === 0 && (
+        <p class="profile__empty">
+          {profile.name} n’a pas encore publié ici. Ça viendra.
+        </p>
+      )
+    }
+  </div>
+
+  {
+    count > 0 && (
+      <PostList
+        posts={profile.posts}
+        heading={authoredHeading(count)}
+        headingLevel="h2"
+        current={1}
+        total={1}
+      />
+    )
+  }
+
+  <div class="container">
+    <p class="back">
+      <a href="/authors/">← Toutes les autrices et tous les auteurs</a>
+    </p>
+  </div>
+</Layout>
+
+<style>
+  .profile {
+    max-width: 48rem;
+  }
+
+  /* The card: a tonal layer and a hairline, this codebase's elevation at rest,
+     the same idiom as the tag index. */
+  .profile__card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .profile__avatar {
+    flex-shrink: 0;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+
+  .profile__identity {
+    /* Takes the rest of the row, and wraps under the avatar on a narrow
+       screen rather than squeezing a name into two characters per line. */
+    flex: 1 1 14rem;
+  }
+
+  .profile__identity h1 {
+    margin: 0;
+    font-size: var(--text-3xl);
+  }
+
+  .profile__title {
+    margin: var(--space-1) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .profile__socials {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+
+  /* 40px, so every mark clears the 24px target outright, as the theme chips
+     and the tag index do. */
+  .profile__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--space-10);
+    block-size: var(--space-10);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text);
+    text-decoration: none;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  /* A network we hold no mark for is a word, not a redrawn logo. */
+  .profile__social--word {
+    inline-size: auto;
+    padding-inline: var(--space-4);
+    font-size: var(--text-sm);
+  }
+
+  .profile__social:hover,
+  .profile__social:focus-visible {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .profile__social .icon {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  .profile__empty {
+    margin: var(--rhythm-heading) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  /* Closer than the section gap: a back link belongs to what it leaves. */
+  .back {
+    margin: 0;
+  }
+
+  .back a {
+    color: var(--color-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .profile__social {
+      transition: none;
+    }
+  }
+</style>

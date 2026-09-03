@@ -1,0 +1,169 @@
+---
+/**
+ * The band under the three facts: what the blog is built, deployed and measured
+ * with.
+ *
+ * Same place and same anatomy as the "Featured on" row on littlemight.com, a
+ * centred letterspaced label over a row of marks, and the same restraint: it
+ * sits between two hairlines and adds no colour of its own.
+ *
+ * One rule decided the contents: the reader has to be able to check every line.
+ * Astro is in package.json, the Website Carbon badge is in the footer of the
+ * page they are reading, and the EcoIndex link goes to our own measured result
+ * rather than to a brochure. Clever Cloud is where production is going, at
+ * Emmanuel's call; it becomes literally true the day publish-on-merge.yml moves,
+ * and Firebase stays out because a preview channel for merge requests is not
+ * where anyone reads this blog.
+ *
+ * Marks rather than names wherever an official one exists, and rendered in one
+ * colour rather than in ours. Colour is part of a trademark and brand guidelines
+ * forbid altering it, so painting these blue and gold would break their rules
+ * and read as counterfeit. One-colour reproduction is the usage they publish
+ * for: Astro ships a light and a dark variant with identical geometry, Clever
+ * Cloud ships a mono variant, and the Website Carbon globe is a single-colour
+ * drawing. All three therefore run on `currentColor`, which puts them in the
+ * page's ink, near-black on the light theme and near-white on the dark one, and
+ * makes the row read as one family instead of a patchwork.
+ *
+ * Nothing was redrawn. Three mechanical changes to their own files, geometry
+ * untouched: the fixed fill becomes `currentColor` in the two SVGs, and the
+ * globe, which they publish only as a raster, is used as a CSS mask so its shape
+ * travels while the colour comes from the page. A mask reads the alpha channel,
+ * which is why that file keeps its transparency instead of being flattened.
+ *
+ * EcoIndex publishes no vector logo of its own, only its partners'. Its name is
+ * set in type instead, because a logo redrawn from memory is a poor forgery of
+ * someone else's trademark. The reference row mixes marks and wordmarks the
+ * same way.
+ */
+import AstroIcon from '../assets/icons/astro.svg';
+import CleverCloudLogo from '../assets/icons/clever-cloud.svg';
+import { ECOINDEX_URL } from '../consts';
+
+/**
+ * `kind` says what the artwork is, because it decides two things at once: how
+ * tall it should be, and whether the name still has to be printed. A glyph
+ * needs the word beside it and a logotype spells itself out, so repeating the
+ * name there would print it twice.
+ */
+const TOOLS = [
+  { name: 'Astro', href: 'https://astro.build', icon: AstroIcon, kind: 'glyph' },
+  { name: 'Clever Cloud', href: 'https://www.clever.cloud', icon: CleverCloudLogo, kind: 'logotype' },
+  { name: 'Website Carbon', href: 'https://www.websitecarbon.com', icon: undefined, kind: 'mask' },
+  { name: 'EcoIndex', href: ECOINDEX_URL, icon: undefined, kind: 'word' },
+] as const;
+---
+
+{/* Not named either, for the same reason as the band above: a region landmark
+    for one row of four links is noise in the landmark list. The label stays
+    visible and reads before the row, which is what actually gives it context. */}
+<section class="built">
+  <p class="built__label">Construit, déployé et mesuré avec</p>
+
+  <ul class="built__list">
+    {
+      TOOLS.map(({ name, href, icon: Icon, kind }) => (
+        <li>
+          <a class="built__item" href={href} rel="noopener noreferrer">
+            {Icon && <Icon class:list={['built__mark', `built__mark--${kind}`]} aria-hidden="true" />}
+            {kind === 'mask' && <span class="built__mark built__mark--mask" aria-hidden="true" />}
+            {/* A logotype carries the name in its artwork, so the word is kept
+                for the accessible name only: the link still has to be readable
+                without seeing the logo. */}
+            <span class:list={[kind === 'logotype' && 'sr-only']}>{name}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .built {
+    /* Contiguous with the facts band above, whose own bottom hairline separates
+       the two: they read as one stack of rules, which is how the reference
+       stacks them. Overriding the section gap from global.css on purpose. */
+    margin-block-start: 0;
+    border-block-end: var(--border-width) solid var(--color-border);
+    padding-block: var(--space-8);
+  }
+
+  .built__label {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .built__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4) var(--space-8);
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+  }
+
+  /* The list items are flex containers rather than blocks holding an inline
+     item, and that is what fixes the alignment. An `inline-flex` aligns on the
+     baseline of its own first child, which is an image for the three marked
+     entries and a line of text for EcoIndex, so their boxes came to rest at
+     different heights: 32px against 26px. As flex children they align on their
+     boxes and the baseline never enters into it. */
+  .built__list li {
+    display: flex;
+    align-items: center;
+  }
+
+  .built__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    /* Every entry as tall as the tallest mark, so a name on its own sits on the
+       same line as a name beside a logo. Well past the 24px of 2.5.8. */
+    min-block-size: 2rem;
+    padding-inline: var(--space-1);
+    color: var(--color-text);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+  }
+
+  .built__item:hover {
+    color: var(--color-primary);
+  }
+
+  /* A glyph, a logotype and a drawing cannot share one height and look the same
+     size. Each kind gets the height that makes it match the others optically
+     rather than numerically, which is why these three numbers differ. */
+  .built__mark {
+    inline-size: auto;
+  }
+
+  .built__mark--glyph {
+    block-size: 2rem;
+  }
+
+  /* 2rem, not the 1.5 it started at: the lettering inside a 4:1 logotype comes
+     out smaller than the names beside it, so the box has to be taller for the
+     words to weigh the same. */
+  .built__mark--logotype {
+    block-size: 2rem;
+  }
+
+  /* The globe is theirs, in their shape, painted in ours: the file provides the
+     alpha, `currentColor` provides the colour. Without this it would stay the
+     fixed blue it ships in, which nearly disappears on the dark theme. */
+  .built__mark--mask {
+    inline-size: 2rem;
+    block-size: 2rem;
+    background: currentColor;
+    mask: url('../assets/icons/website-carbon-planet.png') center / contain no-repeat;
+    -webkit-mask: url('../assets/icons/website-carbon-planet.png') center / contain no-repeat;
+  }
+</style>

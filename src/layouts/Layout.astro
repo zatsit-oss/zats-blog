@@ -1,0 +1,45 @@
+---
+/**
+ * The page shell: document, header, footer. Everything else slots into it.
+ *
+ * Introduced so the article layout and the listing stop each carrying their own
+ * copy of <html>, the skip link and the landmarks. Props are forwarded to
+ * BaseHead untouched.
+ */
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedAt?: Date;
+  authors?: string[];
+  tags?: string[];
+}
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <BaseHead {...Astro.props} />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  /* The footer sticks to the bottom on short pages. `body` is already a
+     column flex container in global.css. */
+  main {
+    flex: 1;
+  }
+</style>

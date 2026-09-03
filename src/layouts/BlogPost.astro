@@ -1,0 +1,451 @@
+---
+import type { MarkdownHeading } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from './Layout.astro';
+import { avatarFor } from '../utils/avatars';
+import FormattedDate from '../components/FormattedDate.astro';
+import ShareLinks from '../components/ShareLinks.astro';
+import CodeCopy from '../components/CodeCopy.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { categoryLabel } from '../consts';
+import { authorSlug } from '../utils/authors';
+import { metaDescription, readingTime } from '../utils/posts';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  headings: MarkdownHeading[];
+}
+
+const { post, headings } = Astro.props;
+const { title, slug, date, tags, category, shareText } = post.data;
+
+// Resolve the author keys against authors.yml. An unknown key is not silently
+// dropped: it would leave an article with no byline, which is worse than a
+// loud build failure while the corpus is being migrated.
+const authors = await Promise.all(
+  post.data.authors.map(async (key) => {
+    const entry = await getEntry('authors', key);
+    if (!entry) {
+      throw new Error(
+        `L'article "${slug}" référence l'auteur "${key}", absent de authors.yml.`,
+      );
+    }
+    // The byline links inside the site now, to the person's own page, rather
+    // than out to the GitHub profile authors.yml declares: a reader clicking
+    // an author wants their other articles. The outbound profiles are on that
+    // page. The slug comes from the shared helper so the two never diverge.
+    return { ...entry.data, href: `/authors/${authorSlug(entry.data.name)}/`, avatar: avatarFor(key) };
+  }),
+);
+
+const description = metaDescription(post);
+const minutes = readingTime(post);
+---
+
+<Layout
+  title={title}
+  description={description}
+  type="article"
+  publishedAt={date}
+  authors={authors.map((a) => a.name)}
+  tags={tags}
+>
+  {/* Pagefind indexes only the regions carrying this attribute, so declaring
+      it here restricts the index to articles: searching a blog should return
+      articles, not the tag pages and the archive that merely list them. The
+      header and footer are excluded for free, which also stops every result
+      from matching the navigation. */}
+  {/* The grid exists only to hold the table of contents beside the text. On
+      narrower screens it collapses to the single centred column the article
+      had before, and the aside is not rendered at all. */}
+  <div class="post-layout">
+    <aside class="post-layout__aside">
+      <TableOfContents headings={headings} />
+    </aside>
+
+    <article class="post" data-pagefind-body>
+    {/* Four rows, and they no longer all carry the same weight: where the
+        article is filed, the title, who wrote it and when as one line, then
+        the themes. A hairline closes the header so the eye knows the article
+        has started.
+
+        The category sits above the title rather than beside the themes below
+        it: it is the one thing here that says where the reader is, and putting
+        it in the same row as the themes would have made it the eighteenth chip
+        of a flat list, which is exactly the confusion this pass removes. */}
+    <header class="post__header">
+      {category && (
+        <p class="post__category">
+          <a href={`/categories/${category}/`}>{categoryLabel(category)}</a>
+        </p>
+      )}
+
+      <h1>{title}</h1>
+
+      <div class="post__byline">
+        {
+          authors.some((author) => author.avatar) && (
+            <div class="post__avatars">
+              {authors.map(
+                (author) =>
+                  author.avatar && (
+                    <Image
+                      class="post__avatar"
+                      src={author.avatar}
+                      alt=""
+                      width={36}
+                      height={36}
+                      densities={[1, 2]}
+                    />
+                  ),
+              )}
+            </div>
+          )
+        }
+
+        <p class="post__credits">
+          <span class="post__authors">
+            {
+              authors.map((author, index) => (
+                <>
+                  {index > 0 && <span>, </span>}
+                  <a href={author.href}>{author.name}</a>
+                </>
+              ))
+            }
+          </span>
+          <span class="post__meta">
+            {date && <FormattedDate date={date} />}
+            <span aria-hidden="true"> · </span>
+            {minutes} min de lecture
+          </span>
+        </p>
+      </div>
+
+      {
+        tags.length > 0 && (
+          <ul class="post__tags" aria-label="Tags de cet article">
+            {tags.map((tag) => (
+              <li>
+                <a class="post__tag" href={`/tags/${tag}/`}>{tag}</a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    <div class="post__body">
+      <slot />
+    </div>
+
+      <ShareLinks slug={slug} title={title} text={shareText} />
+    </article>
+  </div>
+
+  <CodeCopy />
+</Layout>
+
+<style>
+  /* Measure in ch, not rem: 45rem of Poppins ran to roughly 85 characters a
+     line, well past the 65 to 75 where long-form reading stays comfortable.
+     In ch the column follows the font rather than guessing at it. */
+  .post {
+    --measure: 68ch;
+
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--margin-mobile);
+  }
+
+  /* Below the breakpoint the aside is removed from the flow entirely rather
+     than hidden: its content would still be read out by a screen reader, and
+     a duplicate section list before the article helps nobody. */
+  .post-layout__aside {
+    display: none;
+  }
+
+  /* 1200px is where a 16rem column, a 68ch measure and the gap between them
+     all fit without pushing the text off centre. Below it the article keeps
+     the page to itself. */
+  @media (min-width: 1200px) {
+    .post-layout {
+      display: grid;
+      grid-template-columns: 16rem minmax(0, 68ch);
+      justify-content: center;
+      gap: var(--space-10);
+      /* Not `align-items: start`. That shrinks the aside to its content
+         height, leaving a sticky child no distance to travel: the table of
+         contents looked pinned but scrolled away with the page. Stretched to
+         the row, it follows the article all the way down. */
+    }
+
+    .post-layout__aside {
+      display: block;
+    }
+
+    .post {
+      margin-inline: 0;
+    }
+  }
+
+  /* Anchored headings must clear the sticky header when jumped to, or the
+     table of contents lands on a title hidden underneath it. */
+  .post__body :global(h2),
+  .post__body :global(h3) {
+    scroll-margin-block-start: calc(5rem + var(--space-4));
+  }
+
+  .post__header {
+    margin-block-end: var(--rhythm-heading);
+    padding-block-end: var(--space-6);
+    border-block-end: var(--border-width) solid var(--color-border);
+  }
+
+  .post__header h1 {
+    margin-block-end: var(--space-6);
+    font-size: var(--text-3xl);
+  }
+
+  .post__byline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* Overlapped when there are several: three authors read as one credit
+     rather than three competing rows. */
+  .post__avatars {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .post__avatar {
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid var(--color-bg);
+  }
+
+  .post__avatar:not(:first-child) {
+    margin-inline-start: calc(var(--space-3) * -1);
+  }
+
+  .post__credits {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    line-height: var(--leading-snug);
+  }
+
+  .post__authors {
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+  }
+
+  .post__authors a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .post__authors a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .post__meta {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .post__category {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .post__category a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .post__category a:hover {
+    text-decoration: underline;
+  }
+
+  .post__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+  }
+
+  .post__tag {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    text-decoration: none;
+  }
+
+  .post__tag:hover,
+  .post__tag:focus-visible {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  /* ----------------------------------------------------------------------
+     Article body
+     ---------------------------------------------------------------------- */
+
+  /* The opening paragraph carries the article's promise, so it is set larger
+     rather than duplicated into a separate standfirst: the excerpt the
+     listing shows is this same text, and printing it twice would be a
+     redundancy the reader notices immediately. */
+  .post__body :global(> p:first-of-type) {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text);
+  }
+
+  .post__body :global(p) {
+    margin-block: var(--space-5);
+  }
+
+  /* Several articles print a source as its bare URL, and a URL is one
+     unbreakable word: `https://www.researchgate.net/figure/Analysis-of-…`
+     measured 436px against a 390px viewport and pushed the whole page
+     sideways, 46px on this width and 132px on a 320px phone, across three
+     articles. Breaking mid-word is the lesser evil against a page that
+     scrolls horizontally, and it only ever applies to a word longer than the
+     line, so prose is untouched.
+
+     On the body and not on `a` alone: the emphasis around one of those
+     sources overflowed on its own. Code blocks are unaffected, `white-space:
+     pre` forbidding any wrap. */
+  .post__body {
+    overflow-wrap: break-word;
+  }
+
+  /* Asymmetric on purpose. A heading with equal space above and below floats
+     between two sections; pushed up and pulled down, it belongs to the text
+     it introduces. This is the single biggest change to how the page reads. */
+  .post__body :global(h2) {
+    margin-block: var(--space-12) var(--space-3);
+    font-size: var(--text-2xl);
+  }
+
+  .post__body :global(h3) {
+    margin-block: var(--space-8) var(--space-2);
+    font-size: var(--text-xl);
+  }
+
+  .post__body :global(h4) {
+    margin-block: var(--space-6) var(--space-2);
+  }
+
+  .post__body :global(ul),
+  .post__body :global(ol) {
+    margin-block: var(--space-5);
+    padding-inline-start: var(--space-6);
+  }
+
+  .post__body :global(li) {
+    margin-block: var(--space-2);
+    padding-inline-start: var(--space-1);
+  }
+
+  .post__body :global(li)::marker {
+    color: var(--color-primary);
+  }
+
+  .post__body :global(blockquote) {
+    margin-block: var(--space-8);
+    margin-inline: 0;
+  }
+
+  .post__body :global(hr) {
+    margin-block: var(--space-12);
+  }
+
+  /* Images breathe, and are allowed past the text column on wide screens:
+     a diagram or a screenshot is unreadable when squeezed to a 68ch measure
+     that exists for prose. */
+  .post__body :global(img) {
+    display: block;
+    margin-block: var(--space-8);
+    margin-inline: auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+
+  .post__body :global(figure) {
+    margin-block: var(--space-8);
+    margin-inline: 0;
+  }
+
+  .post__body :global(figcaption) {
+    margin-block-start: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  /* Wide content scrolls inside its own box, never the page. For a table that
+     box is the wrapper hast-table-scroll adds, which carries tabindex="0": a
+     scroll container with nothing focusable inside cannot be reached without a
+     pointer, and three tables had their right-hand columns out of reach. */
+  .post__body :global(pre),
+  .post__body :global(.table-scroll),
+  .post__body :global(.math-scroll) {
+    margin-block: var(--space-6);
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  /* A displayed formula is a break in the prose and reads as one: more air than
+     a paragraph gets, and centred in its column. The colour is inherited, so
+     both themes resolve without naming one.
+
+     No font-size: MathML sizes a fraction's parts relative to this one, and the
+     browser's own maths font is the convention for an equation. Nothing else is
+     declared, because nothing else needs to be: this whole feature ships no
+     stylesheet and no font. */
+  .post__body :global(.math-scroll) {
+    margin-block: var(--space-8);
+    text-align: center;
+  }
+
+  /* Visible when either wrapper takes focus, since both are tab stops. */
+  .post__body :global(.table-scroll:focus-visible),
+  .post__body :global(.math-scroll:focus-visible) {
+    outline: var(--border-width-strong) solid var(--color-primary);
+    outline-offset: var(--space-1);
+  }
+
+  .post__body :global(table) {
+    display: block;
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 1100px) {
+    .post__header h1 {
+      font-size: var(--text-4xl);
+    }
+
+    /* Escaping the measure by a controlled amount rather than going full
+       bleed: the image stays anchored to the column it belongs to. */
+    .post__body :global(img) {
+      max-width: calc(var(--measure) + var(--space-24));
+      margin-inline: calc(var(--space-12) * -1);
+    }
+  }
+</style>

@@ -1,17 +1,19 @@
 name: Publish Blog on Merge
 
+# What this deploys, and what it does not: the Firebase `live` channel of the
+# zatsit-blog project. Production, blog.zatsit.fr, is a Google Cloud Storage
+# bucket behind a load balancer, and it is fed by the content repository's own
+# publish-on-merge.yml. Both pipelines built Docusaurus until this change.
+
 on:
   push:
     branches:
       - main
     paths-ignore:
-      - "blog/**"
-      - "docs/**"
       - "README.md"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
   workflow_dispatch:
-
 
 concurrency:
   group: ${{ github.ref || github.run_id }}
@@ -20,16 +22,20 @@ concurrency:
 jobs:
   Fetch-and-build-blog:
     runs-on: ubuntu-latest
-    if: always()
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Fetch and Build blog content
-        uses: ./.github/actions/docusaurus
+      - name: Fetch content and build
+        uses: ./.github/actions/astro
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Explicit, where a pull request lets the action guess: a deploy of
+          # main builds against published content, never against a branch.
+          content-ref: main
 
+      # firebase.json points at dist/ and carries the cache headers, so the
+      # deploy step needs no change of its own.
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

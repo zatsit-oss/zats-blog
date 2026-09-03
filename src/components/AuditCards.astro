@@ -1,0 +1,83 @@
+---
+/**
+ * The two audits as cards: name, score, and a way into the detail.
+ *
+ * Shared by /audits/ and by /blog-conception/, where the audits used to be a
+ * line of text at the foot of the page. A sentence saying "we audited
+ * ourselves" asks to be believed; two scores show it, and the reader decides
+ * whether to go further.
+ *
+ * The heading level is a prop rather than a fixed `h2`: on /audits/ these cards
+ * sit directly under the page title, on /blog-conception/ they sit inside a
+ * section that already holds an `h2`. Hard-coding one would skip a level on one
+ * of the two, which axe catches and a screen reader reads as a broken outline.
+ */
+import AuditScore from './AuditScore.astro';
+import { REFERENTIELS, compter } from '../utils/referentiels';
+
+interface Props {
+  headingLevel?: 'h2' | 'h3';
+  /** Off on a page that has already introduced the references. */
+  meta?: boolean;
+}
+
+const { headingLevel: Heading = 'h2', meta = true } = Astro.props;
+const audits = REFERENTIELS.map((ref) => ({ ...ref, comptes: compter(ref.groupes) }));
+---
+
+<ul class="cards">
+  {
+    audits.map((audit) => (
+      <li class="card">
+        <Heading class="card__titre">
+          <a href={`/audits/${audit.slug}/`}>{audit.nom}</a>
+        </Heading>
+
+        <AuditScore audit={audit} meta={meta} />
+
+        <p class="card__lien">
+          <a href={`/audits/${audit.slug}/`}>
+            Le détail des {audit.comptes.total} {audit.unite}
+          </a>
+        </p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cards {
+    display: grid;
+    gap: var(--space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card {
+    padding: var(--space-6);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-card-bg);
+  }
+
+  .card__titre {
+    margin: 0;
+    font-size: var(--text-2xl);
+  }
+
+  .card__titre a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .card__titre a:hover,
+  .card__titre a:focus-visible {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .card__lien {
+    margin: var(--space-5) 0 0;
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+/**
+ * The two sustainability audits, at /audits/.
+ *
+ * `/audits/` and not `/referentiels/`: the routes this project invents are in
+ * English, `/categories/`, `/authors/`, `/tags/`, `/archive/`. The two French
+ * ones, `/blog-conception/` and `/mentions-legales/`, come from the Docusaurus
+ * contract and cannot move. "Audits" happens to read the same in both
+ * languages, which settles it without translating the page.
+ *
+ * This page holds the scores only; each reference has its own page for the
+ * detail. Everything on one page came to 1132 DOM elements, three quarters of
+ * the budget, for a wall nobody reads end to end.
+ */
+import Layout from '../../layouts/Layout.astro';
+import AuditCards from '../../components/AuditCards.astro';
+import { REFERENTIELS, compter } from '../../utils/referentiels';
+
+const total = REFERENTIELS.reduce((sum, ref) => sum + compter(ref.groupes).total, 0);
+---
+
+<Layout
+  title="Nos audits d'éco-conception"
+  description={`Le blog de zatsit évalué contre ${total} règles de deux référentiels d'éco-conception : le collectif Green IT et le W3C.`}
+>
+  <div class="container audits">
+    <header class="audits__header">
+      <h1>Nos audits d'éco-conception</h1>
+      <p class="audits__lead">
+        Un badge donne une note, un audit dit ce qu'on fait et ce qu'on ne fait pas. Ce blog est
+        évalué ligne à ligne contre deux référentiels publics, {total} règles au total, et les
+        écarts sont nommés plutôt que passés sous silence.
+      </p>
+    </header>
+
+    <AuditCards />
+
+    <p class="audits__source">
+      Les mêmes données sont versionnées dans le dépôt, en{' '}
+      <a
+        href="https://github.com/zatsit-oss/zats-blog/blob/main/REFERENTIEL-GREENIT.md"
+        target="_blank"
+        rel="noopener noreferrer">REFERENTIEL-GREENIT.md</a
+      >{' '}et{' '}
+      <a
+        href="https://github.com/zatsit-oss/zats-blog/blob/main/REFERENTIEL-W3C-WSG.md"
+        target="_blank"
+        rel="noopener noreferrer">REFERENTIEL-W3C-WSG.md</a
+      >, générés depuis le même fichier que ces pages.
+    </p>
+  </div>
+</Layout>
+
+<style>
+  .audits {
+    max-width: 48rem;
+  }
+
+  .audits__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  .audits__lead {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .audits__source {
+    margin-block-start: var(--rhythm-gap);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+</style>

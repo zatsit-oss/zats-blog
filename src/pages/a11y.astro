@@ -1,0 +1,41 @@
+---
+/**
+ * Accessibility, at /a11y/.
+ *
+ * A placeholder, and deliberately one: the tooling is real, `npm run check:axe`
+ * sweeps every page in both themes at two widths and `check:a11y` measures the
+ * contrast tokens, but a tool report is not an audit. axe covers roughly a
+ * third of the criteria; it sees a missing `alt`, never an `alt` that lies.
+ *
+ * What goes here is the RGAA audit recorded as decision D7 in
+ * PLAN-MIGRATION.md, deferred on 29 August: 106 criteria, the same machinery as
+ * /audits/, plus the human pass this page promises.
+ */
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Accessibilité"
+  description="L'accessibilité du blog de zatsit : les outils tournent sur chaque page, l'audit humain reste à faire."
+>
+  <div class="container a11y">
+    <h1>En cours de construction</h1>
+
+    <p class="a11y__lead">
+      Chaque page est analysée avec des outils, à nous maintenant de montrer un rapport cohérent et
+      de faire un audit humain par l'un de nos talents.
+    </p>
+  </div>
+</Layout>
+
+<style>
+  .a11y {
+    max-width: 45rem;
+  }
+
+  .a11y__lead {
+    margin: var(--space-5) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+/**
+ * Every article, grouped by year, newest first. Matches the Docusaurus archive.
+ *
+ * A dense index rather than a listing of cards: this is the page you reach when
+ * you know something exists and want to find it, so titles and dates beat
+ * excerpts and illustrations.
+ */
+import Layout from '../layouts/Layout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { sortedPosts } from '../utils/posts';
+
+const posts = await sortedPosts();
+
+// Grouped in one pass; sortedPosts already ordered them, so each year's list
+// comes out newest first and the years themselves descend.
+const byYear = new Map<number, typeof posts>();
+for (const post of posts) {
+  const year = post.data.date!.getUTCFullYear();
+  byYear.set(year, [...(byYear.get(year) ?? []), post]);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<Layout
+  title="Archive"
+  description={`Les ${posts.length} articles du blog de zatsit, classés par année.`}
+>
+  <div class="container archive">
+    <header class="archive__header">
+      <h1>Archive</h1>
+      <p class="archive__intro">
+        {posts.length} articles depuis {years.at(-1)}.
+      </p>
+    </header>
+
+    {
+      years.map((year) => (
+        <section class="archive__year">
+          <h2 id={String(year)}>{year}</h2>
+          <ul class="archive__list">
+            {byYear.get(year)!.map((post) => (
+              <li class="archive__item">
+                <FormattedDate date={post.data.date!} format="short" />
+                <a href={`/${post.data.slug}/`}>{post.data.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</Layout>
+
+<style>
+  .archive {
+    max-width: 48rem;
+  }
+
+  .archive__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  .archive__intro {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .archive__year + .archive__year {
+    margin-block-start: var(--space-10);
+  }
+
+  .archive__year h2 {
+    padding-block-end: var(--space-2);
+    border-block-end: var(--border-width) solid var(--color-border);
+  }
+
+  .archive__list {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+
+  .archive__item {
+    display: grid;
+    gap: 0 var(--space-4);
+    padding-block: var(--space-2);
+  }
+
+  .archive__item :global(time) {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .archive__item a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .archive__item a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  @media (min-width: 640px) {
+    .archive__item {
+      grid-template-columns: 7rem 1fr;
+      align-items: baseline;
+    }
+  }
+</style>

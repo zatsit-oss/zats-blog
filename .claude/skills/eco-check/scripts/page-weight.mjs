@@ -1,0 +1,291 @@
+#!/usr/bin/env node
+/**
+ * Eco-design budget check for the zatsit blog.
+ *
+ *   npm run build && node .claude/skills/eco-check/scripts/page-weight.mjs
+ *   node .claude/skills/eco-check/scripts/page-weight.mjs --verbose   per-asset breakdown
+ *   node .claude/skills/eco-check/scripts/page-weight.mjs <dir>       measure another build
+ *
+ * The third form is how the Docusaurus baseline was taken: point it at the
+ * archived reference build to compare the migration against what it replaces.
+ *
+ * Walks the built dist/ and estimates, for every page, the bytes a first-time
+ * visitor actually downloads. Text assets are measured gzipped (every host we
+ * use compresses them); binaries are measured raw. Images marked
+ * loading="lazy" and non-preloaded fonts are excluded from the initial figure
+ * and reported separately.
+ *
+ * This is a static estimate, not a Lighthouse run: it sees what the HTML
+ * references, not what the browser ends up executing. It catches budget drift
+ * cheaply and deterministically. For Core Web Vitals, run a real audit.
+ *
+ * Exit code 1 when a budget is exceeded, so CI can gate on it.
+ */
+
+import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve, join, relative, extname } from 'node:path';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(HERE, '../../../..');
+const target = process.argv.slice(2).find((a) => !a.startsWith('--'));
+const DIST = target ? resolve(process.cwd(), target) : resolve(ROOT, 'dist');
+
+// Budgets, from .claude/rules/quality.md. Keep the two in sync.
+const BUDGET = {
+  initialBytes: 500 * 1024, // what a first-time visitor downloads
+  totalBytes: 1024 * 1024, // including lazy images
+  requests: 25, // initial requests, excluding the document itself
+  domElements: 1500, // structural, excluding syntax-highlighting spans
+};
+
+/**
+ * Pages allowed to exceed a budget, with the reason and the fix.
+ *
+ * Empty, and worth keeping empty: the two conference articles that used to sit
+ * here were over budget because Markdown declares no image width, so Astro
+ * emitted the sources untouched. src/plugins/capped-image-service.mjs caps what
+ * nobody sized, and both pages came back under the limit.
+ *
+ * Recorded debt is never a silenced check: a listed page is still measured,
+ * still printed and still reported at the end, and anything not listed fails
+ * the build, so a new regression cannot hide behind an old one. The run says
+ * when a listed page no longer breaches, which is the signal to delete its line.
+ */
+const KNOWN_OVER_BUDGET = {};
+
+const TEXT = new Set(['.html', '.css', '.js', '.mjs', '.json', '.svg', '.xml', '.txt']);
+
+const kb = (n) => `${(n / 1024).toFixed(1)} kB`;
+
+/** Bytes over the wire: gzipped for text, raw for already-compressed binaries. */
+function transferSize(file) {
+  const buf = readFileSync(file);
+  return TEXT.has(extname(file).toLowerCase()) ? gzipSync(buf).length : buf.length;
+}
+
+function walk(dir, match, out = []) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) walk(full, match, out);
+    else if (match(full)) out.push(full);
+  }
+  return out;
+}
+
+/** Resolve an href/src found in `pageFile` to a path inside dist, or null. */
+function toDistPath(ref, pageFile) {
+  if (!ref || /^(https?:|data:|mailto:|tel:|#|\/\/)/i.test(ref)) return null;
+  const clean = ref.split(/[?#]/)[0];
+  const path = clean.startsWith('/')
+    ? join(DIST, clean)
+    : resolve(dirname(pageFile), clean);
+  return existsSync(path) && statSync(path).isFile() ? path : null;
+}
+
+/** Assets pulled in by url() inside a stylesheet. */
+function cssDependencies(cssFile) {
+  const css = readFileSync(cssFile, 'utf8');
+  const deps = [];
+  for (const [, raw] of css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)) {
+    const path = toDistPath(raw, cssFile);
+    if (path) deps.push(path);
+  }
+  return deps;
+}
+
+function analyzePage(pageFile) {
+  const html = readFileSync(pageFile, 'utf8');
+  const initial = new Map(); // path -> bytes, counted in the initial load
+  const deferred = new Map(); // lazy images and other on-demand assets
+  const add = (map, path) => {
+    if (path && !map.has(path)) map.set(path, transferSize(path));
+  };
+
+  // The document itself.
+  const documentBytes = gzipSync(Buffer.from(html)).length;
+
+  // Stylesheets and preloads block or accompany first paint.
+  for (const [, tag] of html.matchAll(/<link\b([^>]*)>/gi)) {
+    const rel = tag.match(/\brel=["']([^"']+)["']/i)?.[1].toLowerCase() ?? '';
+    if (!/\b(stylesheet|preload|modulepreload)\b/.test(rel)) continue;
+    const path = toDistPath(tag.match(/\bhref=["']([^"']+)["']/i)?.[1], pageFile);
+    add(initial, path);
+    if (path && extname(path) === '.css') cssDependencies(path).forEach((d) => add(deferred, d));
+  }
+
+  // Scripts. `async`/`defer` still download on the first visit.
+  for (const [, tag] of html.matchAll(/<script\b([^>]*)>/gi)) {
+    add(initial, toDistPath(tag.match(/\bsrc=["']([^"']+)["']/i)?.[1], pageFile));
+  }
+
+  // <picture>: the browser takes the first <source> whose type it supports and
+  // never fetches the <img> fallback. Counting the fallback would report the
+  // heaviest variant, penalising the very technique that makes the page light.
+  // The first source wins here, matching how a current browser resolves it.
+  const pictures = [...html.matchAll(/<picture\b[\s\S]*?<\/picture>/gi)].map((m) => m[0]);
+
+  for (const picture of pictures) {
+    const srcset = picture.match(/<source\b[^>]*\bsrcset=["']([^"']+)["']/i)?.[1];
+    const fallback = picture.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
+    // A srcset lists "url width" pairs; the last is the largest and is what a
+    // 2x screen pulls, so it is the honest figure to budget against.
+    const candidate = srcset
+      ? srcset.split(',').pop()?.trim().split(/\s+/)[0]
+      : fallback;
+    const path = toDistPath(candidate, pageFile);
+    add(/\bloading=["']lazy["']/i.test(picture) ? deferred : initial, path);
+  }
+
+  // Standalone images. Anything already accounted for inside a <picture> is
+  // skipped, lazy ones stay out of the initial payload.
+  const insidePicture = pictures.join('');
+  for (const [tag] of html.matchAll(/<img\b[^>]*>/gi)) {
+    if (insidePicture.includes(tag)) continue;
+    const path = toDistPath(tag.match(/\bsrc=["']([^"']+)["']/i)?.[1], pageFile);
+    add(/\bloading=["']lazy["']/i.test(tag) ? deferred : initial, path);
+  }
+
+  // Inline CSS and JS ship inside the document, already counted above, but we
+  // surface the volume because it is the usual cause of a fat HTML file.
+  const inlineBytes = [...html.matchAll(/<(style|script)\b[^>]*>([\s\S]*?)<\/\1>/gi)]
+    .reduce((sum, m) => sum + Buffer.byteLength(m[2]), 0);
+
+  // DOM size, counted as opening tags. Syntax highlighting is excluded from the
+  // budgeted figure and reported separately: Shiki wraps every token in a span,
+  // so a code-heavy article can be 78% highlighting. Counting those would flag
+  // "this page contains a lot of code" while claiming to measure structural
+  // complexity, and the two call for completely different fixes. The raw total
+  // is still printed, so nothing is hidden.
+  const countTags = (s) => (s.match(/<[a-z][a-z0-9-]*[\s>/]/gi) ?? []).length;
+  const highlightSpans = (html.match(/<pre[\s\S]*?<\/pre>/gi) ?? [])
+    .join('')
+    .match(/<span[\s>]/gi)?.length ?? 0;
+  const domTotal = countTags(html);
+  const domElements = domTotal - highlightSpans;
+
+  const initialBytes = documentBytes + [...initial.values()].reduce((a, b) => a + b, 0);
+  const deferredBytes = [...deferred.values()].reduce((a, b) => a + b, 0);
+
+  return {
+    page: relative(DIST, pageFile),
+    documentBytes,
+    inlineBytes,
+    initialBytes,
+    totalBytes: initialBytes + deferredBytes,
+    requests: initial.size,
+    domElements,
+    domTotal,
+    highlightSpans,
+    initial,
+    deferred,
+  };
+}
+
+function main() {
+  const verbose = process.argv.includes('--verbose');
+
+  if (!existsSync(DIST)) {
+    console.error('No dist/ found. Run `npm run build` first.');
+    process.exit(1);
+  }
+  const pages = walk(DIST, (f) => f.endsWith('.html'));
+  if (pages.length === 0) {
+    console.error('dist/ contains no HTML. The build did not produce any page.');
+    process.exit(1);
+  }
+
+  const results = pages.map(analyzePage).sort((a, b) => b.initialBytes - a.initialBytes);
+  const breaches = [];
+
+  console.log(`\n  ${results.length} page(s), heaviest first. Initial = first visit, gzipped text.\n`);
+  console.log(
+    '  ' +
+      'page'.padEnd(46) +
+      'initial'.padStart(10) +
+      'total'.padStart(10) +
+      'req'.padStart(6) +
+      'dom'.padStart(7),
+  );
+  console.log('  ' + '-'.repeat(79));
+
+  for (const r of results) {
+    const over = [];
+    if (r.initialBytes > BUDGET.initialBytes) over.push('initial');
+    if (r.totalBytes > BUDGET.totalBytes) over.push('total');
+    if (r.requests > BUDGET.requests) over.push('requests');
+    if (r.domElements > BUDGET.domElements) over.push('dom');
+    if (over.length) breaches.push({ page: r.page, over });
+
+    console.log(
+      `  ${over.length ? '!' : ' '} ` +
+        r.page.padEnd(44) +
+        kb(r.initialBytes).padStart(10) +
+        kb(r.totalBytes).padStart(10) +
+        String(r.requests).padStart(6) +
+        String(r.domElements).padStart(7),
+    );
+
+    if (verbose) {
+      console.log(`      document ${kb(r.documentBytes)} (inline css/js ${kb(r.inlineBytes)} raw)`);
+      if (r.highlightSpans)
+        console.log(
+          `      dom ${r.domTotal} tags total, ${r.highlightSpans} of them syntax highlighting`,
+        );
+      for (const [path, bytes] of [...r.initial].sort((a, b) => b[1] - a[1]))
+        console.log(`      ${kb(bytes).padStart(10)}  ${relative(DIST, path)}`);
+      for (const [path, bytes] of [...r.deferred].sort((a, b) => b[1] - a[1]))
+        console.log(`      ${kb(bytes).padStart(10)}  ${relative(DIST, path)}  (deferred)`);
+    }
+  }
+
+  // Fonts are the classic silent regression: declared once, downloaded forever.
+  const fontsDir = join(DIST, '_astro/fonts');
+  if (existsSync(fontsDir)) {
+    const fonts = walk(fontsDir, (f) => /\.(woff2?|ttf|otf)$/i.test(f));
+    const total = fonts.reduce((sum, f) => sum + statSync(f).size, 0);
+    console.log(`\n  Fonts built: ${fonts.length} file(s), ${kb(total)} on disk.`);
+    if (fonts.length > 6)
+      console.log(
+        '  ! More than 6 font files. Check the weights and styles declared in astro.config.mjs\n' +
+          '    against what the CSS actually uses (rule: 3 weights max).',
+      );
+  }
+
+  console.log('');
+
+  const known = breaches.filter((b) => KNOWN_OVER_BUDGET[b.page]);
+  const unexpected = breaches.filter((b) => !KNOWN_OVER_BUDGET[b.page]);
+
+  for (const b of known) {
+    console.log(`  ~ ${b.page} over budget: ${b.over.join(', ')} — dette connue`);
+    console.log(`      ${KNOWN_OVER_BUDGET[b.page]}`);
+  }
+
+  // A listed page that now fits is debt that got paid: say so, so the entry
+  // gets deleted instead of quietly excusing a future regression.
+  const fixed = Object.keys(KNOWN_OVER_BUDGET).filter(
+    (page) => !breaches.some((b) => b.page === page),
+  );
+  for (const page of fixed) {
+    console.log(`  ok ${page} tient désormais dans le budget, retirer son entrée de KNOWN_OVER_BUDGET.`);
+  }
+
+  if (unexpected.length) {
+    for (const b of unexpected) console.log(`  ! ${b.page} over budget: ${b.over.join(', ')}`);
+    console.log(
+      `\n  Budgets: initial ${kb(BUDGET.initialBytes)}, total ${kb(BUDGET.totalBytes)}, ` +
+        `${BUDGET.requests} requests, ${BUDGET.domElements} DOM elements.`,
+    );
+    process.exit(1);
+  }
+
+  console.log(
+    known.length
+      ? `  Aucune nouvelle régression. ${known.length} dette(s) connue(s) restante(s).`
+      : '  Every page is within budget.',
+  );
+}
+
+main();

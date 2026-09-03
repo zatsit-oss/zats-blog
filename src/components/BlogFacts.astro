@@ -1,0 +1,144 @@
+---
+/**
+ * Three facts about the blog, in a band between the hero and the listing.
+ *
+ * The anatomy is read off littlemight.com, which puts the same band in the same
+ * place: hairline, three columns, and in each one a letterspaced label, a large
+ * value, a sentence that gives the value its meaning. What makes it work there
+ * is that nothing in it is decorative, so nothing here is either.
+ *
+ * Two of the three are computed from the content repository and cannot go
+ * stale: the year of the oldest article and how many there are. The archive
+ * page derives the same two from the same source, so they can never disagree.
+ * The third is editorial, and so are the three sentences under the values.
+ */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+
+// sortedPosts() hands them over newest first, so the oldest is at the end.
+const oldest = posts.at(-1)?.data.date;
+const since = oldest?.getUTCFullYear();
+---
+
+{/* No `aria-label`, and that is deliberate: naming a <section> turns it into a
+    region landmark, and a band of three short statements is not a page area
+    worth a stop in the landmark list. Unnamed, it stays a plain grouping, and
+    the <dl> already carries the structure. The label also used to say "trois
+    chiffres" when the third is a sentence. */}
+<section class="facts">
+  <dl class="facts__grid">
+    {/* The note lives inside the <dd> rather than beside it: a <div> in a <dl>
+        may only hold <dt> and <dd>, so a <p> as a third child would be invalid
+        markup, and axe reports it. */}
+    <div class="facts__item">
+      <dt class="facts__label">Nous écrivons depuis</dt>
+      <dd class="facts__body">
+        <span class="facts__value">{since}</span>
+        <p class="facts__note">
+          Nous écrivons quasiment depuis le premier jour de <b>zatsit</b>.
+        </p>
+      </dd>
+    </div>
+
+    <div class="facts__item">
+      <dt class="facts__label">Articles publiés</dt>
+      <dd class="facts__body">
+        <span class="facts__value">{posts.length}</span>
+        <p class="facts__note">
+          De l'architecture au GreenIT, en passant par le cloud, la data et l'IA.
+        </p>
+      </dd>
+    </div>
+
+    <div class="facts__item">
+      <dt class="facts__label">En ce moment</dt>
+      <dd class="facts__body">
+        <span class="facts__value facts__value--text">On peaufine la suite</span>
+        <p class="facts__note">
+          Les prochains articles sont en cours d'écriture et de relecture. Notre rythme est
+          celui de nos expériences, pas celui d'un calendrier éditorial.
+        </p>
+      </dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  /* Flush against the hero, whose own bottom hairline separates the two, and a
+     hairline of its own at the bottom for the band below. Three bands, three
+     rules, no gaps: the section gap from global.css is overridden here on
+     purpose, and a border-block-start would print a second line 1px under the
+     hero's. */
+  .facts {
+    margin-block-start: 0;
+    border-block-end: var(--border-width) solid var(--color-border);
+    padding-block: var(--space-10);
+  }
+
+  .facts__grid {
+    display: grid;
+    gap: var(--space-8);
+    margin: 0;
+  }
+
+  .facts__item {
+    /* The label, the value and the note are three lines of one statement, so
+       they sit tighter to each other than the columns do to their neighbours. */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .facts__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .facts__label {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .facts__value {
+    color: var(--color-text);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    /* The two numeric values line up on their digits. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The third column holds a sentence where the others hold a number. Same
+     weight in the hierarchy, one step down in size so it does not wrap into
+     three lines on a narrow column. */
+  .facts__value--text {
+    font-size: var(--text-2xl);
+    text-wrap: balance;
+  }
+
+  .facts__note {
+    margin: 0;
+    max-width: 42ch;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+  }
+
+  @media (min-width: 768px) {
+    .facts__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-12);
+    }
+  }
+</style>

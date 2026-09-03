@@ -13,6 +13,11 @@
 .docusaurus
 .cache-loader
 
+# Astro: build output and generated types. Both are derived from the sources
+# and from the content repository, so neither belongs in git.
+dist/
+.astro/
+
 # Misc
 .DS_Store
 .env.local
@@ -28,8 +33,23 @@ blog/**
 docs/**
 blog/authors.yml
 static/img/authors/**
-.claude/
+# Claude Code: the rules and skills are project standards, shared like any
+# other convention file. Only the per-developer settings stay local.
+# Same arrangement as the zats-websites monorepo.
+.claude/*
+!.claude/rules/
+!.claude/skills/
+
 sync-content.sh
+dev.sh
+watch-content.mjs
 
 static/assets/*
 .secrets
+
+# Captures de travail, non versionnées
+img.png
+
+# Notes de reprise, locales : l'état courant du chantier est dans
+# PLAN-MIGRATION.md, versionné, pas dans un fichier de brouillon.
+REPRISE.md

@@ -1,0 +1,157 @@
+---
+/**
+ * How this blog is built and what it costs, at /blog-conception/.
+ *
+ * Ported from the Docusaurus React page, with its two badges. The text is
+ * largely the original; the passage that read "notre page d'accueil pèse kb
+ * (en cours d'amélioration)" is rewritten, since the number had gone missing
+ * from the sentence and the improvement has since happened.
+ */
+import Layout from '../layouts/Layout.astro';
+import WebsiteCarbonBadge from '../components/WebsiteCarbonBadge.astro';
+import EcoIndexBadge from '../components/EcoIndexBadge.astro';
+import AuditCards from '../components/AuditCards.astro';
+import CO2JSBadge from '../components/CO2JSBadge.astro';
+import { MEASURED_PAGE_DATE } from '../consts';
+---
+
+<Layout
+  title="Éco-conception"
+  description="Comment ce blog est conçu, et ce qu'une page coûte réellement."
+>
+  <article class="eco">
+    <header class="eco__header">
+      <h1>Éco-conception de ce blog</h1>
+      <p class="eco__lead">
+        Nous voulions un blog léger, rapide, et qui ne mobilise pas de ressources en continu.
+      </p>
+    </header>
+
+    <p>
+      L'éco-conception et la sobriété comptent dans tous nos projets, et un blog qui en parle
+      sans se mesurer ne vaut pas grand-chose. Ce site est entièrement généré à la publication :
+      aucun serveur n'exécute quoi que ce soit pendant que vous le lisez, il n'y a que des
+      fichiers à servir.
+    </p>
+
+    <h2>Ce que dit Website Carbon</h2>
+
+    <p>
+      Nous utilisons <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener noreferrer"
+        >WebsiteCarbon</a
+      > pour évaluer l'empreinte de nos pages. La mesure est faite sur la page que vous consultez,
+      en direct.
+    </p>
+
+    <div class="eco__badge">
+      <WebsiteCarbonBadge />
+    </div>
+
+    <h2>Ce que dit EcoIndex</h2>
+
+    <p>
+      <a href="https://www.ecoindex.fr/" target="_blank" rel="noopener noreferrer">EcoIndex</a>, du
+      collectif Green IT, note une page de A à G à partir de trois mesures : le poids transféré, le
+      nombre de requêtes et la complexité du document. C'est la plus exigeante des trois, parce
+      qu'elle regarde la structure de la page et pas seulement ce qu'elle pèse.
+    </p>
+
+    <div class="eco__badge">
+      <EcoIndexBadge />
+    </div>
+
+    <h2>Et ce que dit CO2.js</h2>
+
+    <p>
+      Une mesure isolée peut se tromper, mieux vaut croiser les outils. <a
+        href="https://developers.thegreenwebfoundation.org/co2js/"
+        target="_blank"
+        rel="noopener noreferrer">CO2.js</a
+      >, de la Green Web Foundation, donne une seconde estimation à partir du poids réel de la
+      page. Le calcul est fait à la construction du site, pas dans votre navigateur : afficher une
+      empreinte carbone en vous faisant télécharger une bibliothèque pour la calculer serait
+      contradictoire.
+    </p>
+
+    <div class="eco__badge">
+      <CO2JSBadge />
+    </div>
+
+    <h2>Ce que nous mesurons nous-mêmes</h2>
+
+    <p>
+      Trois vérifications tournent à chaque modification du site et échouent si un seuil est
+      dépassé : la première mesure le poids de chaque page contre un budget, la deuxième les
+      contrastes de couleur contre le niveau AA des WCAG dans les thèmes clair et sombre, la
+      troisième passe axe-core sur toutes les pages, aux deux largeurs. Les chiffres de cette page
+      datent du {MEASURED_PAGE_DATE}.
+    </p>
+
+    <h2>Et ce que nous ne faisons pas</h2>
+
+    <p>
+      Une note se conteste mal, une liste se vérifie. Le blog est évalué ligne à ligne contre deux
+      référentiels publics, avec les écarts nommés plutôt que passés sous silence.
+    </p>
+
+    {/* The scores themselves, not a link to them: a sentence saying we audited
+        ourselves asks to be believed, two figures show it. `h3` because the
+        section heading above is already an `h2`. */}
+    <div class="eco__audits">
+      <AuditCards headingLevel="h3" meta={false} />
+    </div>
+
+    <p>
+      Cette approche ne rend pas un site vertueux par magie. Elle rend ses coûts visibles, ce qui
+      est la condition pour les réduire.
+    </p>
+  </article>
+</Layout>
+
+<style>
+  .eco {
+    max-width: 45rem;
+    margin-inline: auto;
+    padding-inline: var(--margin-mobile);
+  }
+
+  .eco__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  .eco__lead {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  /* Asymmetric on purpose, 40 above and 20 below, so an h2 belongs to the
+     section it opens. Measured before the change: the gap under a title was
+     zero, and two consecutive paragraphs were glued as well, the global reset
+     zeroing every margin and nothing on this page putting them back. */
+  .eco h2 {
+    margin-block: var(--space-10) var(--space-5);
+  }
+
+  .eco p + p {
+    margin-block-start: var(--space-4);
+  }
+
+  .eco__badge {
+    margin-block: var(--space-6);
+  }
+
+  /* Wider than the reading column: two cards squeezed into 45rem of prose
+     measure would make the score bars unreadable. Escapes symmetrically so the
+     block stays centred on the text above it. */
+  .eco__audits {
+    margin-block: var(--space-6);
+  }
+
+  @media (min-width: 60rem) {
+    .eco__audits {
+      inline-size: calc(100% + 2 * var(--space-10));
+      margin-inline: calc(var(--space-10) * -1);
+    }
+  }
+</style>

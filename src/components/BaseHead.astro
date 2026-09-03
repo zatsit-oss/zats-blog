@@ -1,0 +1,110 @@
+---
+// Imported here so every page that uses <BaseHead /> gets the global styles.
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_OG_IMAGE } from '../consts';
+import { blogPostingSchema, pageGraph, webSiteSchema } from '../utils/schema';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Absolute or root-relative path to the social card for this page. */
+  image?: string;
+  /** "article" on blog posts, "website" everywhere else. */
+  type?: 'website' | 'article';
+  /** Publication date, articles only. Feeds `article:published_time`. */
+  publishedAt?: Date;
+  /** Author display names, articles only. One `article:author` each. */
+  authors?: string[];
+  /** Tag names, articles only. One `article:tag` each. */
+  tags?: string[];
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  image = SITE_OG_IMAGE,
+  type = 'website',
+  publishedAt,
+  authors = [],
+  tags = [],
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImageURL = new URL(image, Astro.site);
+// A title that already names the site is left alone, which is how the home page
+// reads "Le blog tech de zatsit" and not that followed by "| zatsit".
+const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}`;
+
+// Structured data, emitted at build. An article describes itself as a
+// BlogPosting; every other page is the site. Astro.site is set in the config,
+// so the ids and urls are absolute, which JSON-LD requires.
+const site = Astro.site!;
+const schema = pageGraph(
+  site,
+  type === 'article'
+    ? blogPostingSchema(
+        { title, description, url: canonicalURL, image: socialImageURL, publishedAt, authors, tags },
+        site,
+      )
+    : webSiteSchema(site),
+);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<link rel="icon" type="image/svg+xml" href="/img/logo-zatsit-style-light.svg" />
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={SITE_TITLE}
+  href={new URL('rss.xml', Astro.site)}
+/>
+
+<Font cssVariable="--font-poppins" preload />
+
+<link rel="canonical" href={canonicalURL} />
+
+<title>{fullTitle}</title>
+
+<script type="application/ld+json" is:inline set:html={schema} />
+<meta name="description" content={description} />
+
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={socialImageURL} />
+<meta property="og:image:alt" content={title} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content="fr_FR" />
+
+{/* Article metadata. LinkedIn and X read these when unfurling a share link,
+    which is exactly what ShareLinks generates. */}
+{publishedAt && (
+  <meta property="article:published_time" content={publishedAt.toISOString()} />
+)}
+{authors.map((author) => <meta property="article:author" content={author} />)}
+{tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={socialImageURL} />
+
+{/* Runs before first paint so the dual theme never flashes the wrong palette.
+    The design system ships no prefers-color-scheme block on purpose, so the OS
+    preference is resolved here and written to data-theme. */}
+<script is:inline>
+  (function () {
+    const stored = localStorage.getItem('theme');
+    const theme =
+      stored ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = theme;
+  })();
+</script>

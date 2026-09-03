@@ -1,0 +1,132 @@
+---
+/**
+ * A page of articles, with its heading and its pagination.
+ * Shared by the home page, the tag pages and the archive so the three cannot
+ * drift apart.
+ */
+import type { CollectionEntry } from 'astro:content';
+import PostCard from './PostCard.astro';
+import Pagination from './Pagination.astro';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+  heading: string;
+  /** Rendered under the heading when there is something worth saying. */
+  intro?: string;
+  current: number;
+  total: number;
+  prevUrl?: string;
+  nextUrl?: string;
+  /**
+   * Gives the first article the lead treatment. On for the home page, off
+   * everywhere else: page two of a list has no lead, and neither does a tag
+   * page, where every article is there for the same reason.
+   */
+  lead?: boolean;
+  /**
+   * `h1` when this listing is the page's subject, as on a tag page or the
+   * archive. `h2` when something above it already holds the h1, which is the
+   * home page: the hero states what the page is, and a second h1 underneath
+   * would give a screen reader two page titles.
+   */
+  headingLevel?: 'h1' | 'h2';
+}
+
+const {
+  posts,
+  heading,
+  intro,
+  current,
+  total,
+  prevUrl,
+  nextUrl,
+  lead = false,
+  headingLevel = 'h1',
+} = Astro.props;
+
+const Heading = headingLevel;
+
+// One level below the listing's own heading, so the articles sit inside their
+// section in the outline rather than beside it.
+const cardHeadingLevel = headingLevel === 'h1' ? 'h2' : 'h3';
+
+const [first, ...rest] = posts;
+const showLead = lead && Boolean(first);
+const grid = showLead ? rest : posts;
+---
+
+<section class="listing">
+  <header class="listing__header">
+    {/* The heading and, when a page has one, its action side by side. The row
+        exists only where the slot is filled, so the four other surfaces using
+        this component render exactly what they rendered before. */}
+    <div class:list={['listing__top', Astro.slots.has('action') && 'has-action']}>
+      <Heading class="listing__heading">{heading}</Heading>
+      <slot name="action" />
+    </div>
+    {intro && <p class="listing__intro">{intro}</p>}
+  </header>
+
+  {posts.length === 0 && <p>Aucun article pour l'instant.</p>}
+
+  {showLead && <PostCard post={first} featured headingLevel={cardHeadingLevel} />}
+
+  {
+    grid.length > 0 && (
+      <div class="listing__grid">
+        {grid.map((post) => (
+          <PostCard post={post} headingLevel={cardHeadingLevel} />
+        ))}
+      </div>
+    )
+  }
+
+  <Pagination prevUrl={prevUrl} nextUrl={nextUrl} current={current} total={total} />
+</section>
+
+<style>
+  .listing {
+    max-width: var(--container-max);
+    margin-inline: auto;
+  }
+
+  /* Closer than a full section gap when something precedes it, which today is
+     only the home page and its stack of three banded rules. After three
+     hairlines the eye does not need another 120px to know a new section has
+     started, so the listing opens at the same distance a page does. Everywhere
+     else the listing is the first child and this never applies. */
+  .listing:not(:first-child) {
+    margin-block-start: var(--rhythm-open);
+  }
+
+  .listing__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  /* Wraps rather than shrinks: on a phone the action goes under the heading at
+     full size instead of squeezing beside it. */
+  .listing__top.has-action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+  }
+
+  .listing__intro {
+    margin: var(--space-3) 0 0;
+    max-width: 48ch;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  /* auto-fit rather than a fixed column count: the same rule serves a tag page
+     with two articles and the home page with nine, without either looking
+     stranded. */
+  .listing__grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    margin-block-start: var(--space-6);
+  }
+</style>

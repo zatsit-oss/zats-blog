@@ -1,0 +1,196 @@
+---
+/**
+ * The score of one audit: a sentence, a stacked bar, and the counts as chips.
+ *
+ * Shared by /audits/ and each reference's own page, so the summary a reader
+ * sees on the index is the same object as the one at the top of the detail.
+ *
+ * ## Colour, and what carries the meaning without it
+ *
+ * Each status has a colour, taken from the tokens the admonitions already use
+ * rather than from five new ones: green for respected, the accent for partial,
+ * the secondary for failing, muted for what does not apply. The bar is the only
+ * place that colour alone says something, and it is `aria-hidden` with the
+ * figures repeated in the chips right under it. Remove every colour and the
+ * page still reads.
+ *
+ * The chips carry their colour on a left rule and a dot rather than on the
+ * text: `--color-eco` measures 2.10:1 on the light surface and has never been
+ * a text colour, which is exactly the trap this avoids.
+ */
+import { accorder, ORDRE, compter, type Referentiel } from '../utils/referentiels';
+
+interface Props {
+  audit: Referentiel;
+  /** Adds the reference's own metadata line. Off on a page that has it already. */
+  meta?: boolean;
+}
+
+const { audit, meta = true } = Astro.props;
+const comptes = compter(audit.groupes);
+
+const segments = ORDRE.filter((statut) => comptes.parStatut[statut] > 0).map((statut) => ({
+  statut,
+  n: comptes.parStatut[statut],
+  part: (100 * comptes.parStatut[statut]) / comptes.total,
+}));
+---
+
+<div class="score">
+  {
+    meta && (
+      <p class="score__meta">
+        <a href={audit.source} target="_blank" rel="noopener noreferrer">
+          {audit.version}
+        </a>
+        <span aria-hidden="true"> · </span>
+        évalué le {audit.evalue_le.split('-').reverse().join('/')}
+      </p>
+    )
+  }
+
+  <p class="score__phrase">
+    <strong class="score__chiffre">{comptes.score}&nbsp;%</strong>
+    <span>
+      {comptes.parStatut.OK} {audit.unite} respectées sur les {comptes.applicables} qui nous
+      engagent.
+    </span>
+  </p>
+
+  {/* Decorative: every figure it shows is in the chips below. */}
+  <div class="bar" aria-hidden="true">
+    {
+      segments.map(({ statut, part }) => (
+        <span class:list={['bar__part', `is-${statut.toLowerCase()}`]} style={`--part:${part}%`} />
+      ))
+    }
+  </div>
+
+  <ul class="chips">
+    {
+      segments.map(({ statut, n }) => (
+        <li class:list={['chip', `is-${statut.toLowerCase()}`]}>
+          <span class="chip__n">{n}</span>
+          <span class="chip__label">{accorder(statut, n)}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .score__meta {
+    margin: var(--space-2) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .score__phrase {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-5) 0 0;
+    font-size: var(--text-lg);
+  }
+
+  .score__chiffre {
+    font-size: var(--text-4xl);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The stacked bar. Segment widths come from the data, so it cannot disagree
+     with the chips: both read the same counts. */
+  .bar {
+    display: flex;
+    overflow: hidden;
+    margin-block-start: var(--space-5);
+    block-size: var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+  }
+
+  .bar__part {
+    inline-size: var(--part);
+    /* A hairline between segments, drawn in the page colour so it works on
+       both themes without a token of its own. */
+    box-shadow: inset -1px 0 0 var(--color-bg);
+  }
+
+  .bar__part:last-child {
+    box-shadow: none;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+
+  .chip {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: var(--border-width) solid var(--color-border);
+    /* The colour lives on this rule, not on the text: the eco green measures
+       2.10:1 on the light surface and cannot carry a word. */
+    border-inline-start: var(--border-width-strong) solid var(--chip-accent);
+    border-start-start-radius: var(--radius-sm);
+    border-end-start-radius: var(--radius-sm);
+    border-start-end-radius: var(--radius-full);
+    border-end-end-radius: var(--radius-full);
+    background: var(--color-surface);
+    font-size: var(--text-sm);
+  }
+
+  .chip__n {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chip__label {
+    color: var(--color-text-muted);
+  }
+
+  /* One palette for the bar and the chips, from the tokens the admonitions
+     already use rather than five new ones. */
+  .is-ok {
+    --chip-accent: var(--color-eco);
+  }
+
+  .is-part {
+    --chip-accent: var(--color-primary);
+  }
+
+  .is-ko {
+    --chip-accent: var(--color-secondary);
+  }
+
+  .is-na,
+  .is-org {
+    --chip-accent: var(--color-border);
+  }
+
+  .bar__part.is-ok {
+    background: var(--color-eco);
+  }
+
+  .bar__part.is-part {
+    background: var(--color-primary);
+  }
+
+  .bar__part.is-ko {
+    background: var(--color-secondary);
+  }
+
+  .bar__part.is-na,
+  .bar__part.is-org {
+    background: var(--color-border);
+  }
+</style>

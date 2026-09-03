@@ -1,0 +1,15 @@
+/* ==========================================================================
+   Zatsit Design System — token entry point for the blog
+   Import order matters: primitives → semantics.
+
+   Mirrors styles.css of the Zatsit Design System. Its sixth file, base.css
+   (element resets + brand utility classes .btn-primary, .text-gradient,
+   .card, .tag, .glass), is intentionally not imported yet: those classes are
+   needed when the pages and components land, not for the token layer.
+   ========================================================================== */
+
+@import './tokens/palette.css';     /* raw brand colors                 */
+@import './tokens/colors.css';      /* semantic dual-theme color tokens */
+@import './tokens/typography.css';  /* type scale (faces via Fonts API) */
+@import './tokens/spacing.css';     /* spacing + layout tokens          */
+@import './tokens/shape.css';       /* radii, elevation, motion         */

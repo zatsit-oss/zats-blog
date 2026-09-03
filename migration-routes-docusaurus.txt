@@ -1,0 +1,51 @@
+# Routes de référence : build Docusaurus
+#
+# Généré le 2026-08-07 depuis le dernier build Docusaurus avant migration.
+# Contrat de non-régression : le build Astro doit produire ces 45 routes,
+# ou une 301 pour chacune de celles qui disparaissent (P2 / phase 4).
+#
+/
+/404
+/angular-2025-le-recap/
+/archive/
+/asyncapi-3-is-out/
+/authors/
+/bienvenue/
+/blog-conception/
+/bundlephobia-reduire-javascript/
+/crossplane-presentation-des-concepts/
+/devlille-2026/
+/entreprise-a-mission/
+/fosdem-2026/
+/gemini-vertex-ai/
+/green-consommation-energie/
+/green-exploitation-miniere/
+/hacktoberfest-2024-zatsit-engage-open-source/
+/ia-et-consommation-energetique/
+/local-ai-assistant-in-vscode/
+/markdown-page/
+/mentions-legales/
+/onboarding/
+/openrewrite/
+/page/2/
+/realworld-app/
+/redpanda-introduction/
+/tags/
+/tags/ai/
+/tags/angular/
+/tags/architecture/
+/tags/cloud/
+/tags/conference/
+/tags/data/
+/tags/dev/
+/tags/environnement/
+/tags/general/
+/tags/green/
+/tags/hacktoberfest/
+/tags/java/
+/tags/javascript/
+/tags/open-source/
+/tags/refacto/
+/tags/tech/
+/tags/web/
+/tyranny-of-convenience/

@@ -1,0 +1,68 @@
+---
+/**
+ * Previous/next navigation for a paginated listing.
+ *
+ * Deliberately not a numbered pager: with 19 articles over two pages, numbers
+ * would be more markup than value, and Docusaurus shipped prev/next too.
+ */
+interface Props {
+  prevUrl?: string;
+  nextUrl?: string;
+  current: number;
+  total: number;
+}
+
+const { prevUrl, nextUrl, current, total } = Astro.props;
+---
+
+{
+  total > 1 && (
+    <nav class="pagination" aria-label="Pagination des articles">
+      {prevUrl ? (
+        <a class="pagination__link" href={prevUrl} rel="prev">
+          ← Page précédente
+        </a>
+      ) : (
+        <span />
+      )}
+
+      <p class="pagination__status" aria-current="page">
+        Page {current} sur {total}
+      </p>
+
+      {nextUrl ? (
+        <a class="pagination__link" href={nextUrl} rel="next">
+          Page suivante →
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-start: var(--space-10);
+  }
+
+  .pagination__link {
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+  }
+
+  .pagination__link:hover {
+    text-decoration: underline;
+  }
+
+  .pagination__status {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+</style>

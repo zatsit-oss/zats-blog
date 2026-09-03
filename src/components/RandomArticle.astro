@@ -1,0 +1,151 @@
+---
+/**
+ * "1 article au hasard", beside the listing's heading on the home page.
+ *
+ * ## The argued exception to zero client JavaScript
+ *
+ * A static site cannot draw lots: nothing runs while the page is read, which
+ * is exactly what /blog-conception/ claims and what this must not break. A
+ * draw made at build time would hand every visitor the same article until the
+ * next publication, which is a featured article wearing a wand.
+ *
+ * So: the anchor ships with a real destination, and a script of a few lines
+ * rewrites it before the navigation happens. Cost, on the home page only,
+ * around 250 gzipped bytes for the slug list and the draw, against the 1.1 kB
+ * the theme toggle, the copy button and the search already spend. The site
+ * claims nothing about client JavaScript, only about the server.
+ *
+ * ## Why it works with JavaScript off
+ *
+ * The `href` rendered at build is a real article, so the control is never
+ * dead. That fallback is picked deterministically, from the character sum of
+ * the newest slug rather than from `Math.random()`: a random pick at build
+ * would rewrite the home page's HTML on every build, changing its ETag with no
+ * change of content. This one moves when the corpus moves.
+ *
+ * ## Why the href is rewritten rather than the click intercepted
+ *
+ * `pointerdown` and `focus` both happen before navigation, so the draw lands in
+ * the `href` and the browser does the rest: no `preventDefault`, and a
+ * ctrl-click or a middle-click opens a drawn article too, which intercepting
+ * the click would have broken.
+ *
+ * The last draw is kept in `sessionStorage` and drawn again if it comes up
+ * twice, up to eight tries. "Au hasard" that repeats reads as a bug.
+ */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  /** Newest first, as `sortedPosts` returns them. */
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+
+const hrefs = posts.map((post) => `/${post.data.slug}/`);
+
+/** Deterministic, and it moves whenever the newest article does. */
+const seed = [...(posts[0]?.data.slug ?? 'zatsit')].reduce(
+  (sum, char) => sum + char.charCodeAt(0),
+  0,
+);
+const fallback = hrefs[seed % Math.max(1, hrefs.length)] ?? '/archive/';
+---
+
+{
+  hrefs.length > 0 && (
+    <a class="dice" id="random-article" href={fallback} data-total={hrefs.length}>
+      {/* A wand and its two sparkles. Decorative: the text names the action. */}
+      <svg
+        class="dice__wand"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M4 20L15 9" />
+        <path d="M14.5 5.5l1.2 2.3 2.3 1.2-2.3 1.2-1.2 2.3-1.2-2.3L11 9l2.3-1.2z" />
+        <path d="M19.5 15l.7 1.3 1.3.7-1.3.7-.7 1.3-.7-1.3-1.3-.7 1.3-.7z" />
+      </svg>
+      1 article au hasard
+    </a>
+  )
+}
+
+<script is:inline define:vars={{ hrefs }}>
+  (() => {
+    const link = document.getElementById('random-article');
+    if (!link || hrefs.length < 2) return;
+
+    const KEY = 'zatsit:random-article';
+
+    const draw = () => {
+      let previous = null;
+      try {
+        previous = sessionStorage.getItem(KEY);
+      } catch {
+        // A browser refusing storage is not a reason to refuse the draw.
+      }
+
+      let target = link.getAttribute('href');
+      for (let i = 0; i < 8; i++) {
+        target = hrefs[Math.floor(Math.random() * hrefs.length)];
+        if (target !== previous) break;
+      }
+
+      try {
+        sessionStorage.setItem(KEY, target);
+      } catch {}
+
+      link.setAttribute('href', target);
+    };
+
+    // Both fire before the navigation, so the browser navigates to the drawn
+    // article on its own.
+    link.addEventListener('pointerdown', draw);
+    link.addEventListener('focus', draw);
+  })();
+</script>
+
+<style>
+  .dice {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    /* 40px, so it clears the target size outright like the theme chips. */
+    min-block-size: var(--space-10);
+    padding-inline: var(--space-4);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .dice:hover,
+  .dice:focus-visible {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .dice__wand {
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    flex-shrink: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dice {
+      transition: none;
+    }
+  }
+</style>
