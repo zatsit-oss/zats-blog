@@ -10,10 +10,17 @@
  * One rule decided the contents: the reader has to be able to check every line.
  * Astro is in package.json, the Website Carbon badge is in the footer of the
  * page they are reading, and the EcoIndex link goes to our own measured result
- * rather than to a brochure. Clever Cloud is where production is going, at
- * Emmanuel's call; it becomes literally true the day publish-on-merge.yml moves,
- * and Firebase stays out because a preview channel for merge requests is not
- * where anyone reads this blog.
+ * rather than to a brochure. Firebase stays out because a preview channel for
+ * merge requests is not where anyone reads this blog.
+ *
+ * Clever Cloud is the one entry that rule does not yet cover, and it carries a
+ * `soon` marker for exactly that reason: production runs on a Google Cloud
+ * Storage bucket, and the move is a separate project. Without the marker the
+ * row states something a reader cannot check and that is currently false. The
+ * marker goes when `publish-on-merge.yml` in the content repository stops
+ * uploading to the bucket; the alternative, listing Google Cloud Storage
+ * instead, was not taken because the band is about what the blog is built with
+ * rather than about where it happens to sit this month.
  *
  * Marks rather than names wherever an official one exists, and rendered in one
  * colour rather than in ours. Colour is part of a trademark and brand guidelines
@@ -71,6 +78,16 @@ const TOOLS = [
                 for the accessible name only: the link still has to be readable
                 without seeing the logo. */}
             <span class:list={[kind === 'logotype' && 'sr-only']}>{name}</span>
+            {/* TODO retirer cette ligne, et `.built__soon` avec elle, le jour où
+                la production passe sur Clever Cloud. Une condition sur le nom
+                plutôt qu'un drapeau dans `TOOLS` : c'est temporaire par nature,
+                et une donnée aurait survécu au besoin.
+
+                Le libellé n'est pas `aria-hidden` : la réserve est tout l'objet
+                du marqueur, et un lecteur d'écran n'entendant que « Clever
+                Cloud » repartirait avec l'idée fausse qu'il corrige. Le lien
+                annonce donc « Clever Cloud bientôt ». */}
+            {name === 'Clever Cloud' && <span class="built__soon">(bientôt)</span>}
           </a>
         </li>
       ))
@@ -136,6 +153,50 @@ const TOOLS = [
 
   .built__item:hover {
     color: var(--color-primary);
+  }
+
+  /* Taking the caption out of the flow means the row no longer reserves room
+     for it, and once the list wraps it landed on top of the next line: measured
+     over "Website Carbon" and "EcoIndex" at 390px. The row gap has to host it,
+     so it grows from 16 to 32px, which clears the 12px caption and its leading.
+     Scoped with `:has()` to the run that actually carries one, so the band gets
+     its tighter rhythm back the day the marker goes. */
+  .built__list:has(.built__soon) {
+    row-gap: var(--space-8);
+  }
+
+  /* Only the entry that carries a caveat needs the anchor, and `:has()` reads
+     it off the template rather than from a second class kept in step. */
+  .built__item:has(.built__soon) {
+    position: relative;
+  }
+
+  /* Out of the flow, and that is the whole point: stacked in a column the
+     caption made its item taller, and the row centred that extra height by
+     lifting the logotype 11px above the three other marks. Absolutely
+     positioned, the item keeps the height of a mark, so all four stay on one
+     line and the caption hangs under its own.
+
+     Muted, two steps down and italic: it qualifies the mark rather than
+     competing with it. The parentheses are in the text, not drawn in CSS, so
+     they reach the accessible name too and the link announces "Clever Cloud
+     (bientôt)". Italic costs nothing here, Poppins italic already shipping for
+     blockquotes. */
+  .built__soon {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 100%;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-style: italic;
+    font-weight: var(--font-regular);
+    letter-spacing: var(--tracking-wide);
+    text-align: center;
+  }
+
+  /* The hover colours the mark, never the caveat: it is a note, not a label. */
+  .built__item:hover .built__soon {
+    color: var(--color-text-muted);
   }
 
   /* A glyph, a logotype and a drawing cannot share one height and look the same
