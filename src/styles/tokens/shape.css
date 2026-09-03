@@ -1,0 +1,40 @@
+/* ==========================================================================
+   Zatsit — Shape & Elevation
+   Shape language is "Soft": a small 4px-ish radius that feels engineered,
+   not consumer-casual. Depth comes from TONAL LAYERS + thin borders rather
+   than heavy shadows (eco-light GPU footprint). Shadows are reserved for
+   genuinely floating elements.
+
+   Source: Zatsit Design System, tokens/shape.css — copied verbatim.
+   ========================================================================== */
+
+:root {
+  /* Radii — "Soft / engineered" */
+  --radius-sm: 0.125rem;  /* 2px  */
+  --radius: 0.25rem;      /* 4px  — DEFAULT, the brand's signature edge */
+  --radius-md: 0.5rem;    /* 8px  — buttons, tags */
+  --radius-lg: 0.75rem;   /* 12px — cards, containers */
+  --radius-xl: 1rem;      /* 16px — feature cards */
+  --radius-full: 9999px;  /* pills, avatars, social chips */
+
+  /* Borders */
+  --border-width: 1px;
+  --border-width-strong: 2px;
+
+  /* Elevation — used sparingly; prefer tonal layers + borders */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 8px 30px -8px rgba(0, 0, 0, 0.15), 0 2px 8px -2px rgba(0, 0, 0, 0.08);
+  --shadow-lift: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+  /* Primary glow — the signature hover lift on interactive cards/buttons */
+  --shadow-glow: 0 10px 30px -10px var(--color-primary);
+
+  /* Glass blur (navigation only) */
+  --blur-glass: 10px;
+
+  /* Motion — confident, springy easing */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: ease-in-out;
+  --duration-fast: 0.2s;
+  --duration-base: 0.3s;
+  --duration-slow: 0.6s;
+}

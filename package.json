@@ -1,54 +1,39 @@
 {
   "name": "zats-blog",
-  "version": "0.0.0",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Blog de zatsit. La coque Astro : le contenu vit dans le dépôt zats-blog-content, à cloner à côté.",
   "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
-    "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build && pagefind --site dist && node scripts/prune-pagefind.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "check:a11y": "node .claude/skills/wcag-check/scripts/contrast.mjs",
+    "check:eco": "node .claude/skills/eco-check/scripts/page-weight.mjs",
+    "check:axe": "node scripts/axe-sweep.mjs",
+    "docs:referentiels": "node scripts/build-referentiels.mjs",
+    "astro": "astro"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.9.2",
-    "@docusaurus/preset-classic": "^3.9.2",
-    "@docusaurus/theme-mermaid": "^3.9.2",
-    "@mdx-js/react": "^3.0.0",
-    "@tgwf/co2": "^0.14.2",
-    "clsx": "^2.0.0",
-    "docusaurus-lunr-search": "^3.3.2",
-    "katex": "^0.16.25",
-    "prism-react-renderer": "^2.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-websitecarbon-badge": "^1.0.6",
-    "rehype-katex": "^7.0.1",
-    "remark-math": "^6.0.0"
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.3",
+    "@lucide/astro": "^1.31.0",
+    "@tgwf/co2": "^0.19.0",
+    "astro": "^7.2.0",
+    "sharp": "^0.35.0",
+    "website-carbon-badges": "^1.1.3",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.9.2",
-    "@docusaurus/types": "^3.9.2"
-  },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 3 chrome version",
-      "last 3 firefox version",
-      "last 5 safari version"
-    ]
-  },
-  "engines": {
-    "node": ">=20.0"
-  },
-  "overrides": {
-    "serialize-javascript": "^7.0.7"
+    "@astrojs/check": "^0.9.10",
+    "axe-core": "^4.13.0",
+    "katex": "^0.18.5",
+    "pagefind": "^1.5.2",
+    "typescript": "^6.0.3"
   }
 }

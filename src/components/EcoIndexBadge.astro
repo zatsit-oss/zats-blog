@@ -1,0 +1,89 @@
+---
+/**
+ * The official EcoIndex badge, in its no-JavaScript form.
+ *
+ * cnumr publishes two variants. The documented one loads a script from
+ * jsDelivr, which is a third-party CDN and out of the question here. The other
+ * is a plain image served by their back-for-front, 643 bytes of SVG, and that
+ * is what this uses: no script, no CDN, and the grade stays live because the
+ * reader's browser fetches it rather than the build freezing it.
+ *
+ * It is still a third-party request, which the charter otherwise forbids. The
+ * same argument settled the Website Carbon badge on 28 August: a grade the
+ * reader can check is worth one request, and freezing it at build would grade
+ * the previous deployment. `referrerpolicy` keeps the reader's path out of it.
+ *
+ * ## Two things this badge does that we cannot fix
+ *
+ * Its grade sits in white on the coloured pill, which measures 1.51:1 against
+ * the yellow of a middling grade. It is their asset, redrawing it is out of the
+ * question under the third-party marks rule, and the alternative text carries
+ * what the pill says badly.
+ *
+ * That alternative text cannot name the grade either: the letter lives inside
+ * an image fetched at display time, so nothing here knows it. The text says
+ * what the badge is and the link leads to the detail, which is the honest
+ * version of a figure we do not hold.
+ *
+ * The grade shown is the last analysis EcoIndex ran on that URL, not a fresh
+ * measurement. It reads E today because that is the Docusaurus production this
+ * site replaces; it moves when someone re-runs the analysis after the switch.
+ */
+interface Props {
+  /** The page to grade. Defaults to the site's home page. */
+  url?: string;
+}
+
+// From `site` in astro.config.mjs rather than a constant of our own: one
+// spelling of the domain, as ShareLinks already does.
+const { url = new URL('/', Astro.site).href } = Astro.props;
+const target = encodeURIComponent(url);
+
+const badge = (theme: 'light' | 'dark') =>
+  `https://bff.ecoindex.fr/badge/?theme=${theme}&url=${target}`;
+
+/** Passed to the stylesheet, so the dark swap follows the same URL. */
+const darkBadge = `url('${badge('dark')}')`;
+---
+
+<a
+  class="ecoindex"
+  href={`https://bff.ecoindex.fr/redirect/?url=${target}`}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <img
+    class="ecoindex__badge"
+    src={badge('light')}
+    width="108"
+    height="32"
+    alt="Note EcoIndex de ce site, sur ecoindex.fr, dans un nouvel onglet"
+    loading="lazy"
+    decoding="async"
+    referrerpolicy="no-referrer"
+  />
+</a>
+
+<style define:vars={{ darkBadge }}>
+  .ecoindex {
+    display: inline-block;
+    border-radius: var(--radius-full);
+  }
+
+  .ecoindex:focus-visible {
+    outline: var(--border-width-strong) solid var(--color-primary);
+    outline-offset: var(--space-1);
+  }
+
+  .ecoindex__badge {
+    display: block;
+    border-radius: var(--radius-full);
+  }
+
+  /* Their asset, swapped with the theme rather than recoloured, and global
+     because a scoped rule cannot reach an <img> src swap. Same pattern as the
+     B Corp mark in the footer. */
+  :global([data-theme='dark']) .ecoindex__badge {
+    content: var(--darkBadge);
+  }
+</style>

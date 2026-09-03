@@ -1,0 +1,95 @@
+---
+/**
+ * Light/dark switch.
+ *
+ * The only stateful control on the site, so it is also the only place that
+ * ships client JavaScript. BaseHead already resolves the theme before first
+ * paint; this only lets the visitor override it, and persists the choice.
+ *
+ * Modelled as a two-state toggle: the label stays stable and aria-pressed
+ * carries the state, rather than swapping both and announcing twice.
+ */
+import { Sun, Moon } from '@lucide/astro';
+---
+
+<button
+  id="theme-toggle"
+  class="theme-toggle"
+  type="button"
+  aria-label="Basculer entre le thème clair et le thème sombre"
+  aria-pressed="false"
+>
+  <Sun class="icon theme-toggle__sun" aria-hidden="true" />
+  <Moon class="icon theme-toggle__moon" aria-hidden="true" />
+</button>
+
+<style>
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    inline-size: var(--space-10);
+    block-size: var(--space-10);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .theme-toggle:hover {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  /* Both icons occupy the same cell; only one is shown. Keeping them stacked
+     avoids the layout shift a conditional render would cause on toggle. */
+  .theme-toggle__sun,
+  .theme-toggle__moon {
+    grid-area: 1 / 1;
+  }
+
+  .theme-toggle__sun {
+    display: none;
+  }
+
+  :global([data-theme='dark']) .theme-toggle__sun {
+    display: block;
+  }
+
+  :global([data-theme='dark']) .theme-toggle__moon {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-toggle {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function syncPressedState() {
+    const button = document.getElementById('theme-toggle');
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    button?.setAttribute('aria-pressed', String(isDark));
+  }
+
+  function toggleTheme() {
+    const root = document.documentElement;
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', root.dataset.theme);
+    syncPressedState();
+  }
+
+  function init() {
+    syncPressedState();
+    const button = document.getElementById('theme-toggle');
+    button?.removeEventListener('click', toggleTheme);
+    button?.addEventListener('click', toggleTheme);
+  }
+
+  init();
+  document.addEventListener('astro:after-swap', init);
+</script>

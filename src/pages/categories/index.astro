@@ -1,0 +1,247 @@
+---
+/**
+ * The two taxonomies on one page, at /categories/: the six categories that
+ * carry an article, then the seventeen tags as an alphabetical index.
+ *
+ * This page is the Docusaurus navbar. That navbar listed the categories one by
+ * one and was already full at five, with a sixth commented out and a note
+ * saying a category with no post fails the build. On a page they all fit, the
+ * empty ones simply do not appear, and the header keeps the room its search
+ * field and its icon row need.
+ *
+ * Cards for the categories, a plain index for the tags: six curated entry
+ * points are not seventeen keywords, and the difference should be visible
+ * before it is read. That contrast is the reason the two axes share a page
+ * rather than two menu entries, decided on 27 August: the reader sees at a
+ * glance that one axis is a shelf and the other a subject index.
+ *
+ * The cards carry their article count, the tags carry none. That asymmetry is
+ * deliberate: a category is a shelf whose size tells the reader what the blog
+ * is made of, while a count on a tag would rank seventeen equal words and send
+ * everyone to the same three.
+ *
+ * /tags/ used to hold the second half and now redirects here. Its seventeen
+ * per-tag pages are untouched: they are part of the 45 routes under contract,
+ * and the cloud is what points at them.
+ */
+import Layout from '../../layouts/Layout.astro';
+import CategoryIcon from '../../components/CategoryIcon.astro';
+import TagIndex from '../../components/TagIndex.astro';
+import { allCategories, allTags, sortedPosts } from '../../utils/posts';
+
+const posts = await sortedPosts();
+const categories = await allCategories(posts);
+const tags = await allTags(posts);
+
+/**
+ * Which categories get the wide treatment, and it is a rule rather than a
+ * threshold: **a third of them, never fewer than one nor more than three**.
+ *
+ * A threshold on the article count ("wide above five") ages badly in both
+ * directions: today it would single out one card, and the day every category
+ * holds twenty articles it would make them all wide, which is a single-column
+ * list with extra steps. A proportion keeps the mosaic a mosaic at six
+ * categories as at ten, and the page reshuffles on its own as people publish.
+ *
+ * Ties fall back to the curated order of CATEGORY_LABELS, since `sort` is
+ * stable and `allCategories` already returns them in that order: two
+ * categories at three articles each are separated by editorial intent, not by
+ * chance.
+ */
+const WIDE_COUNT = Math.min(3, Math.max(1, Math.floor(categories.length / 3)));
+const byWeight = [...categories].sort((a, b) => b.count - a.count);
+const featured = new Set(byWeight.slice(0, WIDE_COUNT).map(({ slug }) => slug));
+
+/**
+ * Wide cards first, then the others in the curated order. Left in the curated
+ * order alone, the two widest happened to be the last two of the list, so the
+ * mosaic opened on three identical cards and closed on a wide one stranded on
+ * its own row. Leading with them also lets `grid-auto-flow: dense` fill the
+ * holes they leave, since the small cards that can climb into them come after.
+ */
+const arranged = [
+  ...byWeight.slice(0, WIDE_COUNT),
+  ...categories.filter(({ slug }) => !featured.has(slug)),
+];
+---
+
+<Layout
+  title="Catégories"
+  description={`Les ${categories.length} catégories et les ${tags.length} tags du blog de zatsit : ${categories
+    .map(({ label }) => label)
+    .join(', ')}.`}
+>
+  <div class="container categories">
+    <header class="categories__header">
+      <h1>Catégories</h1>
+      <p class="categories__intro">
+        Chaque article est rangé dans une catégorie, et une seule. Pour ce qu'il aborde en plus,
+        voir <a href="#tags">les tags</a>, plus bas sur cette page.
+      </p>
+    </header>
+
+    <ul class="categories__list">
+      {
+        arranged.map(({ slug, label, count }) => {
+          const wide = featured.has(slug);
+          return (
+            <li class:list={[wide && 'is-wide']}>
+              <a class:list={['categories__card', wide && 'categories__card--wide']} href={`/categories/${slug}/`}>
+                <CategoryIcon slug={slug} />
+                <span class="categories__label">{label}</span>
+                {/* The numeral, not "Un": it is a counter, it reads faster, and
+                    the row stays legible when the corpus grows. */}
+                <span class="categories__count">
+                  {count} article{count > 1 ? 's' : ''}
+                </span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <TagIndex tags={tags} />
+</Layout>
+
+<style>
+  .categories {
+    max-width: 48rem;
+  }
+
+  .categories__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  .categories__intro {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .categories__intro a {
+    color: var(--color-primary);
+  }
+
+  /* A fixed column count rather than auto-fit, because a card has to be able
+     to span two of them and `auto-fit` gives no stable number to span against.
+     One column on a phone, where a wide card would be indistinguishable. */
+  .categories__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* Lets a small card climb into the hole a wide one leaves at the end of a
+       row, so the mosaic has no gaps whatever the counts are. */
+    grid-auto-flow: dense;
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 640px) {
+    .categories__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .categories__list > .is-wide {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .categories__list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .categories__card {
+    position: relative;
+    /* The watermark is cropped by the card rather than bleeding over its
+       neighbour. */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    block-size: 100%;
+    padding: var(--space-5) var(--space-6);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .categories__card:hover,
+  .categories__card:focus-visible {
+    border-color: var(--color-primary);
+  }
+
+  .categories__card:hover .categories__label,
+  .categories__card:focus-visible .categories__label {
+    color: var(--color-primary);
+  }
+
+  /* `:global` on the icon, and not by taste: the class reaches the child
+     component's root element, but the page's scope attribute does not, so a
+     plain `.categories__icon` rule compiles to
+     `.categories__icon[data-astro-cid-…]` and matches nothing. The card part of
+     the selector stays scoped, so this reaches no other icon on the site.
+
+     Neutral at rest and accent on hover, which is what the header's icon row
+     does; the label already turns with it, so the card reads as one target. */
+  .categories__card :global(.caticon) {
+    margin-block-end: var(--space-2);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .categories__card:hover :global(.caticon),
+  .categories__card:focus-visible :global(.caticon) {
+    color: var(--color-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .categories__card :global(.caticon) {
+      transition: none;
+    }
+  }
+
+  .categories__label {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  /* A wide card holds more room, so the label takes it: width alone would read
+     as an accident of the grid rather than as emphasis. */
+  .categories__card--wide {
+    justify-content: flex-end;
+    min-block-size: 8.5rem;
+  }
+
+  .categories__card--wide .categories__label {
+    font-size: var(--text-3xl);
+  }
+
+  /* The icon grows with the card instead of becoming a faint watermark. The
+     watermark was tried and dropped: floating mid-card at 14% opacity, a line
+     drawing reads as an artefact rather than as an icon, and nobody wonders
+     what an icon in the corner is doing. */
+  .categories__card--wide :global(.caticon) {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+  }
+
+  .categories__count {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .categories__card,
+    .categories__label {
+      transition: none;
+    }
+  }
+</style>

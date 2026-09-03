@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Zatsit — Spacing & Layout
+   Strict 4px base unit drives all vertical rhythm. Generous section gaps
+   create a premium, "breathable" feel and reduce visual clutter.
+
+   Source: Zatsit Design System, tokens/spacing.css, copied verbatim. The
+   vertical rhythm block at the end of the file is local to the blog.
+   ========================================================================== */
+
+:root {
+  /* Base unit */
+  --space-unit: 4px;
+
+  /* Spacing scale (multiples of the 4px unit) */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px  */
+  --space-2: 0.5rem;    /* 8px  */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px — default gutter */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px — section padding (mobile) */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px — section padding (desktop) */
+  --space-30: 7.5rem;   /* 120px — large section gap */
+
+  /* Layout */
+  --container-max: 1280px;  /* desktop max content width */
+  --gutter: 24px;           /* desktop column gutter */
+  --gutter-tablet: 20px;    /* tablet column gutter */
+  --margin-mobile: 16px;    /* mobile side margin */
+  --section-gap: 120px;     /* premium section rhythm */
+}
+
+/* --------------------------------------------------------------------------
+   Vertical rhythm, local to the blog and derived from the scale above
+
+   Every page used to set its own padding-block by hand, so the space under
+   the header depended on which page you were reading, and the gap between the
+   hero and the listing was the sum of two paddings that knew nothing of each
+   other. These four values carry the whole vertical rhythm instead; the rules
+   that apply them are in global.css, under "Vertical rhythm".
+   -------------------------------------------------------------------------- */
+
+:root {
+  --rhythm-open: var(--space-12);     /* main's opening space, under the header */
+  --rhythm-close: var(--space-16);    /* main's closing space, before the footer */
+  --rhythm-gap: var(--space-16);      /* between two sections of the same page */
+  --rhythm-heading: var(--space-8);   /* a header to the content it introduces */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --rhythm-open: var(--space-16);
+    --rhythm-close: var(--space-24);
+    /* The design system's premium section rhythm, 120px, finally applied. */
+    --rhythm-gap: var(--section-gap);
+    --rhythm-heading: var(--space-10);
+  }
+}

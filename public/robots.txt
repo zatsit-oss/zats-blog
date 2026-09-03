@@ -1,0 +1,7 @@
+# Blog public, ouvert à l'indexation, agents des moteurs de réponse compris.
+# Pas de règle par agent : une liste nominative serait à compléter à chaque
+# nouveau venu et laisserait passer les autres.
+User-agent: *
+Allow: /
+
+Sitemap: https://blog.zatsit.fr/sitemap-index.xml

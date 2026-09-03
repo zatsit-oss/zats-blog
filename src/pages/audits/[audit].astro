@@ -1,0 +1,219 @@
+---
+/**
+ * One reference in full, at /audits/greenit/ and /audits/w3c/.
+ *
+ * No script and no filter: filtering would need JavaScript to hide rows the
+ * reader has already downloaded, which is the wrong trade on a page whose
+ * subject is sobriety. The score and the counts sit at the top for whoever is
+ * in a hurry, the list is for whoever wants the detail, and the browser's own
+ * find-in-page does the rest.
+ */
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../layouts/Layout.astro';
+import AuditScore from '../../components/AuditScore.astro';
+import {
+  REFERENTIELS,
+  STATUTS,
+  ORDRE,
+  compter,
+  formaterCommentaire,
+  type Referentiel,
+} from '../../utils/referentiels';
+
+export const getStaticPaths: GetStaticPaths = async () =>
+  REFERENTIELS.map((audit) => ({ params: { audit: audit.slug }, props: { audit } }));
+
+const { audit } = Astro.props as { audit: Referentiel };
+const comptes = compter(audit.groupes);
+
+const description = `Les ${comptes.total} ${audit.unite} du référentiel ${audit.court}, appliquées au blog de zatsit : ${comptes.parStatut.OK} respectées, ${comptes.parStatut.PART} partielles.`;
+---
+
+<Layout title={audit.nom} description={description}>
+  <div class="container audit">
+    <header class="audit__header">
+      <p class="audit__fil">
+        <a href="/audits/">Nos audits d'éco-conception</a>
+      </p>
+      <h1>{audit.nom}</h1>
+    </header>
+
+    <AuditScore audit={audit} />
+
+    <p class="audit__note">{audit.note}</p>
+
+    {/* A summary of the statuses used, so the dots below are never the only
+        thing telling the reader what a colour means. */}
+    <p class="audit__legende">
+      Chaque {audit.unite.replace(/s$/, '')} porte l'un de ces verdicts :{' '}
+      {
+        ORDRE.filter((statut) => comptes.parStatut[statut] > 0)
+          .map((statut) => STATUTS[statut].label.toLowerCase())
+          .join(', ')
+      }.
+    </p>
+
+    {
+      audit.groupes.map((groupe) => (
+        <section class="groupe">
+          <h2>{groupe.nom}</h2>
+
+          {/* A description list, not a table: each entry is one item and its
+              verdict, not a grid to read across, and it wraps on a phone with
+              no horizontal scroll. */}
+          <dl class="criteres">
+            {groupe.criteres.map((critere) => (
+              <div class:list={['critere', `is-${critere.statut.toLowerCase()}`]}>
+                <dt class="critere__titre">
+                  <span class="critere__nom">
+                    {critere.url ? (
+                      <a href={critere.url} target="_blank" rel="noopener noreferrer">
+                        {critere.titre}
+                      </a>
+                    ) : (
+                      <>
+                        <span class="critere__ref">{critere.ref}</span>
+                        {critere.titre}
+                      </>
+                    )}
+                  </span>
+                  <span class="critere__statut">{STATUTS[critere.statut].label}</span>
+                </dt>
+                <dd class="critere__comment" set:html={formaterCommentaire(critere.comment)} />
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))
+    }
+
+    <p class="audit__retour">
+      <a href="/audits/">← Les deux audits</a>
+    </p>
+  </div>
+</Layout>
+
+<style>
+  .audit {
+    max-width: 52rem;
+  }
+
+  .audit__header {
+    margin-block-end: var(--space-4);
+  }
+
+  .audit__fil {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .audit__note,
+  .audit__legende {
+    margin: var(--space-5) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .groupe {
+    margin-block-start: var(--rhythm-heading);
+  }
+
+  .groupe h2 {
+    font-size: var(--text-2xl);
+  }
+
+  .criteres {
+    margin: var(--space-4) 0 0;
+  }
+
+  /* A hairline between entries rather than a card each: a hundred cards is a
+     wall, and the rule keeps the page readable at this length. */
+  .critere {
+    padding-block: var(--space-4);
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+
+  .critere__titre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    font-weight: var(--font-semibold);
+  }
+
+  .critere__nom {
+    /* Takes the row and lets the verdict sit at its end, wrapping under on a
+       narrow screen rather than squeezing the title. */
+    flex: 1 1 18rem;
+  }
+
+  /* The rule number, in the monospace the code uses, so it reads as an
+     identifier and not as part of the sentence. */
+  .critere__ref {
+    margin-inline-end: var(--space-3);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-regular);
+  }
+
+  .critere__nom a {
+    color: var(--color-text);
+    text-decoration-color: var(--color-border);
+  }
+
+  .critere__nom a:hover,
+  .critere__nom a:focus-visible {
+    color: var(--color-primary);
+    text-decoration-color: currentColor;
+  }
+
+  /* The verdict in words, with a dot carrying the colour. Hide every colour and
+     the sentence still says it. */
+  .critere__statut {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-regular);
+    white-space: nowrap;
+  }
+
+  .critere__statut::before {
+    content: '';
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: var(--radius-full);
+    background: var(--verdict, var(--color-border));
+  }
+
+  .is-ok {
+    --verdict: var(--color-eco);
+  }
+
+  .is-part {
+    --verdict: var(--color-primary);
+  }
+
+  .is-ko {
+    --verdict: var(--color-secondary);
+  }
+
+  .critere__comment {
+    margin: var(--space-2) 0 0;
+    color: var(--color-text-muted);
+  }
+
+  /* Inline code inside a verdict, one step down so it sits in the sentence
+     rather than interrupting it. */
+  .critere__comment :global(code) {
+    font-size: 0.9em;
+  }
+
+  .audit__retour {
+    margin-block-start: var(--rhythm-heading);
+  }
+</style>

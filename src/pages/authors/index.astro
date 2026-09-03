@@ -1,0 +1,153 @@
+---
+/**
+ * The people who write here, at /authors/.
+ *
+ * Docusaurus generated no page per author, and for a while neither did we: the
+ * reference routes list /authors/ alone, so each name led to its own GitHub
+ * profile. It now leads to /authors/<prénom-nom>/, where the person's articles
+ * are, which is what a reader clicking a name is after. The outbound profiles
+ * live on that page, on the card.
+ */
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import { sortedPosts } from '../../utils/posts';
+import { authorProfiles } from '../../utils/authors';
+
+// Counting, ordering and slugs all come from authorProfiles, shared with the
+// per-author pages: two surfaces disagreeing on what someone has written is
+// exactly the kind of drift this helper exists to prevent.
+const posts = await sortedPosts();
+const counted = await authorProfiles(posts);
+---
+
+<Layout
+  title="Les auteurs"
+  description="Les consultantes et consultants de zatsit qui écrivent sur ce blog."
+>
+  <div class="container authors">
+    <header class="authors__header">
+      <h1>Les auteurs</h1>
+      <p class="authors__intro">
+        {counted.length} talents vous ont écrit les {posts.length} articles de ce blog.
+      </p>
+    </header>
+
+    <ul class="authors__list">
+      {
+        counted.map((author) => (
+          <li class="author">
+            {author.avatar && (
+              <Image
+                class="author__avatar"
+                src={author.avatar}
+                alt=""
+                width={96}
+                height={96}
+                densities={[1, 2]}
+                loading="lazy"
+              />
+            )}
+            <div>
+              <h2 class="author__name">
+                <a href={author.href}>{author.name}</a>
+              </h2>
+              {author.title && <p class="author__title">{author.title}</p>}
+              <p class="author__count">
+                {author.posts.length === 0
+                  ? 'Pas encore publié'
+                  : `${author.posts.length} article${author.posts.length > 1 ? 's' : ''}`}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Layout>
+
+<style>
+  .authors {
+    max-width: 48rem;
+  }
+
+  .authors__header {
+    margin-block-end: var(--rhythm-heading);
+  }
+
+  .authors__intro {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  /* Portraits rather than rows. Thirteen identical lines stacked vertically
+     was the most monotonous surface of the site, and the faces are the one
+     source of variety that costs nothing: the avatars are already there. It
+     also scales, three rows here where the list took thirteen, and it still
+     holds at thirty people.
+
+     Flex and not grid, for one reason: the last row has to centre its
+     leftovers. Thirteen people over four columns leave one alone, and a grid
+     leaves it hard against the left edge; `justify-content` on a grid centres
+     the tracks, not the items that remain. In flex, the orphans of the last
+     line centre on their own, one in the middle or two straddling the middle,
+     and the count of people stays none of our business.
+
+     The basis grows so a full row fills the measure, and `max-inline-size`
+     caps it so the one leftover does not stretch to 48rem. */
+  .authors__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-8) var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Centred under the portrait, which is what makes a grid of faces read as a
+     gallery rather than as a table that lost its borders. */
+  .author {
+    flex: 1 1 9rem;
+    max-inline-size: 11rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: center;
+  }
+
+  .author__avatar {
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .author__name {
+    margin: 0;
+    font-size: var(--text-lg);
+    /* Two words on two lines rather than a hyphenated surname. */
+    text-wrap: balance;
+  }
+
+  .author__name a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .author__name a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .author__title,
+  .author__count {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  /* No breakpoint of its own any more: `auto-fit` above does the work, two
+     portraits on a phone and four at full measure, and the fixed two-column
+     rule that used to live here was overriding it. */
+</style>

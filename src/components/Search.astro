@@ -1,0 +1,370 @@
+---
+/**
+ * Article search, replacing docusaurus-lunr-search.
+ *
+ * Pagefind builds a fragmented index at build time and fetches only the
+ * fragments a query needs, where lunr shipped the whole index on first load.
+ *
+ * Two decisions that keep it honest on an eco-conscious site. The library is
+ * loaded on first interaction, not on page load, so a visitor who never
+ * searches pays nothing for it. And the low-level API is used rather than
+ * pagefind-ui, whose bundled interface is several times the size of the search
+ * itself and brings its own styling to override.
+ *
+ * The field is hidden until the script runs: a search box that does nothing is
+ * worse than none.
+ *
+ * No `aria-expanded`, and it is not an oversight. An `input type="search"` has
+ * the implicit role `searchbox`, which does not support that state, so axe
+ * reports it as a critical ARIA violation. The state would only be allowed
+ * under `role="combobox"`, and claiming that role would be a lie: a combobox
+ * owes the reader arrow-key navigation through options and an
+ * `aria-activedescendant`, where this is a search field followed by a list of
+ * links reached with Tab. What the reader needs is the result count, and the
+ * live region below already announces it.
+ *
+ * The look is carried over from docusaurus-lunr-search, read off the archived
+ * build rather than guessed: a borderless pill on a translucent fill, with the
+ * magnifier inside on the left. Docusaurus used `#ffffff1a` in dark and a grey
+ * in light; color-mix on our text token reproduces both from one declaration.
+ */
+import { Search as SearchIcon } from '@lucide/astro';
+---
+
+<div class="search" hidden data-search>
+  <label class="sr-only" for="search-input">Rechercher un article</label>
+  <SearchIcon class="search__icon" aria-hidden="true" />
+  <input
+    id="search-input"
+    class="search__input"
+    type="search"
+    placeholder="Rechercher…"
+    autocomplete="off"
+    aria-describedby="search-status"
+    aria-controls="search-results"
+  />
+
+  <p id="search-status" class="sr-only" role="status" aria-live="polite"></p>
+
+  <ul id="search-results" class="search__results" hidden></ul>
+</div>
+
+<style>
+  .search {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search__icon {
+    position: absolute;
+    inset-inline-start: var(--space-3);
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+
+  .search__input {
+    /* Full width on its own row below 1024px, capped once it sits inline in
+       the header row. */
+    inline-size: 100%;
+    block-size: var(--space-10);
+    /* Room for the magnifier on the leading side, as the old field had. */
+    padding-inline: var(--space-8) var(--space-4);
+    border: 0;
+    border-radius: var(--radius-full);
+    /* One declaration for both themes: a tint of the text colour over whatever
+       is behind, which is how Docusaurus got a grey in light and a translucent
+       white in dark. */
+    background: color-mix(in srgb, var(--color-text) 8%, transparent);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    appearance: none;
+  }
+
+  .search__input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  /* Removing the border removes the usual focus affordance, so the global
+     focus ring is the only thing left saying where you are. It is not
+     overridden here on purpose. */
+  .search__input:hover {
+    background: color-mix(in srgb, var(--color-text) 12%, transparent);
+  }
+
+  /* Safari draws its own clear button on type="search" and it collides with
+     the pill. */
+  .search__input::-webkit-search-decoration,
+  .search__input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  @media (min-width: 1024px) {
+    .search__input {
+      max-inline-size: 14rem;
+    }
+  }
+</style>
+
+{/* Global on purpose, and not a shortcut. Everything below styles markup the
+    script creates at runtime, and Astro's scoped CSS appends a data-astro-cid
+    attribute that only server-rendered elements carry. Scoped, these rules
+    matched nothing: results fell back to the global link colour, which is why
+    matches showed as blue text on the browser's default mark. */}
+<style is:global>
+  .search__results {
+    position: absolute;
+    inset-block-start: calc(100% + var(--space-2));
+    inset-inline-end: 0;
+    z-index: 60;
+    inline-size: min(24rem, 90vw);
+    max-block-size: 60vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: var(--space-2);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-card);
+    list-style: none;
+  }
+
+  .search__results:empty {
+    display: none;
+  }
+
+  /* Results are grouped per article, as the previous search did: a dark bar
+     naming the article, then the sections that matched inside it. */
+  .search__group + .search__group {
+    margin-block-start: var(--space-2);
+  }
+
+  .search__group-title {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .search__hits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .search__hit a {
+    display: block;
+    padding: var(--space-3);
+    border-inline-start: var(--border-width) solid var(--color-border);
+    margin-inline-start: var(--space-3);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  /* One row in two is tinted, so a long excerpt cannot be mistaken for the
+     start of the next result. A tint of the text colour rather than a fixed
+     grey, so it holds in both themes. */
+  .search__hit:nth-child(odd) a {
+    background: color-mix(in srgb, var(--color-text) 4%, transparent);
+  }
+
+  .search__hit a:hover,
+  .search__hit a:focus-visible {
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    border-inline-start-color: var(--color-primary);
+  }
+
+  .search__title {
+    display: block;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+  }
+
+  .search__excerpt {
+    display: block;
+    margin-block-start: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+  }
+
+  /* The yellow highlight is the detail that made the old results readable at a
+     glance. Its text colour is pinned rather than inherited: on the dark theme
+     --color-text is near-white, which on yellow is unreadable. */
+  .search__hit mark {
+    background: #ffe564;
+    color: var(--zat-ink);
+    border-radius: 2px;
+    padding-inline: 0.1em;
+  }
+</style>
+
+{/* type="module" is not decoration: without it this is a classic script, where
+    Safari refuses the dynamic import that Chrome accepts, so the search worked
+    in one browser and failed in the other.
+
+    is:inline keeps it out of the Vite pipeline, which is required rather than
+    stylistic. /pagefind/pagefind.js is generated after the Astro build, and a
+    processed dynamic import went through Vite's preload helper and emitted an
+    unsubstituted __VITE_PRELOAD__ marker, throwing a ReferenceError at runtime.
+    The cost is plain JavaScript with no bundling; the benefit is an import the
+    browser resolves itself. */}
+<script is:inline type="module">
+  (() => {
+    // Articles shown, and sections within each. Kept low: the panel hangs off
+    // the header and a long list ends up taller than a laptop viewport.
+    const MAX_RESULTS = 5;
+    const MAX_SECTIONS = 4;
+    const PAGEFIND_URL = '/pagefind/pagefind.js';
+
+    let pagefind = null;
+    let loading = null;
+
+    async function load(status) {
+      if (pagefind) return;
+      if (loading) return loading;
+
+      loading = (async () => {
+        try {
+          pagefind = await import(PAGEFIND_URL);
+          await pagefind.options({ excerptLength: 20 });
+        } catch (error) {
+          // A missing index is expected in dev, since the build produces it.
+          // Anything else is a real failure: the console gets the truth, the
+          // visitor gets a sentence. Reporting both as one reassuring message
+          // is what hid the __VITE_PRELOAD__ bug for a whole round of testing.
+          console.error('[search] Pagefind n’a pas pu être chargé.', error);
+          status.textContent = "La recherche n'est pas disponible sur cette page.";
+          pagefind = null;
+        }
+      })();
+
+      return loading;
+    }
+
+    function init() {
+      const root = document.querySelector('[data-search]');
+      const input = document.getElementById('search-input');
+      const list = document.getElementById('search-results');
+      const status = document.getElementById('search-status');
+      if (!root || !input || !list || !status) return;
+
+      // Only now does the field become real.
+      root.hidden = false;
+
+      const render = (results, query) => {
+        list.innerHTML = '';
+
+        if (!query) {
+          list.hidden = true;
+          status.textContent = '';
+          return;
+        }
+
+        if (results.length === 0) {
+          status.textContent = `Aucun résultat pour « ${query} »`;
+          list.hidden = true;
+          return;
+        }
+
+        status.textContent =
+          `${results.length} article${results.length > 1 ? 's' : ''} trouvé${results.length > 1 ? 's' : ''}`;
+
+        for (const result of results) {
+          const group = document.createElement('li');
+          group.className = 'search__group';
+
+          const heading = document.createElement('p');
+          heading.className = 'search__group-title';
+          heading.textContent = result.meta?.title ?? result.url;
+          group.append(heading);
+
+          const hits = document.createElement('ul');
+          hits.className = 'search__hits';
+
+          // Pagefind returns the matching sections of a page as sub_results,
+          // each with its nearest heading and its own anchor, which is what
+          // lets the list read like the old one: an article, then the places
+          // inside it. An article with no headings has none, so fall back to
+          // the page itself rather than rendering an empty group.
+          const sections = result.sub_results?.length
+            ? result.sub_results.slice(0, MAX_SECTIONS)
+            : [{ title: result.meta?.title ?? '', url: result.url, excerpt: result.excerpt }];
+
+          for (const section of sections) {
+            const item = document.createElement('li');
+            item.className = 'search__hit';
+
+            const link = document.createElement('a');
+            link.href = section.url;
+
+            const title = document.createElement('span');
+            title.className = 'search__title';
+            title.textContent = section.title;
+
+            const excerpt = document.createElement('span');
+            excerpt.className = 'search__excerpt';
+            // Pagefind wraps matches in <mark> itself; this is its markup, not
+            // anything a visitor typed.
+            excerpt.innerHTML = section.excerpt;
+
+            link.append(title, excerpt);
+            item.append(link);
+            hits.append(item);
+          }
+
+          group.append(hits);
+          list.append(group);
+        }
+
+        list.hidden = false;
+      };
+
+      let timer;
+
+      const search = async () => {
+        const query = input.value.trim();
+        if (!query) return render([], '');
+
+        await load(status);
+        if (!pagefind) return;
+
+        const response = await pagefind.search(query);
+        const results = await Promise.all(
+          response.results.slice(0, MAX_RESULTS).map((r) => r.data()),
+        );
+        render(results, query);
+      };
+
+      input.addEventListener('focus', () => void load(status), { once: true });
+
+      input.addEventListener('input', () => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(search, 200);
+      });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        input.value = '';
+        render([], '');
+      });
+
+      // A click elsewhere closes the results, which would otherwise sit over
+      // the page until the next query.
+      document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) render([], '');
+      });
+    }
+
+    init();
+    document.addEventListener('astro:after-swap', init);
+  })();
+</script>

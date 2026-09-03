@@ -1,0 +1,164 @@
+---
+/**
+ * Every tag the blog uses, alphabetically, at the foot of /categories/.
+ *
+ * An index, not a cloud, and the difference is a decision rather than a style:
+ * **no tag is presented as bigger than another**. The first version graded the
+ * words by article count, over four sizes; Emmanuel dropped that on 28 August,
+ * "laissons le visiteur être curieux". A count printed next to a word tells the
+ * reader which links are worth their time, and six of the seventeen carry a
+ * single article: they are the ones a reader would never click, and the ones
+ * most likely to hold something they have not already seen.
+ *
+ * So the counts are gone from the page and from the accessible text alike, not
+ * hidden from one and kept for the other. Alphabetical order then carries the
+ * whole burden of findability, which is exactly why it is not by frequency.
+ *
+ * ## Making an undifferentiated list of seventeen words not look inert
+ *
+ * With size, weight and numerals all off the table, three things are left, and
+ * they are the site's own idioms rather than new ones:
+ *
+ *   - a tonal panel with a hairline, which is how this codebase does elevation
+ *     (`--color-surface` over the page, never a shadow at rest);
+ *   - the words set two steps above body size, since they *are* the content of
+ *     this section and not a caption to it;
+ *   - the accent on a 2px rule along the top of the panel, the same one the
+ *     listing cards reveal on hover, here permanent. The words themselves stay
+ *     on `--color-text`, measured at 15.97:1 in light and 11.71:1 in dark.
+ *
+ * The accent first went on middots between the words, and that was wrong on a
+ * phone: a wrapped run has no "last on this line" selector, so seven lines out
+ * of eight ended on a dangling dot and read as an unfinished sentence. Space
+ * alone separates the words now. Worth remembering before reaching for a
+ * separator in any wrapped list.
+ *
+ * No motion beyond the colour of a word under the pointer.
+ */
+import type { TagSummary } from '../utils/posts';
+
+interface Props {
+  tags: TagSummary[];
+  /** Id for the heading, so the page can link to this section. */
+  id?: string;
+}
+
+const { tags, id = 'tags' } = Astro.props;
+
+/**
+ * Alphabetical, and `localeCompare` with the French locale rather than a raw
+ * sort: it is the only order the reader can navigate now that nothing else
+ * distinguishes one word from the next.
+ */
+const words = [...tags].sort((a, b) => a.tag.localeCompare(b.tag, 'fr'));
+---
+
+<section class="container tagindex" aria-labelledby={id}>
+  <h2 id={id}>Tags</h2>
+
+  <p class="tagindex__intro">
+    Parce que parfois, une catégorie ne suffit pas.
+  </p>
+
+  <ul class="tagindex__list">
+    {
+      words.map(({ tag }) => (
+        <li>
+          <a class="tagindex__word" href={`/tags/${tag}/`}>
+            {tag}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  /* The same measure as the category cards above, so the two sections of the
+     page share one left edge and one right one. */
+  .tagindex {
+    max-width: 48rem;
+  }
+
+  .tagindex__intro {
+    margin: var(--space-3) 0 var(--space-6);
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .tagindex__list {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    /* Baseline, so the words sit on a common line the way type does. */
+    align-items: baseline;
+    /* Space, and nothing but space, between two words. The first version put a
+       middot between them: with a wrapped run there is no selector for "last on
+       this line", so seven lines out of eight on a phone ended on a dangling
+       dot and read as an unfinished sentence. 20px carries the separation on
+       its own, and the accent moved to the rule above, where it cannot dangle.
+       Rows are left to the 40px of the words themselves. */
+    column-gap: var(--space-5);
+    row-gap: 0;
+    /* The panel: a tonal layer and a hairline, this codebase's elevation at
+       rest. It is what stops seventeen equal words from reading as a leftover
+       list under the cards. */
+    padding: var(--space-6);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    list-style: none;
+    margin: 0;
+  }
+
+  /* The accent, and the only colour in the block besides the text. The same
+     2px rule the listing cards reveal on hover, here permanent and on a panel
+     nothing can point at: it signs the block instead of decorating it.
+     A 48px stub and not the card's full width: run edge to edge and a
+     permanent rule reads as a banner across the top of the panel, which is
+     more weight than a list of seventeen words should carry. */
+  .tagindex__list::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -1px;
+    inset-inline-start: var(--space-6);
+    inline-size: var(--space-12);
+    block-size: 2px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+  }
+
+  /* A tag never breaks across two lines, "open-source" included: the hyphen is
+     a break opportunity the browser will take. */
+  .tagindex__list li {
+    display: inline-flex;
+    align-items: baseline;
+    white-space: nowrap;
+  }
+
+  .tagindex__word {
+    display: inline-flex;
+    align-items: center;
+    /* 40px, the theme chips' minimum, so every word clears 2.5.5 outright
+       rather than relying on the spacing exception. */
+    min-block-size: var(--space-10);
+    color: var(--color-text);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .tagindex__word:hover,
+  .tagindex__word:focus-visible {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tagindex__word {
+      transition: none;
+    }
+  }
+</style>
