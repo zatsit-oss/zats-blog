@@ -9,6 +9,16 @@
  *
  * Rewritten against our tokens rather than copied, since corporate is a
  * Tailwind project. The badge is self-hosted here, see WebsiteCarbonBadge.
+ *
+ * **The carbon badge only appears on the home page**, and that is a measured
+ * decision rather than a layout preference. Website Carbon's API answers 503
+ * for any URL it has not already measured, verified down to
+ * `https://example.com/?zzz=19906`, so on every page but the home one the badge
+ * printed "No Result" to the reader. An empty figure on a blog that argues for
+ * sobriety reads as a broken claim, and it was worst on /blog-conception/, the
+ * page that presents our own measurements. One page where the number is real
+ * beats sixty-eight where it is absent. `CO2JSBadge`, computed at build from
+ * our own weight, depends on no third party and is unaffected.
  */
 import { Image } from 'astro:assets';
 import { Mail, MapPin, Globe } from '@lucide/astro';
@@ -33,6 +43,9 @@ import {
 // Build time, not visitor time: a static page cannot know today's date, and
 // pretending otherwise would need client JavaScript for a copyright line.
 const year = new Date().getFullYear();
+
+/** Gates the carbon badge, for the reason given in the header. */
+const isHome = Astro.url.pathname === '/';
 ---
 
 <footer class="footer">
@@ -50,9 +63,16 @@ const year = new Date().getFullYear();
         > et <strong>positif</strong>.
       </p>
 
-      <div class="footer__badge">
-        <WebsiteCarbonBadge />
-      </div>
+      {
+        /* Home page only: see the header. The wrapper goes with it rather than
+           staying as an empty box, so no page carries its top margin for
+           nothing. */
+        isHome && (
+          <div class="footer__badge">
+            <WebsiteCarbonBadge />
+          </div>
+        )
+      }
     </section>
 
     <section class="footer__column">

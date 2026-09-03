@@ -8,7 +8,6 @@
  * from the sentence and the improvement has since happened.
  */
 import Layout from '../layouts/Layout.astro';
-import WebsiteCarbonBadge from '../components/WebsiteCarbonBadge.astro';
 import EcoIndexBadge from '../components/EcoIndexBadge.astro';
 import AuditCards from '../components/AuditCards.astro';
 import CO2JSBadge from '../components/CO2JSBadge.astro';
@@ -39,13 +38,12 @@ import { MEASURED_PAGE_DATE } from '../consts';
     <p>
       Nous utilisons <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener noreferrer"
         >WebsiteCarbon</a
-      > pour évaluer l'empreinte de nos pages. La mesure est faite sur la page que vous consultez,
-      en direct.
+      > pour évaluer l'empreinte de notre page d'accueil, où le badge est affiché. Leur API mesure
+      une URL en la chargeant, et elle ne répond que pour celles qu'elle a déjà mesurées : sur
+      toutes les autres pages, le badge affichait « No Result » plutôt qu'un chiffre. Un compteur
+      vide sur une page qui parle de sobriété en dit moins que son absence, donc il ne figure plus
+      qu'à l'accueil.
     </p>
-
-    <div class="eco__badge">
-      <WebsiteCarbonBadge />
-    </div>
 
     <h2>Ce que dit EcoIndex</h2>
 
