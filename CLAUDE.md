@@ -67,6 +67,12 @@ Each of these cost a debugging session. They are not hypothetical.
 
 **A sticky child needs a parent taller than itself.** `align-items: start` on a grid shrinks the item to its content height, leaving nothing for the sticky element to travel along: the table of contents looked pinned and scrolled away with the page.
 
+**The built-in highlighter runs ahead of every user hast plugin, and its exclusion list cannot see a math block.** Astro documents `syntaxHighlight.excludeLangs: ['math']` as a default, but `createHighlightPlugin` tests `code.data.lang`, which a math block does not carry, so it reads as `plaintext` and Shiki claims the formula: `language-math` is stripped and what reaches the rest of the pipeline is a coloured code listing that no longer says it is maths. `hastPlugins` is pushed *after* the highlighter unconditionally, so no ordering fixes it. Anything the highlighter would swallow has to be handled at the mdast layer instead, which is what `mdast-math.mjs` does.
+
+**Sätteri parses maths and renders none.** `features.math` produces a `math` node, then the pipeline emits `<pre><code class="language-math">` holding the LaTeX, exactly as remark-math does without a renderer, so the reader sees `$$ \text{WUE} = … $$` printed. This shipped unnoticed for the whole migration: no quality gate asks whether what is displayed resembles what the author wrote. It was found by reading what `main` had that the branch did not.
+
+**Block-level `rawHtml` escapes the paragraph wrapper, phrasing-level does not.** Returning KaTeX's output as-is put the formula in `<p><span class="katex">…`, because the replacement opens on a `span`. Opening on a `div` emits a clean sibling block. That is what lets the formula have its own scroll box, and a `div` inside a `p` would have been closed by the browser.
+
 ## Testing behaviour
 
 Static HTML tells you what was generated, not what happens. Three rounds were lost reporting "everything checks out from here" while a feature was broken in the browser.
@@ -111,6 +117,7 @@ Two things this catches that nothing else does: whether an element is actually v
 | Page shell, header, footer | `src/layouts/Layout.astro` |
 | Article | `src/layouts/BlogPost.astro`, `src/pages/[...slug].astro` |
 | Admonitions | `src/plugins/mdast-admonitions.mjs` |
+| Maths, une formule dans tout le corpus | `src/plugins/mdast-math.mjs` |
 | Image sizing policy | `src/plugins/capped-image-service.mjs` |
 | Home page bands, hero figure | `src/components/BlogFacts.astro`, `BuiltWith.astro`, `HeroTagCloud.astro` |
 | Design tokens | `src/styles/tokens/`, entry point `src/styles/tokens.css` |

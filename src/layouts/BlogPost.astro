@@ -319,6 +319,21 @@ const minutes = readingTime(post);
     margin-block: var(--space-5);
   }
 
+  /* Several articles print a source as its bare URL, and a URL is one
+     unbreakable word: `https://www.researchgate.net/figure/Analysis-of-…`
+     measured 436px against a 390px viewport and pushed the whole page
+     sideways, 46px on this width and 132px on a 320px phone, across three
+     articles. Breaking mid-word is the lesser evil against a page that
+     scrolls horizontally, and it only ever applies to a word longer than the
+     line, so prose is untouched.
+
+     On the body and not on `a` alone: the emphasis around one of those
+     sources overflowed on its own. Code blocks are unaffected, `white-space:
+     pre` forbidding any wrap. */
+  .post__body {
+    overflow-wrap: break-word;
+  }
+
   /* Asymmetric on purpose. A heading with equal space above and below floats
      between two sections; pushed up and pulled down, it belongs to the text
      it introduces. This is the single biggest change to how the page reads. */

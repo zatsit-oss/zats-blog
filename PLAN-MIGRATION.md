@@ -195,7 +195,7 @@ Appliquer une modification demande une nouvelle version du secret puis une **nou
 | Avec `<!-- truncate -->` | 17 / 19 |
 | Admonitions | 2 occurrences : un `:::tip`, un `:::info` |
 | Mermaid | **0** (la dépendance existe, aucun article ne l'utilise) |
-| Maths `$$` | 1 fichier à vérifier |
+| Maths `$$` | 1 fichier, 1 formule, aucune math en ligne (voir D4) |
 | Balises JSX | aucune |
 
 ### Routage actuel
@@ -414,7 +414,11 @@ $$
 $$
 ```
 
-`remark-math` + `rehype-katex` restent donc au périmètre. Pour limiter le coût GreenIT, ne charger le CSS KaTeX que sur les pages qui contiennent effectivement des maths, plutôt que globalement comme aujourd'hui.
+**Fait le 3 septembre 2026, et il avait été oublié** : la décision était prise mais rien ne l'appliquait, et la formule sortait en LaTeX brut à l'écran depuis le début de la migration. Le défaut a été trouvé en examinant ce que `main` avait en plus avant la fusion, pas par une porte de qualité : aucune ne mesure « ce qui est affiché ressemble-t-il à ce que l'auteur a écrit ».
+
+Ni `remark-math` ni `rehype-katex`, finalement : Sätteri parse les maths lui-même avec `features.math`, et `src/plugins/mdast-math.mjs` les rend avec KaTeX en **MathML seul**. Le coût GreenIT n'est donc pas « limité », il est nul : 437 octets sur une page, aucune feuille de style et aucune police, là où la sortie HTML de KaTeX aurait demandé `katex.css` et sa vingtaine de woff2. MathML Core est natif dans tous les navigateurs actuels. La question du chargement par page ne se pose plus, faute de fichier à charger.
+
+Deux contraintes découvertes à l'implémentation, écrites dans l'en-tête du plugin : il doit être un plugin **mdast** et non hast, le coloriseur intégré passant avant et réclamant le bloc en `plaintext` ; et la formule, large de 339 px sans pouvoir se replier, reçoit la boîte défilante des tableaux larges.
 
 ### D5. Jetons CSS → design system
 
