@@ -87,7 +87,7 @@ const TOOLS = [
                 du marqueur, et un lecteur d'écran n'entendant que « Clever
                 Cloud » repartirait avec l'idée fausse qu'il corrige. Le lien
                 annonce donc « Clever Cloud bientôt ». */}
-            {name === 'Clever Cloud' && <span class="built__soon">bientôt</span>}
+            {name === 'Clever Cloud' && <span class="built__soon">(bientôt)</span>}
           </a>
         </li>
       ))
@@ -155,25 +155,43 @@ const TOOLS = [
     color: var(--color-primary);
   }
 
-  /* The marker stacks under the mark, so whichever entry carries one runs as a
-     column while the others stay rows. Derived with `:has()` rather than from a
-     second class, so the template says "this entry has a caveat" in one place
-     and nothing has to be kept in step. The `li` centres it, so the extra line
-     grows evenly above and below rather than dropping the logo off the row. */
-  .built__item:has(.built__soon) {
-    flex-direction: column;
-    gap: var(--space-1);
+  /* Taking the caption out of the flow means the row no longer reserves room
+     for it, and once the list wraps it landed on top of the next line: measured
+     over "Website Carbon" and "EcoIndex" at 390px. The row gap has to host it,
+     so it grows from 16 to 32px, which clears the 12px caption and its leading.
+     Scoped with `:has()` to the run that actually carries one, so the band gets
+     its tighter rhythm back the day the marker goes. */
+  .built__list:has(.built__soon) {
+    row-gap: var(--space-8);
   }
 
-  /* Muted and two steps down: it qualifies the mark, it does not compete with
-     it. Same token as the band's own label, so it is a pairing check:a11y
-     already measures. */
+  /* Only the entry that carries a caveat needs the anchor, and `:has()` reads
+     it off the template rather than from a second class kept in step. */
+  .built__item:has(.built__soon) {
+    position: relative;
+  }
+
+  /* Out of the flow, and that is the whole point: stacked in a column the
+     caption made its item taller, and the row centred that extra height by
+     lifting the logotype 11px above the three other marks. Absolutely
+     positioned, the item keeps the height of a mark, so all four stay on one
+     line and the caption hangs under its own.
+
+     Muted, two steps down and italic: it qualifies the mark rather than
+     competing with it. The parentheses are in the text, not drawn in CSS, so
+     they reach the accessible name too and the link announces "Clever Cloud
+     (bientôt)". Italic costs nothing here, Poppins italic already shipping for
+     blockquotes. */
   .built__soon {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 100%;
     color: var(--color-text-muted);
     font-size: var(--text-xs);
+    font-style: italic;
     font-weight: var(--font-regular);
     letter-spacing: var(--tracking-wide);
-    text-transform: lowercase;
+    text-align: center;
   }
 
   /* The hover colours the mark, never the caveat: it is a note, not a label. */
