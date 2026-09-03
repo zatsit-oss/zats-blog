@@ -1,12 +1,22 @@
 # Où en est la migration
 
-Note de reprise, mise à jour le 28 août 2026. À supprimer une fois la migration terminée.
+Note de reprise, mise à jour le 3 septembre 2026. À supprimer une fois la migration terminée.
 
-**Rien en cours.** Arbre de travail propre. Le 27 août : taxonomies, `srcset` des images, correctif a11y du pied de page. Le 28 août : la décision D6, une seule entrée de menu et le nuage de tags sur `/categories/`, plus la bascule du mot lu par le lecteur, de « thème » vers **« tag »**. `astro check` à zéro erreur, 52 pages dans les budgets, axe-core à zéro violation sur `/categories/` dans les deux thèmes. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
+**Rien en cours.** Arbres de travail propres des deux côtés, tout est poussé. Reprendre par le prochain geste ci-dessous, il n'y a pas d'état intermédiaire à retrouver.
 
-Branche `migration-astro` dans **les deux** repos. PR en brouillon : [#82](https://github.com/zatsit-oss/zats-blog/pull/82).
+Branche `migration-astro` dans **les deux** dépôts, la coque et le contenu, et elles doivent avancer ensemble : la CI de la coque construit avec la branche de contenu portant le même nom. Seule celle de la coque porte une PR, [#82](https://github.com/zatsit-oss/zats-blog/pull/82) en brouillon ; celle du contenu n'en a jamais eu, ce qui est sans conséquence puisque la preview est déployée par la coque.
 
-**Preview en ligne et validée** : https://zatsit-blog--pr82-migration-astro-9gtho1s6.web.app
+**Une règle de travail, redemandée le 1er septembre :** Emmanuel valide en local avant qu'on pousse. Ne pas pousser, ni lancer `gh workflow run`, sans qu'il le demande.
+
+**Preview en ligne** : https://zatsit-blog--pr82-migration-astro-9gtho1s6.web.app
+
+**Attention, la CI de preview ne part plus toute seule.** Le déclencheur `pull_request` ne lance plus rien sur la PR #82, alors qu'il fonctionne pour les PR Dependabot du même dépôt : cause non trouvée, apparue autour de la réécriture d'historique du 29 août. Le contournement est en place et il faut y penser à chaque push :
+
+```bash
+gh workflow run firebase-hosting-pull-request.yml --ref migration-astro
+```
+
+Le faire marcher a demandé trois correctifs au workflow, tous en place : un `workflow_dispatch`, la branche du run comme candidate de branche de contenu (sans quoi le build prend le contenu `main` et meurt sur `ImageNotFound`), et un paramètre de canal Firebase (sans quoi « channelID is currently required »).
 
 ## À faire après la bascule de production
 
@@ -14,7 +24,7 @@ Trois points qui n'ont de sens, ou d'urgence, qu'une fois le site en ligne sur s
 
 1. **`ECOINDEX_URL` dans `src/consts.ts`.** Le résultat pointé a été mesuré sur le blog Docusaurus, donc il note un site que celui-ci remplace. Relancer l'analyse sur le build Astro en ligne et remplacer l'identifiant, sinon le lien du pied de page et la bande « construit, déployé et mesuré avec » de l'accueil affichent les chiffres de quelqu'un d'autre. Un `TODO` est posé à côté de la constante.
 2. **Les doublons de SVG dans `dist/`.** Deux SVG d'article sont émis deux fois, 51,5 ko que rien ne référence : le HTML ne pointe que la copie sortie du service d'images, l'autre est l'émission de l'import par Astro lui-même, en amont, donc `capped-image-service.mjs` ne peut rien y faire. Zéro octet sur le réseau, du poids d'artefact de déploiement seulement, d'où le report. Reporté sciemment le 27 août.
-3. **`MEASURED_PAGE_BYTES`**, même fichier, à rafraîchir après tout changement qui déplace le poids : le chiffre est imprimé au lecteur sur `/blog-conception/`. Il vaut 91,6 ko au 27 août.
+3. **`MEASURED_PAGE_BYTES`**, même fichier, à rafraîchir après tout changement qui déplace le poids : le chiffre est imprimé au lecteur sur `/blog-conception/`. Il vaut 96,0 ko au 28 août, pour un total mesuré de 96,3 ko : à rafraîchir au prochain écart.
 
 ## Le prochain geste
 
@@ -36,11 +46,13 @@ Ensuite :
 
 | | |
 |---|---|
-| Routes | **45 / 45** de la référence Docusaurus, plus les 7 nouvelles de `/categories/` |
-| `astro check` | 0 erreur |
+| Pages construites | **72**, dont les 45 routes de la référence Docusaurus |
+| Articles | 21, par 13 autrices et auteurs |
+| `astro check` | 0 erreur sur 61 fichiers |
 | Gate a11y | verte, jetons et couleurs Shiki, deux thèmes |
-| Gate éco | verte, **52 pages sur 52 dans les budgets** |
-| CI de preview | verte, déploie sur un canal Firebase |
+| Gate éco | verte, **toutes les pages dans les budgets** |
+| Gate axe | verte, zéro violation sur toutes les pages, deux thèmes, deux largeurs |
+| CI de preview | verte, mais **à déclencher à la main**, voir plus haut |
 | Production | **intacte, toujours Docusaurus** |
 
 | Mesure | Docusaurus | Astro |
@@ -48,6 +60,16 @@ Ensuite :
 | Poids initial | 243 à 3 324 ko | 63 à 81 ko |
 | JS par page | 135 ko gzip | 1,1 ko, plus 1,7 ko si recherche |
 | Paquets | 1 478 | 299 |
+
+## Ce qui a été ajouté hors périmètre de migration
+
+Le blog fait plus que ce que la migration demandait, et ces surfaces n'existaient pas sous Docusaurus :
+
+- **`/audits/`**, avec `/audits/greenit/` et `/audits/w3c/` : le blog évalué ligne à ligne contre **190 critères** de deux référentiels publics, 119 règles du collectif Green IT et 71 lignes directrices du W3C. La source unique est `src/data/referentiel-*.json`, dont `npm run docs:referentiels` régénère `REFERENTIEL-GREENIT.md` et `REFERENTIEL-W3C-WSG.md` : **ne jamais modifier ces deux Markdown à la main**.
+- **`/authors/<prénom-nom>/`** pour les treize auteurs, fiche et articles, et un nom cliqué ne sort plus du site.
+- **`/a11y/`**, page en construction en attendant l'audit RGAA.
+- **`npm run check:axe`**, la porte de qualité qui a trouvé les trois violations que dix passes sur les gabarits avaient manquées, toutes dans les articles.
+- **Un lot AEO/GEO** après un scan externe : `robots.txt`, `llms.txt` généré depuis la collection, JSON-LD au build, et un titre propre à l'accueil. Deux recommandations du scan ont été refusées et le code dit pourquoi : `alt=""` compté comme alt manquant est un contresens, et un script tiers injectant le balisage est l'inverse d'un site à 4 ko de JavaScript.
 
 ## Fait
 
@@ -73,33 +95,42 @@ La présence visuelle du bloc vient des idiomes maison, pas d'un ajout : couche 
 
 Vérifié dans Chrome sur ce dernier lot, et c'est ce qui a servi : dix-sept mots cliquables une fois la section à l'écran, cibles de 40 px de haut, une seule taille et un seul poids, zéro chiffre dans la section, focus clavier à 2 px pleins avec soulignement, trois lignes en 1440 px et neuf en 390 px sans débordement, axe-core à zéro violation dans les deux thèmes avec `target-size` demandée par son nom, contrastes de 5,86:1 à 16,71:1, aucune erreur console.
 
+Puis, du 29 août au 3 septembre, les surfaces listées plus haut, plus deux corrections de fond : la **pagination**, dont la grille montrait neuf cartes sur la première page contre dix sur la deuxième, l'article mis en avant mangeant un emplacement au lieu de s'y ajouter (les deux routes passent maintenant par un `listingPages` partagé, puisque c'est en calculant chacune de leur côté qu'elles avaient divergé) ; et les **titres d'admonition**, qui prenaient la couleur d'accent, non lisible comme texte.
+
+**Une proposition graphique jetée le 1er septembre**, gardée dans l'historique : un bandeau de trois mesures en tête de `/blog-conception/` (`4a52e3a`, annulée par `ab5bc87`). Les trois badges sont trop hétérogènes pour qu'un cadre commun les rattrape. **La page est acceptée en l'état** depuis le 3 septembre, le sujet est clos ; ne pas reproposer de refonte sans qu'Emmanuel la redemande. Le déséquilibre reste mesuré, si la question revenait : trois badges de 40 à 92 px contre deux cartes d'audit de 585.
+
+**Le ménage des branches, le 3 septembre** : 37 branches supprimées dans les deux dépôts, il ne reste que `main`, les deux `migration-astro` et celles portant une PR ouverte.
+
 Une tentative jetée en cours de route, gardée dans l'historique : la marque zatsit en filigrane dans la moitié droite du hero (`9c5f1d9`, annulée par `3fc9a64`).
 
 Le diagnostic qui a motivé cette passe vaut d'être retenu : **`--shadow-lift`, `--shadow-glow` et `--section-gap` étaient définis dans les jetons et référencés nulle part**, et l'échelle typographique était écrasée vers le bas, 17 usages de `--text-sm` contre un seul de `--text-3xl`. Vérifier ce genre d'écart entre ce que le système offre et ce que le code utilise est plus rapide que de discuter du rendu.
 
-## Six pièges déjà payés, un par session perdue
+## Les pièges déjà payés, un par session perdue
 
-Ils sont écrits dans `CLAUDE.md`, section « The traps this codebase has already paid for ». Les relire coûte moins cher que les redécouvrir.
+Ils sont écrits dans `CLAUDE.md`, section « The traps this codebase has already paid for », et ils sont vingt-quatre désormais. Les relire coûte moins cher que les redécouvrir.
 
 Le plus vicieux : **le store de contenu met en cache le Markdown rendu**. Après toute modification du pipeline Markdown, écarter `node_modules/.astro/data-store.json`, sinon on diagnostique des problèmes qui n'existent plus.
 
-## Trois erreurs de méthode à ne pas refaire
+## Erreurs de méthode à ne pas refaire
 
 **Tester le comportement dans un navigateur, pas dans le HTML statique.** J'ai passé trois échanges à affirmer « tout est bon d'ici » pendant que la recherche était cassée pour l'utilisateur. Chrome est installé sur la machine : le piloter en CDP donne la frappe clavier, le DOM après exécution, la géométrie des éléments et les erreurs console. La marche à suivre est dans `CLAUDE.md`, section « Testing behaviour ».
 
 Corollaire : le script de recherche est **inliné dans chaque page**, donc un onglet ouvert avant le dernier build sert l'ancien code. Recharger en forçant le cache avant de conclure. C'était la cause du dernier « ça ne marche plus ».
 
-## Deux erreurs de méthode à ne pas refaire
-
 **Lire la sortie complète d'`astro check`.** La ligne du décompte est au-dessus des warnings ; un `tail -3` la coupe et laisse croire à un succès. J'ai annoncé « zéro erreur » plusieurs tours de suite alors qu'il y en avait deux, et c'est la CI qui les a trouvées.
 
 **Ne pas faire confiance à `AGENTS.md` d'avant le 14 août.** Il décrivait un `src/pages/index.js` absent de tout l'historique, ce qui m'a fait affirmer que la home Docusaurus avait un hero. Elle n'en avait pas : c'était le listing, seul.
+
+**Vérifier le déploiement, pas seulement le dépôt.** Le 1er septembre j'ai affirmé que la preview était à jour parce que `git` était en règle : aucune CI n'avait tourné depuis trois jours et cinq pages n'étaient jamais parties. Un `git status` propre ne dit rien de ce qui est en ligne.
+
+**Vérifier la base d'une branche avant de la merger.** Une branche de contenu partant de `main` aurait annulé la migration, avec un `git diff --stat` de soixante fichiers pour un correctif de dix lignes. Le détail est dans la mémoire du projet.
 
 ## En attente d'arbitrage
 
 - **La recherche prend une ligne de header en plus sur mobile.** L'alternative est une icône ouvrant un panneau plein écran, avec la machinerie de focus que ça implique.
 - **Les mentions légales ont deux corrections dans du texte juridique** : titres de section en `h2`, et le siège de Google Ireland qui n'est plus « Royaume-Uni ». À faire relire.
 - **Coquilles dans le `shareText` de `bundlephobia`**, reprises verbatim de l'ancien boilerplate.
+- **Le badge EcoIndex note `blog.zatsit.fr`**, donc la production Docusaurus, et affiche un **E** même sur la preview. Il faudra relancer une analyse après la bascule, comme pour `ECOINDEX_URL`, ou le faire pointer sur l'URL courante.
 
 ## Récupérer les fichiers Docusaurus
 
