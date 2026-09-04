@@ -154,8 +154,8 @@ const isHome = Astro.url.pathname === '/';
       <Image
         src={ecovadisMedal}
         alt="Médaille EcoVadis Silver, zatsit dans le top 15%"
-        width={100}
-        height={100}
+        width={84}
+        height={84}
         loading="lazy"
       />
       <a
@@ -170,8 +170,8 @@ const isHome = Astro.url.pathname === '/';
         <img
           class="footer__bcorp"
           src="/img/bcorp-black.svg"
-          width="66"
-          height="100"
+          width="76"
+          height="116"
           alt=""
           loading="lazy"
         />
@@ -207,17 +207,17 @@ const isHome = Astro.url.pathname === '/';
     font-size: var(--text-sm);
   }
 
+  /* One column on a phone, three from 768px, the same as corporate, the
+     portal and the tech watcher. This footer used to put the address beside
+     the medal from the start, which was 66px shorter but squeezed the address
+     column to 160px: the five social icons broke onto two lines there and the
+     badges rendered at 57px instead of 76px. Uniformity across the four sites
+     won over the saved height. */
   .footer__columns {
     display: grid;
-    /* Two columns from the start, so the medal sits beside the address on a
-       phone instead of dropping below everything. The brand spans both. */
-    grid-template-columns: 1fr auto;
-    gap: var(--space-10) var(--space-6);
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
     padding-block: var(--space-10);
-  }
-
-  .footer__column:first-child {
-    grid-column: 1 / -1;
   }
 
   .footer__brand {
@@ -259,6 +259,7 @@ const isHome = Astro.url.pathname === '/';
   .footer__title {
     margin: 0 0 var(--space-3);
     font-size: var(--text-base);
+    font-weight: var(--font-semibold);
     letter-spacing: var(--tracking-normal);
   }
 
@@ -322,12 +323,12 @@ const isHome = Astro.url.pathname === '/';
   .footer__bar-inner {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-2);
     padding-block: var(--space-4);
     color: var(--color-text-muted);
     font-size: var(--text-xs);
-    text-align: center;
+    text-align: start;
   }
 
   .footer__copyright {
@@ -368,15 +369,10 @@ const isHome = Astro.url.pathname === '/';
       padding-block: var(--space-12);
     }
 
-    /* Three real columns from here, so the brand stops spanning. */
-    .footer__column:first-child {
-      grid-column: auto;
-    }
-
     .footer__bar-inner {
       flex-direction: row;
+      align-items: center;
       justify-content: space-between;
-      text-align: start;
     }
   }
 </style>
