@@ -4,8 +4,10 @@
  * statement, same address, same EcoVadis medal and B Corp badge, same carbon
  * badge.
  *
- * The social row swaps corporate's "Blog" link for "Site web": pointing a
- * reader of the blog at the blog would be a link to nowhere.
+ * The social row repeats the header's five icons in the header's order: the
+ * two sibling sites, then LinkedIn, GitHub, mail. Keep the two in step. It
+ * swaps corporate's "Blog" link for "Site web": pointing a reader of the blog
+ * at the blog would be a link to nowhere.
  *
  * Rewritten against our tokens rather than copied, since corporate is a
  * Tailwind project. The badge is self-hosted here, see WebsiteCarbonBadge.
@@ -94,17 +96,6 @@ const isHome = Astro.url.pathname === '/';
         <li>
           <a
             class="footer__social"
-            href={LINKEDIN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn, dans un nouvel onglet"
-          >
-            <LinkedinIcon class="icon" aria-hidden="true" />
-          </a>
-        </li>
-        <li>
-          <a
-            class="footer__social"
             href={WEBSITE_URL}
             target="_blank"
             rel="noopener noreferrer"
@@ -122,6 +113,17 @@ const isHome = Astro.url.pathname === '/';
             aria-label="Le portail Sustainability, dans un nouvel onglet"
           >
             <SustainabilityIcon class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="footer__social"
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn, dans un nouvel onglet"
+          >
+            <LinkedinIcon class="icon" aria-hidden="true" />
           </a>
         </li>
         <li>
@@ -281,15 +283,16 @@ const isHome = Astro.url.pathname === '/';
     padding: 0;
   }
 
-  /* 40px targets: below the 44px aim, but these are secondary links repeated
-     in the copyright bar and the header, never the only path to anything.
-     Filled primary discs, as on corporate; the glyph takes the page colour so
-     it inverts with the theme instead of being white on gold. */
+  /* 44px targets, matching corporate, the portal and the tech watcher. The
+     header shows the same five links as bare icons, which are narrower below
+     640px; these discs are the full-size way to reach them. Filled primary,
+     with the glyph on the page colour so it inverts with the theme instead of
+     being white on gold. */
   .footer__social {
     display: grid;
     place-items: center;
-    inline-size: var(--space-10);
-    block-size: var(--space-10);
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
     border-radius: var(--radius-full);
     background: var(--color-primary);
     color: var(--color-bg);
