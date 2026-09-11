@@ -1,8 +1,14 @@
 # Ce que le blog coche en SEO, AEO et GEO
 
-État au 3 septembre 2026. Trois sigles pour trois lecteurs différents : **SEO** pour un moteur de recherche, **AEO** pour un moteur de réponse qui cite, **GEO** pour un modèle génératif qui reformule. Les trois demandent en grande partie la même chose, du HTML sémantique et du texte lisible sans exécuter de script, ce qui explique que ce site parte avec une avance.
+État au 11 septembre 2026. Trois sigles pour trois lecteurs différents : **SEO** pour un moteur de recherche, **AEO** pour un moteur de réponse qui cite, **GEO** pour un modèle génératif qui reformule. Les trois demandent en grande partie la même chose, du HTML sémantique et du texte lisible sans exécuter de script, ce qui explique que ce site parte avec une avance.
 
 Chaque ligne ci-dessous est vérifiable sur le site ou dans le dépôt. Le dernier audit externe, [seoscore.tools](https://seoscore.tools) le 3 septembre, donne **73/100, grade B** : SEO 77, AEO 72, GEO 67, contre des moyennes de 52, 28 et 13 sur deux mille sites scannés. 145 contrôles passés, 59 échoués, 19 sans objet.
+
+## Un seul éditeur pour les trois sites
+
+Le 11 septembre, les données structurées du blog ont été alignées sur celles que `zatsit.fr` et `sustainability.zatsit.fr` publient depuis le 9. L'écart tenait en une ligne et il coûtait cher : l'identifiant de l'organisation était dérivé du domaine du site, donc le blog publiait sa propre `Organization` à `blog.zatsit.fr/#organization` pendant que les deux autres s'ancraient sur `zatsit.fr/#organization`. Un moteur de réponse voyait deux entreprises homonymes au lieu d'un éditeur. Les trois sites partagent maintenant le même `@id`, le même logo et les mêmes profils.
+
+Tout cela pèse **289 octets gzippés** sur l'accueil, mesurés : 21 452 contre 21 163 avant.
 
 ## Le chiffre qu'aucun scanner ne met en avant
 
@@ -21,9 +27,10 @@ Ce qu'un moteur de recherche attend, et où c'est fait.
 | Un titre et une méta-description propres à chaque page | `src/components/BaseHead.astro` |
 | `<link rel="canonical">` sur les **72 pages** | absolue, dérivée de `site` dans `astro.config.mjs` |
 | `robots.txt` ouvert, déclarant le sitemap | `public/robots.txt` |
-| Sitemap segmenté, généré au build | `sitemap-index.xml` et `sitemap-0.xml` |
+| Sitemap segmenté, généré au build | `sitemap-index.xml` et `sitemap-0.xml`, copiés sur `/sitemap.xml` |
+| Directives d'indexation explicites | `index, follow, max-image-preview:large`, et `noindex` sur la 404 |
 | Flux RSS | `/rss.xml` |
-| Open Graph et carte Twitter complets sur 70 pages | titre, description, image absolue, `og:type` correct |
+| Open Graph et carte Twitter complets sur 70 pages | titre, description, image absolue et dimensionnée, `og:type` correct |
 | Une seule `<h1>` par page, hiérarchie sans saut | vérifié par axe-core sur toutes les pages |
 | HTML sémantique | `<nav>`, `<main>`, `<article>`, `<time>`, `<figure>` |
 | URLs stables et lisibles | `/mon-article/`, tirets, pas de paramètre |
@@ -41,19 +48,22 @@ Ce qu'un moteur de réponse attend pour **citer** une page, c'est-à-dire en ext
 
 | Ce qui est en place | Vérifiable |
 |---|---|
-| JSON-LD sur **70 pages sur 72**, émis au build | `src/utils/schema.ts` |
-| `Organization` avec nom, logo, `sameAs`, référencée par identité | `/#organization` |
+| JSON-LD sur **69 pages sur 72**, émis au build | `src/utils/schema.ts` |
+| `Organization` partagée avec les autres sites zatsit | `https://zatsit.fr/#organization`, le même identifiant partout |
+| Ses faits vérifiables : adresse, contact, B Corp, EcoVadis | ceux que le pied de page imprime déjà, et rien d'autre |
 | `BlogPosting` par article : titre, description, date, auteurs, mots-clés | et `publisher` par référence, pas dupliqué |
-| `WebSite` sur les pages qui ne sont pas des articles | |
+| `WebSite` du blog, et `WebPage` par page qui n'est pas un article | une page de liste ne se décrit plus comme le site entier |
+| `BreadcrumbList` sur toutes les pages sous la racine | la catégorie sert de parent à l'article, qui est à la racine |
 | Les 23 agents d'IA recensés ont accès | aucune règle par agent dans `robots.txt` |
-| `llms.txt`, généré depuis la collection | `/llms.txt`, 6,5 ko, jamais périmé |
+| `llms.txt`, généré depuis la collection | `/llms.txt`, jamais périmé |
+| Et il ouvre le reste du domaine | liens vers `zatsit.fr`, le portail, LinkedIn et GitHub |
 | Signature d'auteur sur chaque article, et une page par auteur | `/authors/<prénom-nom>/` |
 | Date de publication en `<time>` lisible par une machine | |
 | Titres de section explicites, listes, tableaux, définitions | ce que le rapport relève comme « bien structuré pour l'IA » |
 | Chiffres sourcés et liens externes vers les sources | 20 liens externes sur l'accueil |
 | Contenu de fond : 1 559 mots sur un article récent | |
 
-Les deux pages sans JSON-LD sont les redirections `/tags/` et `/markdown-page/`, qui n'ont rien à décrire.
+Les trois pages sans JSON-LD sont les redirections `/tags/` et `/markdown-page/`, qui n'ont rien à décrire, et la 404, qui porte `noindex` : une page qui existe sans être du contenu n'a pas à se décrire à un moteur de réponse.
 
 ## GEO
 
@@ -64,6 +74,7 @@ Ce qu'un modèle génératif attend pour **reformuler sans se tromper**. C'est l
 | Langue déclarée, site monolingue assumé | `lang="fr"` sur `<html>` |
 | Un sujet par page, titre et contenu alignés | |
 | Marque nommée de façon constante | titre, Open Graph et schema disent « zatsit » |
+| Une seule organisation pour les trois sites | le blog, `zatsit.fr` et le portail partagent un identifiant |
 | Deux liens `sameAs` faisant autorité | LinkedIn et GitHub de l'organisation |
 | Taxonomies explicites et navigables | `/categories/` et 17 pages de tags |
 | Fraîcheur datée et visible | date de publication, et les mesures portent la leur |
@@ -81,8 +92,8 @@ Par ordre d'utilité réelle, non par ordre de score.
    La CSP a été testée avant d'être posée, et ce test a évité une régression : sans `'wasm-unsafe-eval'`, la recherche mourait sur un `CompileError` de WebAssembly que seule la console du navigateur montre. Pagefind compile son index en WebAssembly.
 2. **La méta-description du site, 75 caractères**, contre 120 à 160 attendus.
 3. **Le titre de l'accueil, 22 caractères**, contre une cible de 50 à 60. Attention, les deux outils se contredisent sur ce point : l'un veut 10 à 70, l'autre 30 à 60.
-4. **`BreadcrumbList`**, et une identité stable pour les auteurs dans le schema, ce que le `BlogPosting` ne fait pas encore.
-5. **Un alias `/sitemap.xml`.** Le sitemap existe sous son nom segmenté et il est déclaré partout, mais plusieurs outils cherchent ce chemin littéral.
+4. ~~**`BreadcrumbList`**~~ **fait le 11 septembre**, sur l'implémentation que le site corporate avait éprouvée d'abord. Reste la part que cet item recouvrait aussi : **une identité stable pour les auteurs dans le schema**, que le `BlogPosting` ne donne toujours pas ; il nomme une `Person` sans l'ancrer sur `/authors/<prénom-nom>/#person`, donc rien ne relie deux articles du même auteur.
+5. ~~**Un alias `/sitemap.xml`**~~ **fait le 11 septembre.** `@astrojs/sitemap` écrit toujours `<base>-index.xml` et le suffixe n'est pas configurable, donc un crochet de build recopie l'index sous le chemin littéral. Une redirection aurait été pire : Astro y répond par une page HTML à méta-rafraîchissement, et `text/html` n'est pas le type d'une réponse à un crawler qui demande un sitemap.
 6. ~~Le cache HTTP~~ **corrigé le 3 septembre**, et ce n'était dans aucun audit : aucune règle de `firebase.json` ne s'appliquait, les actifs hachés recevaient 24 h au lieu d'un an et les pages 24 h au lieu de dix minutes. Pour les en-têtes, Firebase applique toutes les règles correspondantes et **la dernière écrase** : l'attrape-tout `**`, placé en fin de liste, annulait les trois autres. Il est désormais en tête. Un audit avait même compté ce `max-age=86400` comme une réussite.
 
    En production, c'était plus simple et plus grave : **aucun `Cache-Control` n'était envoyé du tout**, chaque navigateur décidait seul. Corrigé dans la PR [#31](https://github.com/zatsit-oss/zatsit-terraform/pull/31), qui porte les quatre durées dans la configuration nginx.
@@ -90,6 +101,10 @@ Par ordre d'utilité réelle, non par ordre de score.
    Et c'est là qu'on a trouvé bien pire, que ce document lui-même affirmait sans le vérifier : **la production ne compressait rien.** `gzip on` était commenté, donc l'accueil partait à 72 407 octets au lieu de 21 163, un facteur 3,4. Or les poids annoncés dans ce document sont mesurés **gzippés**, sur l'hypothèse que l'hébergeur compresse. Ils décrivaient donc un site que personne ne recevait, sur le seul site où une revendication d'éco-conception est censée être vérifiable par le lecteur. Compression activée le 3 septembre, chiffres redevenus vrais.
 
    La cause était une ligne : `gzip_proxied` vaut `off` par défaut, donc nginx renonce à compresser dès qu'une requête porte un en-tête `Via`, et le load balancer estampille tout avec `Via: 1.1 google`.
+
+7. **La carte sociale, 350x304 sur un fond transparent.** Ce n'est pas une carte, c'est un export de logo : le sigle au-dessus du nom, très en dessous des 1200x630 qu'attend `summary_large_image`, et sans fond, donc LinkedIn et Meta composent le bleu sur ce qu'ils veulent. Les dimensions annoncées sont désormais les vraies, ce qui est honnête sans être suffisant : l'asset est à refaire, et c'est un travail de design. Le site corporate porte exactement le même défaut sur le sien.
+
+8. **L'organisation reste décrite trois fois.** Les trois sites pointent le même `@id`, ce qui était le but, mais chacun émet le nœud complet et le corporate comme le portail y ajoutent leur propre `description`, en français ici et en anglais là. Le blog n'en met aucune, pour ne pas décrire l'entreprise comme un blog. À trancher côté `@zatsit/components` plutôt qu'ici.
 
 ## Ce que nous refusons, et pourquoi
 

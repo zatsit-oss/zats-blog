@@ -1,6 +1,7 @@
 // @ts-check
 
 import sitemap from '@astrojs/sitemap';
+import sitemapAlias from './src/integrations/sitemap-alias.mjs';
 import { satteri } from '@astrojs/markdown-satteri';
 import { defineConfig, fontProviders } from 'astro/config';
 import { mdastAdmonitions } from './src/plugins/mdast-admonitions.mjs';
@@ -21,7 +22,7 @@ export default defineConfig({
   },
 
   // No MDX on purpose: articles stay portable plain Markdown, per the brief.
-  integrations: [sitemap()],
+  integrations: [sitemap(), sitemapAlias()],
 
   image: {
     // Sharp, plus a cap on any image whose size nobody declared. Markdown has

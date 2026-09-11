@@ -10,7 +10,11 @@ import { sortedPosts } from '../utils/posts';
 const latest = (await sortedPosts()).slice(0, 3);
 ---
 
-<Layout title="Page introuvable" description="Cette page n'existe pas ou plus.">
+<Layout
+  title="Page introuvable"
+  description="Cette page n'existe pas ou plus."
+  noindex
+>
   <div class="container notfound">
     <p class="notfound__code" aria-hidden="true">404</p>
     <h1>Page introuvable</h1>

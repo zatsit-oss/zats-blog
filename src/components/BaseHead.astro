@@ -2,14 +2,30 @@
 // Imported here so every page that uses <BaseHead /> gets the global styles.
 import '../styles/global.css';
 import { Font } from 'astro:assets';
-import { SITE_TITLE, SITE_DESCRIPTION, SITE_OG_IMAGE } from '../consts';
-import { blogPostingSchema, pageGraph, webSiteSchema } from '../utils/schema';
+import {
+  HOME_TITLE,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SITE_OG_IMAGE,
+  SITE_OG_IMAGE_ALT,
+  SITE_OG_IMAGE_HEIGHT,
+  SITE_OG_IMAGE_WIDTH,
+} from '../consts';
+import {
+  blogPostingSchema,
+  breadcrumbListSchema,
+  pageGraph,
+  webPageSchema,
+  type BreadcrumbItem,
+} from '../utils/schema';
 
 interface Props {
   title: string;
   description?: string;
   /** Absolute or root-relative path to the social card for this page. */
   image?: string;
+  /** What the card shows. Describe the image, not the page. */
+  imageAlt?: string;
   /** "article" on blog posts, "website" everywhere else. */
   type?: 'website' | 'article';
   /** Publication date, articles only. Feeds `article:published_time`. */
@@ -18,46 +34,119 @@ interface Props {
   authors?: string[];
   /** Tag names, articles only. One `article:tag` each. */
   tags?: string[];
+  /**
+   * The trail from the home page to this one, **excluding** both ends: the
+   * home page is prepended and the current page appended, without a URL, as
+   * schema.org advises for the last item.
+   *
+   * A page directly below the root needs nothing here: its two-item trail is
+   * the default. An article does, since it sits at the root of the site and
+   * its parent is the category it is filed in, which no URL segment shows.
+   */
+  breadcrumbs?: { name: string; href: string }[];
+  /**
+   * Keeps the page out of every index, and out of the structured data with it.
+   *
+   * For a page that exists without being content: the 404 body, which nginx
+   * serves with a 404 status on an unknown URL, but which is also a file, and
+   * so answers 200 to anyone asking for `/404.html` directly.
+   */
+  noindex?: boolean;
 }
 
 const {
   title,
   description = SITE_DESCRIPTION,
   image = SITE_OG_IMAGE,
+  imageAlt = SITE_OG_IMAGE_ALT,
   type = 'website',
   publishedAt,
   authors = [],
   tags = [],
+  breadcrumbs = [],
+  noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL(image, Astro.site);
+// The measured size of the default card. A page shipping its own image would
+// have its own dimensions, and a wrong pair helps nobody, so it gets neither.
+const isDefaultImage = image === SITE_OG_IMAGE;
 // A title that already names the site is left alone, which is how the home page
 // reads "Le blog tech de zatsit" and not that followed by "| zatsit".
 const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}`;
 
 // Structured data, emitted at build. An article describes itself as a
-// BlogPosting; every other page is the site. Astro.site is set in the config,
-// so the ids and urls are absolute, which JSON-LD requires.
+// BlogPosting, every other page as a WebPage, and the graph carries the
+// organisation and the site beside it. Astro.site is set in the config, so the
+// ids and urls are absolute, which JSON-LD requires.
 const site = Astro.site!;
-const schema = pageGraph(
-  site,
-  type === 'article'
-    ? blogPostingSchema(
-        { title, description, url: canonicalURL, image: socialImageURL, publishedAt, authors, tags },
-        site,
-      )
-    : webSiteSchema(site),
-);
+
+// The home page gets no trail: a one-item breadcrumb describes nothing.
+const isHome = canonicalURL.pathname === '/';
+const trail: BreadcrumbItem[] = isHome
+  ? []
+  : [
+      { name: HOME_TITLE, url: new URL('/', site).href },
+      ...breadcrumbs.map(({ name, href }) => ({ name, url: new URL(href, site).href })),
+      { name: title },
+    ];
+const breadcrumb = trail.length > 1 ? breadcrumbListSchema(trail, canonicalURL) : undefined;
+
+const schema = noindex
+  ? undefined
+  : pageGraph(
+      site,
+      type === 'article'
+        ? blogPostingSchema(
+            {
+              title,
+              description,
+              url: canonicalURL,
+              image: socialImageURL,
+              publishedAt,
+              authors,
+              tags,
+            },
+            site,
+          )
+        : webPageSchema({
+            name: fullTitle,
+            description,
+            url: canonicalURL,
+            site,
+            breadcrumbId: breadcrumb?.['@id'],
+          }),
+      breadcrumb,
+    );
 ---
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
 
+{/* `max-image-preview:large` lets Google use a full-size image in Discover and
+    in the AI surfaces; without it the preview is capped at a thumbnail. The
+    other two directives are the defaults, spelled out so the one that matters
+    is not sitting alone on a line that reads like an override. */}
+{
+  noindex ? (
+    <meta name="robots" content="noindex, follow" />
+  ) : (
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+  )
+}
+
+{/* The browser chrome follows the OS preference rather than a stored choice:
+    the two tags are static, and a reader who overrode the theme keeps the
+    other one in the address bar until the next load. Correcting that would
+    cost a script on every page, for a band of colour. */}
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1b1b1d" media="(prefers-color-scheme: dark)" />
+
 <link rel="icon" type="image/svg+xml" href="/img/logo-zatsit-style-light.svg" />
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
-<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 <link
   rel="alternate"
   type="application/rss+xml"
@@ -71,7 +160,7 @@ const schema = pageGraph(
 
 <title>{fullTitle}</title>
 
-<script type="application/ld+json" is:inline set:html={schema} />
+{schema && <script type="application/ld+json" is:inline set:html={schema} />}
 <meta name="description" content={description} />
 
 <meta property="og:type" content={type} />
@@ -79,7 +168,15 @@ const schema = pageGraph(
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={socialImageURL} />
-<meta property="og:image:alt" content={title} />
+<meta property="og:image:alt" content={imageAlt} />
+{
+  isDefaultImage && (
+    <>
+      <meta property="og:image:width" content={String(SITE_OG_IMAGE_WIDTH)} />
+      <meta property="og:image:height" content={String(SITE_OG_IMAGE_HEIGHT)} />
+    </>
+  )
+}
 <meta property="og:site_name" content={SITE_TITLE} />
 <meta property="og:locale" content="fr_FR" />
 
@@ -95,6 +192,7 @@ const schema = pageGraph(
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={socialImageURL} />
+<meta name="twitter:image:alt" content={imageAlt} />
 
 {/* Runs before first paint so the dual theme never flashes the wrong palette.
     The design system ships no prefers-color-scheme block on purpose, so the OS

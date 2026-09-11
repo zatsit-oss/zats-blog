@@ -14,10 +14,13 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
   type?: 'website' | 'article';
   publishedAt?: Date;
   authors?: string[];
   tags?: string[];
+  breadcrumbs?: { name: string; href: string }[];
+  noindex?: boolean;
 }
 ---
 

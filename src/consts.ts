@@ -15,8 +15,27 @@ export const HOME_TITLE = 'Le blog tech de zatsit';
 export const SITE_DESCRIPTION =
   'Quel que soit votre domaine tech, nous avons forcément un article pour vous';
 
-/** Default social card, used when a page or an article declares no cover. */
+/**
+ * Default social card, used when a page or an article declares no cover, which
+ * today is every page.
+ *
+ * The declared size is the file's real size, measured: **350x304**, not the
+ * 1200x630 a card is expected to be. Announcing a size the file does not have
+ * would make a platform reserve the wrong box, so these two numbers are honest
+ * rather than aspirational.
+ *
+ * **The asset itself needs replacing, and that is a design task.** It is a logo
+ * export, not a card: the sigle above the wordmark on a fully transparent
+ * background, which LinkedIn and Meta composite onto whatever they use, and
+ * 350px wide against the 1200px `summary_large_image` wants at a 1.91:1 ratio.
+ * At this size a platform falls back to a small thumbnail. Target 1200x630,
+ * opaque. The corporate site carries the same defect on its own card.
+ */
 export const SITE_OG_IMAGE = '/img/zatsit-social-card.png';
+export const SITE_OG_IMAGE_WIDTH = 350;
+export const SITE_OG_IMAGE_HEIGHT = 304;
+/** Describes the card, not the page: the same image is shared by every page. */
+export const SITE_OG_IMAGE_ALT = 'Le logo de zatsit, le sigle au-dessus du nom';
 
 /** How many articles per page on the paginated listing. Matches Docusaurus. */
 /**
@@ -88,6 +107,33 @@ export const MEASURED_PAGE_DATE = '3 septembre 2026';
 
 /** Postal address, as the corporate footer prints it. */
 export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];
+
+/**
+ * The same address in the shape schema.org expects, kept beside the display
+ * lines so the two move together.
+ *
+ * The values match `ZATSIT_POSTAL_ADDRESS` in `@zatsit/components`, which the
+ * corporate site and the sustainability portal read. The three sites describe
+ * one organisation under one id, so a divergence here would make them disagree
+ * about it.
+ */
+export const POSTAL_ADDRESS = {
+  streetAddress: '2 Allée de la Haye du Temple',
+  postalCode: '59160',
+  addressLocality: 'Lille',
+  addressCountry: 'FR',
+};
+
+/**
+ * The certification and the rating the footer shows a badge for.
+ *
+ * The bar for anything added here: the page already prints it for a reader.
+ * Declaring it adds nothing to the claim, it only makes the claim
+ * machine-readable. A founding date or a headcount would not qualify, since no
+ * page states either.
+ */
+export const CERTIFICATIONS = [{ name: 'B Corp', issuedBy: 'B Lab', url: BCORP_URL }];
+export const AWARDS = ['EcoVadis Silver (top 15%)'];
 
 /**
  * Home page hero.
