@@ -48,7 +48,8 @@ interface Props {
    * Keeps the page out of every index, and out of the structured data with it.
    *
    * For a page that exists without being content: the 404 body, which nginx
-   * serves with a 404 status but which is also reachable at `/404/` with a 200.
+   * serves with a 404 status on an unknown URL, but which is also a file, and
+   * so answers 200 to anyone asking for `/404.html` directly.
    */
   noindex?: boolean;
 }
