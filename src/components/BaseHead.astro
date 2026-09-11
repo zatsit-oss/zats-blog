@@ -3,6 +3,7 @@
 import '../styles/global.css';
 import { Font } from 'astro:assets';
 import {
+  HOME_TITLE,
   SITE_TITLE,
   SITE_DESCRIPTION,
   SITE_OG_IMAGE,
@@ -10,7 +11,13 @@ import {
   SITE_OG_IMAGE_HEIGHT,
   SITE_OG_IMAGE_WIDTH,
 } from '../consts';
-import { blogPostingSchema, pageGraph, webPageSchema } from '../utils/schema';
+import {
+  blogPostingSchema,
+  breadcrumbListSchema,
+  pageGraph,
+  webPageSchema,
+  type BreadcrumbItem,
+} from '../utils/schema';
 
 interface Props {
   title: string;
@@ -27,6 +34,16 @@ interface Props {
   authors?: string[];
   /** Tag names, articles only. One `article:tag` each. */
   tags?: string[];
+  /**
+   * The trail from the home page to this one, **excluding** both ends: the
+   * home page is prepended and the current page appended, without a URL, as
+   * schema.org advises for the last item.
+   *
+   * A page directly below the root needs nothing here: its two-item trail is
+   * the default. An article does, since it sits at the root of the site and
+   * its parent is the category it is filed in, which no URL segment shows.
+   */
+  breadcrumbs?: { name: string; href: string }[];
   /**
    * Keeps the page out of every index, and out of the structured data with it.
    *
@@ -45,6 +62,7 @@ const {
   publishedAt,
   authors = [],
   tags = [],
+  breadcrumbs = [],
   noindex = false,
 } = Astro.props;
 
@@ -62,6 +80,18 @@ const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}
 // organisation and the site beside it. Astro.site is set in the config, so the
 // ids and urls are absolute, which JSON-LD requires.
 const site = Astro.site!;
+
+// The home page gets no trail: a one-item breadcrumb describes nothing.
+const isHome = canonicalURL.pathname === '/';
+const trail: BreadcrumbItem[] = isHome
+  ? []
+  : [
+      { name: HOME_TITLE, url: new URL('/', site).href },
+      ...breadcrumbs.map(({ name, href }) => ({ name, url: new URL(href, site).href })),
+      { name: title },
+    ];
+const breadcrumb = trail.length > 1 ? breadcrumbListSchema(trail, canonicalURL) : undefined;
+
 const schema = noindex
   ? undefined
   : pageGraph(
@@ -79,7 +109,14 @@ const schema = noindex
             },
             site,
           )
-        : webPageSchema({ name: fullTitle, description, url: canonicalURL, site }),
+        : webPageSchema({
+            name: fullTitle,
+            description,
+            url: canonicalURL,
+            site,
+            breadcrumbId: breadcrumb?.['@id'],
+          }),
+      breadcrumb,
     );
 ---
 

@@ -124,11 +124,40 @@ export function webSiteSchema(site: URL) {
   };
 }
 
+export interface BreadcrumbItem {
+  name: string;
+  /** Absolute. The last item omits it, as schema.org advises. */
+  url?: string;
+}
+
+/**
+ * The trail from the site root to this page.
+ *
+ * Anchored on the page's own URL so two pages never share a node id. Articles
+ * sit at the root of the site, so their trail is the category they are filed
+ * in rather than anything the URL shows: one article has exactly one category,
+ * which is what makes the trail unambiguous.
+ */
+export function breadcrumbListSchema(items: BreadcrumbItem[], pageUrl: URL) {
+  return {
+    '@type': 'BreadcrumbList',
+    '@id': new URL('#breadcrumb', pageUrl).href,
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      ...(item.url ? { item: item.url } : {}),
+    })),
+  };
+}
+
 export interface PageSchemaInput {
   name: string;
   description: string;
   url: URL;
   site: URL;
+  /** Id of the BreadcrumbList travelling in the same graph, when there is one. */
+  breadcrumbId?: string;
 }
 
 /**
@@ -149,6 +178,7 @@ export function webPageSchema(page: PageSchemaInput) {
     inLanguage: 'fr-FR',
     isPartOf: { '@id': webSiteId(page.site) },
     publisher: { '@id': ORGANIZATION_ID },
+    ...(page.breadcrumbId ? { breadcrumb: { '@id': page.breadcrumbId } } : {}),
   };
 }
 
@@ -158,11 +188,10 @@ export function webPageSchema(page: PageSchemaInput) {
  * page, which is both smaller and what the consumers expect.
  *
  * Every page carries the same three nodes: who publishes, which site this is,
- * and what this page is.
+ * and what this page is. A page below the root carries its trail as a fourth.
  */
-export function pageGraph(site: URL, page: object) {
-  return JSON.stringify({
-    '@context': 'https://schema.org',
-    '@graph': [organizationSchema(), webSiteSchema(site), page],
-  });
+export function pageGraph(site: URL, page: object, breadcrumb?: object) {
+  const nodes = [organizationSchema(), webSiteSchema(site), page];
+  if (breadcrumb) nodes.push(breadcrumb);
+  return JSON.stringify({ '@context': 'https://schema.org', '@graph': nodes });
 }
