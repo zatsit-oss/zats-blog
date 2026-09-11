@@ -3,7 +3,7 @@
 import '../styles/global.css';
 import { Font } from 'astro:assets';
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_OG_IMAGE } from '../consts';
-import { blogPostingSchema, pageGraph, webSiteSchema } from '../utils/schema';
+import { blogPostingSchema, pageGraph, webPageSchema } from '../utils/schema';
 
 interface Props {
   title: string;
@@ -37,8 +37,9 @@ const socialImageURL = new URL(image, Astro.site);
 const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}`;
 
 // Structured data, emitted at build. An article describes itself as a
-// BlogPosting; every other page is the site. Astro.site is set in the config,
-// so the ids and urls are absolute, which JSON-LD requires.
+// BlogPosting, every other page as a WebPage, and the graph carries the
+// organisation and the site beside it. Astro.site is set in the config, so the
+// ids and urls are absolute, which JSON-LD requires.
 const site = Astro.site!;
 const schema = pageGraph(
   site,
@@ -47,7 +48,7 @@ const schema = pageGraph(
         { title, description, url: canonicalURL, image: socialImageURL, publishedAt, authors, tags },
         site,
       )
-    : webSiteSchema(site),
+    : webPageSchema({ name: fullTitle, description, url: canonicalURL, site }),
 );
 ---
 

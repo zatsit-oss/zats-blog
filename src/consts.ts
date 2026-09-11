@@ -90,6 +90,33 @@ export const MEASURED_PAGE_DATE = '3 septembre 2026';
 export const ADDRESS = ['EURATECHNOPOLYS', '2 Allée de la Haye du Temple', '59160 Lille'];
 
 /**
+ * The same address in the shape schema.org expects, kept beside the display
+ * lines so the two move together.
+ *
+ * The values match `ZATSIT_POSTAL_ADDRESS` in `@zatsit/components`, which the
+ * corporate site and the sustainability portal read. The three sites describe
+ * one organisation under one id, so a divergence here would make them disagree
+ * about it.
+ */
+export const POSTAL_ADDRESS = {
+  streetAddress: '2 Allée de la Haye du Temple',
+  postalCode: '59160',
+  addressLocality: 'Lille',
+  addressCountry: 'FR',
+};
+
+/**
+ * The certification and the rating the footer shows a badge for.
+ *
+ * The bar for anything added here: the page already prints it for a reader.
+ * Declaring it adds nothing to the claim, it only makes the claim
+ * machine-readable. A founding date or a headcount would not qualify, since no
+ * page states either.
+ */
+export const CERTIFICATIONS = [{ name: 'B Corp', issuedBy: 'B Lab', url: BCORP_URL }];
+export const AWARDS = ['EcoVadis Silver (top 15%)'];
+
+/**
  * Home page hero.
  *
  * PLACEHOLDER. The Docusaurus home was the article listing and nothing else,
