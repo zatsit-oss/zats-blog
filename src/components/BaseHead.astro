@@ -18,6 +18,13 @@ interface Props {
   authors?: string[];
   /** Tag names, articles only. One `article:tag` each. */
   tags?: string[];
+  /**
+   * Keeps the page out of every index, and out of the structured data with it.
+   *
+   * For a page that exists without being content: the 404 body, which nginx
+   * serves with a 404 status but which is also reachable at `/404/` with a 200.
+   */
+  noindex?: boolean;
 }
 
 const {
@@ -28,6 +35,7 @@ const {
   publishedAt,
   authors = [],
   tags = [],
+  noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -41,20 +49,49 @@ const fullTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}
 // organisation and the site beside it. Astro.site is set in the config, so the
 // ids and urls are absolute, which JSON-LD requires.
 const site = Astro.site!;
-const schema = pageGraph(
-  site,
-  type === 'article'
-    ? blogPostingSchema(
-        { title, description, url: canonicalURL, image: socialImageURL, publishedAt, authors, tags },
-        site,
-      )
-    : webPageSchema({ name: fullTitle, description, url: canonicalURL, site }),
-);
+const schema = noindex
+  ? undefined
+  : pageGraph(
+      site,
+      type === 'article'
+        ? blogPostingSchema(
+            {
+              title,
+              description,
+              url: canonicalURL,
+              image: socialImageURL,
+              publishedAt,
+              authors,
+              tags,
+            },
+            site,
+          )
+        : webPageSchema({ name: fullTitle, description, url: canonicalURL, site }),
+    );
 ---
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
+
+{/* `max-image-preview:large` lets Google use a full-size image in Discover and
+    in the AI surfaces; without it the preview is capped at a thumbnail. The
+    other two directives are the defaults, spelled out so the one that matters
+    is not sitting alone on a line that reads like an override. */}
+{
+  noindex ? (
+    <meta name="robots" content="noindex, follow" />
+  ) : (
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+  )
+}
+
+{/* The browser chrome follows the OS preference rather than a stored choice:
+    the two tags are static, and a reader who overrode the theme keeps the
+    other one in the address bar until the next load. Correcting that would
+    cost a script on every page, for a band of colour. */}
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1b1b1d" media="(prefers-color-scheme: dark)" />
 
 <link rel="icon" type="image/svg+xml" href="/img/logo-zatsit-style-light.svg" />
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
@@ -72,7 +109,7 @@ const schema = pageGraph(
 
 <title>{fullTitle}</title>
 
-<script type="application/ld+json" is:inline set:html={schema} />
+{schema && <script type="application/ld+json" is:inline set:html={schema} />}
 <meta name="description" content={description} />
 
 <meta property="og:type" content={type} />
