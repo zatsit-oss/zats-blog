@@ -21,6 +21,17 @@ interface Props {
 const { post, headings } = Astro.props;
 const { title, slug, date, tags, category, shareText } = post.data;
 
+// An article sits at the root of the site, so its trail is the category it is
+// filed in rather than anything its URL shows. The loader gives every article
+// a category, but the type allows none, and a trail through a category that
+// does not exist would be worse than the shorter one.
+const breadcrumbs = category
+  ? [
+      { name: 'Catégories', href: '/categories/' },
+      { name: categoryLabel(category), href: `/categories/${category}/` },
+    ]
+  : [];
+
 // Resolve the author keys against authors.yml. An unknown key is not silently
 // dropped: it would leave an article with no byline, which is worse than a
 // loud build failure while the corpus is being migrated.
@@ -51,6 +62,7 @@ const minutes = readingTime(post);
   publishedAt={date}
   authors={authors.map((a) => a.name)}
   tags={tags}
+  breadcrumbs={breadcrumbs}
 >
   {/* Pagefind indexes only the regions carrying this attribute, so declaring
       it here restricts the index to articles: searching a blog should return

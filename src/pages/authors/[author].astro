@@ -56,7 +56,11 @@ const description =
     : `Les ${count} articles de ${profile.name} sur le blog de zatsit${profile.title ? `, ${profile.title}` : ''}.`;
 ---
 
-<Layout title={profile.name} description={description}>
+<Layout
+  title={profile.name}
+  description={description}
+  breadcrumbs={[{ name: 'Les auteurs', href: '/authors/' }]}
+>
   <div class="container profile">
     <header class="profile__card">
       {

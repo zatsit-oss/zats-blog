@@ -40,6 +40,7 @@ const heading = categoryHeading(slug, posts.length);
 <Layout
   title={label}
   description={`Tous les articles du blog de zatsit dans la catégorie « ${label} ».`}
+  breadcrumbs={[{ name: 'Catégories', href: '/categories/' }]}
 >
   <PostList posts={posts} heading={heading} current={1} total={1} />
 
