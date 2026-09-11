@@ -1,17 +1,34 @@
 ---
 /**
- * Site header, modelled on the corporate one but rewritten against our tokens:
- * corporate is a Tailwind project, this is plain CSS, so the utility classes do
- * not carry over even though the result should read as the same site.
+ * Site header, the same bar as corporate, the sustainability portal and the
+ * tech watcher, so a reader moving between the four zatsit sites never
+ * re-learns it. Corporate's `Header.astro` is the reference.
  *
- * Navigation is shorter than the Docusaurus navbar: the categories it spelled
- * out are behind "Catégories" now, which leaves the room the ecosystem links
- * need. See NAV_LINKS in consts.ts.
+ * Left to right, and in this order everywhere:
+ *   1. brand: sigle plus the "zatsit" wordmark, the wordmark only from 1024px
+ *   2. page navigation, collapsed behind the menu button below 1024px
+ *   3. ecosystem icons, always visible: the two sibling sites, then LinkedIn,
+ *      GitHub, mail
+ *   4. theme toggle
+ *   5. menu button, below 1024px only
+ *
+ * Only the navigation entries and the two sibling sites differ from site to
+ * site. Here the siblings are the corporate website and the sustainability
+ * portal: pointing a reader of the blog at the blog would be a link to
+ * nowhere.
+ *
+ * The search field is this site's alone, and takes its own row below 1024px.
+ *
+ * Class names stay BEM, which is this repository's convention; corporate is a
+ * Tailwind project, so the utility classes never carried over anyway. What is
+ * shared is the rendered result and the metrics, listed in the style block
+ * below against the same breakpoints the other three sites use.
  */
-import { Globe, Menu, X } from '@lucide/astro';
+import { Globe, Mail, Menu, X } from '@lucide/astro';
 import GithubIcon from '../assets/icons/github.svg';
 import LinkedinIcon from '../assets/icons/linkedin.svg';
 import SustainabilityIcon from '../assets/icons/sustainability.svg';
+import LogoIcon from '../assets/icons/logo.svg';
 import ThemeToggle from './ThemeToggle.astro';
 import Search from './Search.astro';
 import {
@@ -20,6 +37,7 @@ import {
   LINKEDIN_URL,
   SUSTAINABILITY_URL,
   WEBSITE_URL,
+  CONTACT_EMAIL,
 } from '../consts';
 
 const currentPath = Astro.url.pathname;
@@ -29,18 +47,11 @@ const isCurrent = (href: string) =>
   href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 ---
 
-<header class="header glass">
+<header class="header glass" role="banner">
   <nav class="container header__nav" aria-label="Navigation principale">
-    <a class="header__brand" href="/">
-      <img
-        class="header__logo"
-        src="/img/logo-zatsit-style-light.svg"
-        alt=""
-        width="32"
-        height="32"
-      />
-      <span>zatsit</span>
-      <span class="sr-only">, accueil du blog</span>
+    <a class="header__brand" href="/" aria-label="zatsit, accueil du blog">
+      <LogoIcon class="header__logo" aria-hidden="true" />
+      <span class="header__wordmark">zatsit</span>
     </a>
 
     <ul class="header__links">
@@ -68,42 +79,61 @@ const isCurrent = (href: string) =>
     </div>
 
     <div class="header__actions">
-      <a
-        class="header__icon-link"
-        href={WEBSITE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Le site zatsit.fr, dans un nouvel onglet"
-      >
-        <Globe class="icon" aria-hidden="true" />
-      </a>
-      <a
-        class="header__icon-link"
-        href={LINKEDIN_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Le LinkedIn de zatsit, dans un nouvel onglet"
-      >
-        <LinkedinIcon class="icon" aria-hidden="true" />
-      </a>
-      <a
-        class="header__icon-link"
-        href={SUSTAINABILITY_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Le portail Sustainability, dans un nouvel onglet"
-      >
-        <SustainabilityIcon class="icon" aria-hidden="true" />
-      </a>
-      <a
-        class="header__icon-link"
-        href={GITHUB_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Le GitHub de zatsit, dans un nouvel onglet"
-      >
-        <GithubIcon class="icon" aria-hidden="true" />
-      </a>
+      <ul class="header__ecosystem">
+        <li>
+          <a
+            class="header__action"
+            href={WEBSITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Le site zatsit.fr, dans un nouvel onglet"
+          >
+            <Globe class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="header__action"
+            href={SUSTAINABILITY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Le portail Sustainability, dans un nouvel onglet"
+          >
+            <SustainabilityIcon class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="header__action"
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Le LinkedIn de zatsit, dans un nouvel onglet"
+          >
+            <LinkedinIcon class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="header__action"
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Le GitHub de zatsit, dans un nouvel onglet"
+          >
+            <GithubIcon class="icon" aria-hidden="true" />
+          </a>
+        </li>
+        <li>
+          <a
+            class="header__action"
+            href={`mailto:${CONTACT_EMAIL}`}
+            aria-label={`Écrire à ${CONTACT_EMAIL}`}
+          >
+            <Mail class="icon" aria-hidden="true" />
+          </a>
+        </li>
+      </ul>
 
       <ThemeToggle />
 
@@ -121,6 +151,8 @@ const isCurrent = (href: string) =>
     </div>
   </nav>
 
+  {/* Navigation only: the ecosystem icons and the mail link stay in the bar at
+      every width, so repeating them here would be a duplicate. */}
   <div id="mobile-menu" class="header__mobile" hidden>
     <ul class="container header__mobile-links">
       {
@@ -136,50 +168,6 @@ const isCurrent = (href: string) =>
           </li>
         ))
       }
-      <li class="header__mobile-external">
-        <a
-          class="header__link header__link--with-icon"
-          href={WEBSITE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Globe class="icon" aria-hidden="true" />
-          Site web<span class="sr-only">, dans un nouvel onglet</span>
-        </a>
-      </li>
-      <li class="header__mobile-external">
-        <a
-          class="header__link header__link--with-icon"
-          href={LINKEDIN_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <LinkedinIcon class="icon" aria-hidden="true" />
-          LinkedIn<span class="sr-only">, dans un nouvel onglet</span>
-        </a>
-      </li>
-      <li class="header__mobile-external">
-        <a
-          class="header__link header__link--with-icon"
-          href={SUSTAINABILITY_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <SustainabilityIcon class="icon" aria-hidden="true" />
-          Sustainability<span class="sr-only">, dans un nouvel onglet</span>
-        </a>
-      </li>
-      <li class="header__mobile-external">
-        <a
-          class="header__link header__link--with-icon"
-          href={GITHUB_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <GithubIcon class="icon" aria-hidden="true" />
-          GitHub<span class="sr-only">, dans un nouvel onglet</span>
-        </a>
-      </li>
     </ul>
   </div>
 </header>
@@ -193,24 +181,23 @@ const isCurrent = (href: string) =>
   }
 
   /* Wraps on purpose: below 1024px the search takes the second row, which is
-     the only way to keep one instance of it and still fit a logo, a theme
-     toggle and a menu button on a 375px screen. */
+     the only way to keep one instance of it and still fit a logo, five
+     ecosystem icons, a theme toggle and a menu button on a 375px screen. */
   .header__nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-2) var(--space-4);
-    padding-block: var(--space-3);
+    gap: var(--space-2);
+    min-block-size: 4rem;
+    padding-block: var(--space-2);
   }
 
   .header__brand {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
     color: var(--color-text);
-    font-weight: var(--font-bold);
-    font-size: var(--text-lg);
     text-decoration: none;
     flex-shrink: 0;
   }
@@ -218,12 +205,18 @@ const isCurrent = (href: string) =>
   .header__logo {
     inline-size: 2rem;
     block-size: 2rem;
+    color: var(--color-primary);
   }
 
-  /* The dark logo is a separate file, swapped with the theme rather than
-     recoloured: it is a brand asset, not an icon. */
-  :global([data-theme='dark']) .header__logo {
-    content: url('/img/logo-zatsit-style-dark.svg');
+  /* Hidden until the navigation unfolds at 1024px: below that the row needs
+     the width for the ecosystem icons, and the sigle already carries the
+     brand. The brand link's aria-label names it either way. */
+  .header__wordmark {
+    display: none;
+    color: var(--color-primary);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-semibold);
+    line-height: 1;
   }
 
   .header__links {
@@ -267,47 +260,57 @@ const isCurrent = (href: string) =>
     flex-basis: 100%;
   }
 
-  .header__icon-link {
-    display: none;
+  /* `flex-wrap` is a safety valve for the narrowest phones, not a layout:
+     under roughly 360px the five icons take a second line instead of forcing
+     the page to scroll sideways. From 640px the row is locked to one line and
+     refuses to shrink, so a crowded bar squeezes the search field and the
+     navigation instead of breaking the icons onto two and three lines. */
+  .header__ecosystem {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Icon-only control. 44px tall everywhere, but 36px wide below 640px, where
+     five of them plus the toggle and the menu button have to share a 375px
+     row. Every one of these links is repeated as a 44px disc in the footer,
+     so the narrow target is never the only way to reach it. */
+  .header__action {
+    display: grid;
+    place-items: center;
+    min-inline-size: 2.25rem;
+    min-block-size: 2.75rem;
+    border-radius: var(--radius-md);
     color: var(--color-primary);
     text-decoration: none;
+    transition: background-color var(--duration-fast) var(--ease-out);
   }
 
-  /* Mobile rows only: the desktop bar shows these two as bare icons. */
-  .header__link--with-icon {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  .header__icon-link {
-    inline-size: var(--space-10);
-    block-size: var(--space-10);
-    justify-content: center;
-    border-radius: var(--radius-md);
-  }
-
-  .header__icon-link:hover {
-    opacity: 0.8;
+  .header__action:hover {
+    background-color: var(--color-surface);
   }
 
   .header__menu-button {
     display: grid;
     place-items: center;
-    inline-size: var(--space-10);
-    block-size: var(--space-10);
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
     padding: 0;
     border: 0;
     border-radius: var(--radius-md);
     background: transparent;
     color: var(--color-text);
     cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
   }
 
   .header__menu-button:hover {
     background-color: var(--color-surface);
-    color: var(--color-text);
   }
 
   .menu-icon--open,
@@ -345,18 +348,37 @@ const isCurrent = (href: string) =>
     font-size: var(--text-lg);
   }
 
+  @media (min-width: 640px) {
+    .header__action {
+      min-inline-size: 2.75rem;
+    }
+
+    .header__ecosystem {
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+      gap: var(--space-1);
+    }
+  }
+
   @media (min-width: 768px) {
     .header__logo {
       inline-size: 2.5rem;
       block-size: 2.5rem;
     }
 
-    .header__icon-link {
-      display: flex;
+    .header__nav {
+      min-block-size: 5rem;
+      gap: var(--space-2) var(--space-4);
     }
 
-    .header__mobile-external {
-      display: none;
+    .header__actions {
+      gap: var(--space-4);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .header__links {
+      gap: var(--space-8);
     }
   }
 
@@ -368,23 +390,31 @@ const isCurrent = (href: string) =>
     }
 
     /* Back inline, and pushed to the right so it sits against the ecosystem
-       icons rather than floating in the middle: with two navigation entries
-       left, `space-between` alone left a gap on either side of it. The auto
-       margin ends the left-hand group instead. */
+       icons rather than floating in the middle: with a handful of navigation
+       entries left, `space-between` alone left a gap on either side of it. The
+       auto margin ends the left-hand group instead. */
     .header__links {
       /* Detached from the wordmark, or "zatsit Blog" reads as one phrase. */
       margin-inline-start: var(--space-8);
       margin-inline-end: auto;
+      /* Tighter than the design gap until 1280px: with the wordmark back and
+         the search field inline, 32px between five entries did not fit. */
+      gap: var(--space-4);
+      min-inline-size: 0;
     }
 
     .header__search {
       order: 0;
       flex-basis: auto;
+      min-inline-size: 0;
     }
 
-    .header__links,
-    .header__icon-link {
+    .header__links {
       display: flex;
+    }
+
+    .header__wordmark {
+      display: inline;
     }
 
     .header__menu-button,
@@ -400,10 +430,12 @@ const isCurrent = (href: string) =>
     const menu = document.getElementById('mobile-menu');
     if (!button || !menu) return;
 
+    // The label follows the state, so a screen reader announces what the next
+    // click does rather than what the button opened last time.
     const setOpen = (open: boolean) => {
       button.setAttribute('aria-expanded', String(open));
       button.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
-      menu.hidden = !open;
+      (menu as HTMLElement).hidden = !open;
     };
 
     setOpen(false);

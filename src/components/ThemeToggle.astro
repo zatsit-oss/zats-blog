@@ -24,23 +24,25 @@ import { Sun, Moon } from '@lucide/astro';
 </button>
 
 <style>
+  /* Same 44px square and same primary colour as `.header__action`, so the
+     toggle reads as one of the icons it sits next to. Shared with the other
+     three zatsit sites. */
   .theme-toggle {
     display: grid;
     place-items: center;
-    inline-size: var(--space-10);
-    block-size: var(--space-10);
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
     padding: 0;
     border: 0;
     border-radius: var(--radius-md);
     background: transparent;
-    color: var(--color-text);
+    color: var(--color-primary);
     cursor: pointer;
     transition: background-color var(--duration-fast) var(--ease-out);
   }
 
   .theme-toggle:hover {
     background-color: var(--color-surface);
-    color: var(--color-text);
   }
 
   /* Both icons occupy the same cell; only one is shown. Keeping them stacked
