@@ -83,6 +83,10 @@ function routes(dir, prefix = '') {
       if (['_astro', 'pagefind', 'img', 'fonts'].includes(entry)) continue;
       out.push(...routes(full, `${prefix}/${entry}`));
     } else if (entry === 'index.html') {
+      // A redirect stub navigates away on its own meta refresh, and the CDP call
+      // made while it does never answers: the sweep hung on /tags/ indefinitely.
+      // It carries none of our markup, so it is skipped before being visited.
+      if (readFileSync(full, 'utf8').includes('http-equiv="refresh"')) continue;
       out.push(`${prefix}/`);
     } else if (entry === '404.html') {
       out.push('/404.html');
