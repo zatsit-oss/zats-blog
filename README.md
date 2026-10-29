@@ -1,5 +1,11 @@
 # Blog zatsit
 
+[![Built with Astro](https://astro.badg.es/v2/built-with-astro/tiny.svg)](https://astro.build)
+[![Publish](https://github.com/zatsit-oss/zats-blog/actions/workflows/publish-on-merge.yml/badge.svg)](https://github.com/zatsit-oss/zats-blog/actions/workflows/publish-on-merge.yml)
+[![Site blog.zatsit.fr](https://img.shields.io/badge/site-blog.zatsit.fr-0f15fd)](https://blog.zatsit.fr/blog/)
+[![Node.js 22.12+](https://img.shields.io/badge/node-%E2%89%A522.12-339933?logo=nodedotjs&logoColor=white)](package.json)
+[![Zéro framework côté client](https://img.shields.io/badge/JS%20client-zéro%20framework-1b1b1d)](#)
+
 La coque du blog zatsit, construite avec [Astro](https://astro.build/). Site francophone, statique, sans framework côté client : le JavaScript embarqué se limite à quelques scripts inline (bascule de thème, bouton copier, recherche, tirage d'un article au hasard, sommaire, badge carbone), soit 2,5 ko pour tout le site.
 
 **Le contenu vit ailleurs.** Les articles, les auteurs et leurs images sont dans [zats-blog-content](https://github.com/zatsit-oss/zats-blog-content). Ce dépôt ne contient que la coque : mise en page, thème, composants, build.
