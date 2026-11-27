@@ -306,8 +306,14 @@ const isHome = Astro.url.pathname === '/';
 
   .footer__column--medal {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-4);
+  }
+
+  /* Block, so the inline <a> adds no line-height strut under the badge and
+     skews the centring against the medal. */
+  .footer__bcorp {
+    display: block;
   }
 
   /* Brand asset, swapped with the theme rather than recoloured, and global
